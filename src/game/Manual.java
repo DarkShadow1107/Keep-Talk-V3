@@ -13,10 +13,11 @@ public class Manual extends JPanel {
         editorPane.setContentType("text/html");
         editorPane.setText(getManualHtml());
         editorPane.setCaretPosition(0);
-        editorPane.setBackground(new Color(44, 62, 80)); // Dark Manual Color
+        editorPane.setBackground(new Color(30, 30, 35));
 
         JScrollPane scrollPane = new JScrollPane(editorPane);
         scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         add(scrollPane, BorderLayout.CENTER);
 
         JButton backButton = Theme.createButton("Back to Menu");
@@ -30,32 +31,58 @@ public class Manual extends JPanel {
 
     private String getManualHtml() {
         return "<html><head><style>" +
-               "body { font-family: 'Consolas', 'Courier New', monospace; padding: 30px; color: #00ff00; background-color: #000000; }" +
-               "h1 { font-size: 36px; color: #ff0000; text-align: center; border-bottom: 4px double #ff0000; padding-bottom: 10px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; }" +
-               "h2 { font-size: 24px; color: #00ffff; border-bottom: 1px dashed #00ffff; margin-top: 30px; padding-bottom: 5px; text-transform: uppercase; }" +
-               "h3 { font-size: 18px; color: #ffff00; margin-top: 15px; text-decoration: underline; }" +
-               ".section { background-color: #111111; border: 1px solid #333; padding: 20px; margin-bottom: 25px; }" +
-               ".warning { background-color: #330000; color: #ff0000; border: 2px solid #ff0000; padding: 10px; margin: 10px 0; font-weight: bold; }" +
-               "table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; color: #00ff00; border: 1px solid #00ff00; }" +
-               "th, td { border: 1px solid #00ff00; padding: 8px; text-align: left; }" +
-               "th { background-color: #003300; font-weight: bold; color: #ffffff; }" +
-               "ul, ol { margin-top: 5px; margin-bottom: 5px; }" +
-               "li { margin-bottom: 5px; }" +
-               "strong { color: #ffffff; }" +
+               "body { font-family: 'Segoe UI', sans-serif; padding: 40px; color: #e0e0e0; background-color: #1e1e23; }" +
+               "h1 { font-size: 42px; color: #e74c3c; text-align: center; border-bottom: 2px solid #e74c3c; padding-bottom: 20px; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 3px; }" +
+               "h2 { font-size: 28px; color: #3498db; border-left: 5px solid #3498db; padding-left: 15px; margin-top: 40px; margin-bottom: 20px; text-transform: uppercase; background-color: #2c3e50; padding: 10px; }" +
+               "h3 { font-size: 20px; color: #f1c40f; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #555; padding-bottom: 5px; }" +
+               ".section { background-color: #25252a; border: 1px solid #444; padding: 25px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border-radius: 5px; }" +
+               ".warning { background-color: #3e1a1a; color: #e74c3c; border: 1px solid #c0392b; padding: 15px; margin: 15px 0; font-weight: bold; border-radius: 3px; }" +
+               "table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 15px; color: #ecf0f1; }" +
+               "th, td { border: 1px solid #555; padding: 12px; text-align: left; }" +
+               "th { background-color: #2c3e50; font-weight: bold; color: #3498db; }" +
+               "tr:nth-child(even) { background-color: #2a2a2f; }" +
+               "ul, ol { margin-top: 10px; margin-bottom: 10px; padding-left: 25px; }" +
+               "li { margin-bottom: 8px; line-height: 1.5; }" +
+               "strong { color: #ffffff; font-weight: bold; }" +
+               "a { color: #3498db; text-decoration: none; }" +
+               "a:hover { text-decoration: underline; }" +
+               ".toc { background-color: #25252a; padding: 20px; border: 1px solid #444; margin-bottom: 40px; }" +
+               ".toc h2 { margin-top: 0; background-color: transparent; border-left: none; padding-left: 0; color: #e74c3c; }" +
+               ".toc ul { list-style-type: none; padding-left: 0; }" +
+               ".toc li { margin-bottom: 5px; }" +
                "</style></head><body>" +
 
-               "<h1>BOMB DEFUSAL MANUAL <span style='font-size: 16px; color: #666; font-weight: normal;'>v2.0 [CLASSIFIED]</span></h1>" +
+               "<h1>Bomb Defusal Manual <span style='font-size: 18px; color: #7f8c8d; vertical-align: middle; font-weight: normal;'>v2.1 [CLASSIFIED]</span></h1>" +
                
-               "<div class='section'>" +
-               "<h2>APPENDIX A: INDICATOR REFERENCE</h2>" +
+               "<div class='toc'>" +
+               "<h2>Table of Contents</h2>" +
+               "<ul>" +
+               "<li><a href='#wires'>Section 1: Wires</a></li>" +
+               "<li><a href='#button'>Section 2: The Button</a></li>" +
+               "<li><a href='#keypad'>Section 3: Keypad</a></li>" +
+               "<li><a href='#simon'>Section 4: Simon Says</a></li>" +
+               "<li><a href='#wof'>Section 5: Who's On First</a></li>" +
+               "<li><a href='#memory'>Section 6: Memory</a></li>" +
+               "<li><a href='#morse'>Section 7: Morse Code</a></li>" +
+               "<li><a href='#password'>Section 8: Password</a></li>" +
+               "<li><a href='#maze'>Section 9: Maze</a></li>" +
+               "<li><a href='#complicated'>Section 10: Complicated Wires</a></li>" +
+               "<li><a href='#appendix'>Appendix: Indicators & Batteries</a></li>" +
+               "</ul>" +
+               "</div>" +
+
+               "<div class='section' id='appendix'>" +
+               "<h2>Appendix: Reference</h2>" +
+               "<h3>Indicators</h3>" +
                "<p>Common indicators found on casings:</p>" +
-               "<p><strong>SND, CLR, CAR, IND, FRQ, SIG, NSA, MSA, TRN, BOB, FRK</strong></p>" +
-               "<h2>APPENDIX B: BATTERY REFERENCE</h2>" +
+               "<p style='font-family: monospace; font-size: 1.2em; color: #f1c40f;'>SND, CLR, CAR, IND, FRQ, SIG, NSA, MSA, TRN, BOB, FRK</p>" +
+               "<h3>Batteries</h3>" +
                "<p>Batteries can be AA, D, or 9V. Count the total number of batteries on the casing.</p>" +
                "</div>" +
 
-               "<div class='section'>" +
-               "<h2>SECTION 1: WIRES</h2>" +
+               "<div class='section' id='wires'>" +
+               "<h2>Section 1: Wires</h2>" +
+               "<p>Wires are the lifeblood of electronics! Wait, no, electricity is. Wires are more like the arteries. The arteries that if you cut the wrong one, you die.</p>" +
                "<h3>3 WIRES:</h3>" +
                "<ul>" +
                "<li>If there are no red wires, cut the second wire.</li>" +
@@ -87,8 +114,8 @@ public class Manual extends JPanel {
                "</ul>" +
                "</div>" +
                
-               "<div class='section'>" +
-               "<h2>SECTION 2: THE BUTTON</h2>" +
+               "<div class='section' id='button'>" +
+               "<h2>Section 2: The Button</h2>" +
                "<ol>" +
                "<li>If the button is blue and the button says \"Abort\", hold the button.</li>" +
                "<li>If there is more than 1 battery on the bomb and the button says \"Detonate\", press and immediately release the button.</li>" +
@@ -108,8 +135,8 @@ public class Manual extends JPanel {
                "</ul>" +
                "</div>" +
 
-               "<div class='section'>" +
-               "<h2>SECTION 3: KEYPAD</h2>" +
+               "<div class='section' id='keypad'>" +
+               "<h2>Section 3: Keypad</h2>" +
                "<p>Only one column below has all four of the symbols from the keypad. Press the four buttons in the order their symbols appear from top to bottom within that column.</p>" +
                "<table>" +
                "<tr><td>Ϙ, Ѧ, ƛ, Ϟ, Ѭ, ϗ, Ͽ</td><td>Ӭ, Ϙ, Ͽ, Ҩ, ☆, ϗ, ¿</td></tr>" +
@@ -117,8 +144,8 @@ public class Manual extends JPanel {
                "</table>" +
                "</div>" +
                
-               "<div class='section'>" +
-               "<h2>SECTION 4: SIMON SAYS</h2>" +
+               "<div class='section' id='simon'>" +
+               "<h2>Section 4: Simon Says</h2>" +
                "<p><strong>Vowel in Serial Number:</strong></p>" +
                "<ul>" +
                "<li><strong>0 Strikes:</strong> Red->Blue, Blue->Red, Green->Yellow, Yellow->Green</li>" +
@@ -133,8 +160,8 @@ public class Manual extends JPanel {
                "</ul>" +
                "</div>" +
 
-               "<div class='section'>" +
-               "<h2>SECTION 5: WHO'S ON FIRST</h2>" +
+               "<div class='section' id='wof'>" +
+               "<h2>Section 5: Who's On First</h2>" +
                "<p><strong>Step 1:</strong> Read the display. Use the table below to determine which button position to read.</p>" +
                "<table>" +
                "<tr><td>YES: Middle Left</td><td>FIRST: Top Right</td><td>DISPLAY: Bottom Right</td></tr>" +
@@ -179,8 +206,8 @@ public class Manual extends JPanel {
                "<p><strong>LIKE:</strong> YOU'RE, NEXT, U, UR, HOLD, DONE, UH UH, WHAT?, UH HUH, YOU, LIKE</p>" +
                "</div>" +
 
-               "<div class='section'>" +
-               "<h2>SECTION 6: MEMORY</h2>" +
+               "<div class='section' id='memory'>" +
+               "<h2>Section 6: Memory</h2>" +
                "<p><strong>Stage 1:</strong></p>" +
                "<ul><li>Display 1: Press 2nd position.</li><li>Display 2: Press 2nd position.</li><li>Display 3: Press 3rd position.</li><li>Display 4: Press 4th position.</li></ul>" +
                "<p><strong>Stage 2:</strong></p>" +
@@ -193,8 +220,8 @@ public class Manual extends JPanel {
                "<ul><li>Display 1: Press button with same label as Stage 1.</li><li>Display 2: Press button with same label as Stage 2.</li><li>Display 3: Press button with same label as Stage 4.</li><li>Display 4: Press button with same label as Stage 3.</li></ul>" +
                "</div>" +
 
-               "<div class='section'>" +
-               "<h2>SECTION 7: MORSE CODE</h2>" +
+               "<div class='section' id='morse'>" +
+               "<h2>Section 7: Morse Code</h2>" +
                "<p>Interpret the flashing light using the Morse Code table to spell a word.</p>" +
                "<p>Tune the radio to the corresponding frequency for that word.</p>" +
                "<p><strong>Frequencies:</strong></p>" +
@@ -206,14 +233,14 @@ public class Manual extends JPanel {
                "</ul>" +
                "</div>" +
 
-               "<div class='section'>" +
-               "<h2>SECTION 8: PASSWORD</h2>" +
+               "<div class='section' id='password'>" +
+               "<h2>Section 8: Password</h2>" +
                "<p><strong>Possible Passwords:</strong></p>" +
                "<p>ABOUT, AFTER, AGAIN, BELOW, COULD, EVERY, FIRST, FOUND, GREAT, HOUSE, LARGE, LEARN, NEVER, OTHER, PLACE, PLANT, POINT, RIGHT, SMALL, SOUND, SPELL, STILL, STUDY, THEIR, THERE, THESE, THING, THINK, THREE, WATER, WHERE, WHICH, WORLD, WOULD, WRITE</p>" +
                "</div>" +
 
-               "<div class='section'>" +
-               "<h2>SECTION 9: MAZE</h2>" +
+               "<div class='section' id='maze'>" +
+               "<h2>Section 9: Maze</h2>" +
                "<div class='warning'>" +
                "<p>Find the maze with matching circular markings.</p>" +
                "<p>The defuser must navigate the white light to the red triangle.</p>" +
@@ -221,8 +248,8 @@ public class Manual extends JPanel {
                "</div>" +
                "</div>" +
                
-               "<div class='section'>" +
-               "<h2>SECTION 10: COMPLICATED WIRES</h2>" +
+               "<div class='section' id='complicated'>" +
+               "<h2>Section 10: Complicated Wires</h2>" +
                "<p>Look at each wire: it has a color, a star, and an LED.</p>" +
                "<p>Use the Venn Diagram rules to decide whether to cut the wire.</p>" +
                "<table>" +

@@ -1,22 +1,24 @@
 package modules;
 
 import game.Bomb;
+import game.Theme;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.RoundRectangle2D;
 import java.util.Random;
 
 public class ButtonModule implements BombModule {
     private JPanel panel;
-    private JButton button;
-    private JPanel stripPanel;
     private boolean solved = false;
     private Bomb bomb;
     private String color;
     private String text;
     private String stripColor;
-    private boolean isHolding = false;
+    private boolean isPressed = false;
+    private long pressTime = 0;
 
     public ButtonModule(Bomb bomb) {
         this.bomb = bomb;
@@ -30,132 +32,174 @@ public class ButtonModule implements BombModule {
         Random rand = new Random();
         color = colors[rand.nextInt(colors.length)];
         text = texts[rand.nextInt(texts.length)];
-        stripColor = colors[rand.nextInt(colors.length)]; // Random strip color
+        stripColor = colors[rand.nextInt(colors.length)];
     }
 
     private void setupUI() {
-        panel = new JPanel(new BorderLayout());
-        
-        button = new JButton(text);
-        button.setBackground(getColor(color));
-        button.setForeground(isDark(color) ? Color.WHITE : Color.BLACK);
-        button.setFont(new Font("Arial", Font.BOLD, 20));
-        button.setPreferredSize(new Dimension(100, 100));
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Add cursor pointer
+        panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        stripPanel = new JPanel();
-        stripPanel.setPreferredSize(new Dimension(20, 100));
-        stripPanel.setBackground(Color.GRAY); // Hidden initially
+                // Draw Status LED
+                Theme.drawLed(g2, getWidth() - 30, 20, solved, true);
 
-        panel.add(button, BorderLayout.CENTER);
-        panel.add(stripPanel, BorderLayout.EAST);
+                // Draw Strip
+                int stripX = getWidth() - 40;
+                int stripY = 60;
+                int stripW = 20;
+                int stripH = 100;
+                
+                g2.setColor(new Color(20, 20, 20));
+                g2.fillRoundRect(stripX, stripY, stripW, stripH, 5, 5);
+                
+                if (isPressed && shouldHold()) {
+                    g2.setColor(getColor(stripColor));
+                    g2.fillRoundRect(stripX + 2, stripY + 2, stripW - 4, stripH - 4, 3, 3);
+                    
+                    // Glow
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+                    g2.setColor(getColor(stripColor));
+                    g2.fillRoundRect(stripX - 2, stripY - 2, stripW + 4, stripH + 4, 8, 8);
+                    g2.setComposite(AlphaComposite.SrcOver);
+                }
 
-        button.addMouseListener(new MouseAdapter() {
+                // Draw Button Base
+                int btnSize = 140;
+                int btnX = (getWidth() - stripW - 20 - btnSize) / 2;
+                int btnY = (getHeight() - btnSize) / 2 + 10;
+
+                g2.setColor(new Color(0, 0, 0, 100));
+                g2.fillOval(btnX + 5, btnY + 5, btnSize, btnSize);
+
+                // Draw Button
+                Color btnColor = getColor(color);
+                if (isPressed) btnColor = btnColor.darker();
+                
+                g2.setColor(btnColor);
+                g2.fillOval(btnX, btnY, btnSize, btnSize);
+                
+                // Button Highlight/Shadow
+                GradientPaint gp = new GradientPaint(
+                    btnX, btnY, new Color(255, 255, 255, 50),
+                    btnX, btnY + btnSize, new Color(0, 0, 0, 50)
+                );
+                g2.setPaint(gp);
+                g2.fillOval(btnX, btnY, btnSize, btnSize);
+
+                // Button Border
+                g2.setColor(new Color(0, 0, 0, 50));
+                g2.setStroke(new BasicStroke(2));
+                g2.drawOval(btnX, btnY, btnSize, btnSize);
+
+                // Text
+                g2.setColor(isDark(color) ? Color.WHITE : Color.BLACK);
+                g2.setFont(Theme.FONT_BOLD.deriveFont(24f));
+                FontMetrics fm = g2.getFontMetrics();
+                int textX = btnX + (btnSize - fm.stringWidth(text)) / 2;
+                int textY = btnY + (btnSize + fm.getAscent()) / 2 - 5;
+                g2.drawString(text, textX, textY);
+            }
+        };
+        panel.setBackground(Theme.PANEL_BG);
+        panel.setPreferredSize(new Dimension(200, 200));
+
+        panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (solved) return;
-                handlePress();
+                
+                // Check if click is within button circle
+                int btnSize = 140;
+                int stripW = 20;
+                int btnX = (panel.getWidth() - stripW - 20 - btnSize) / 2;
+                int btnY = (panel.getHeight() - btnSize) / 2 + 10;
+                
+                Ellipse2D buttonShape = new Ellipse2D.Float(btnX, btnY, btnSize, btnSize);
+                
+                if (buttonShape.contains(e.getPoint())) {
+                    isPressed = true;
+                    pressTime = System.currentTimeMillis();
+                    panel.repaint();
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (solved) return;
+                if (!isPressed) return;
+                
+                isPressed = false;
+                panel.repaint();
                 handleRelease();
             }
         });
     }
 
-    private void handlePress() {
-        boolean shouldHold = shouldHold();
-        if (shouldHold) {
-            isHolding = true;
-            stripPanel.setBackground(getColor(stripColor));
-        } else {
-            // Immediate press required
-            // If we release immediately, it's fine. If we hold, it's a strike?
-            // Actually, "Press" means press and immediately release.
-            // "Hold" means press, wait for strip, release on digit.
-            // If we are supposed to press, and we hold, does the strip appear?
-            // In the game, the strip appears after a short delay or immediately.
-            // If the rule says "Press and release", we shouldn't see the strip logic apply?
-            // Let's simplify: If rule says hold, we MUST hold (wait for strip).
-            // If rule says press, we MUST NOT hold (release immediately).
-            // But how to distinguish?
-            // Let's say: if we hold for > 0.5s, it counts as a hold.
-            // But for simplicity here:
-            // If logic says Hold, we show strip.
-            // If logic says Press, we don't show strip? Or we do?
-            // In real game, strip appears if you hold.
-            // Let's just show strip immediately on press.
-            stripPanel.setBackground(getColor(stripColor));
-            isHolding = true;
-        }
-    }
-
     private void handleRelease() {
-        if (!isHolding) return; // Should not happen
-
-        boolean shouldHold = shouldHold();
+        // Determine if it was a tap or a hold
+        // In the original game, holding for any amount of time shows the strip.
+        // If you release immediately (tap), you don't see the strip.
+        // But "immediately" is subjective.
+        // Logic:
+        // If we are supposed to hold, and we release, we check the timer.
+        // If we are supposed to press, and we release, it's solved.
         
-        if (shouldHold) {
-            // Check release time
+        boolean ruleSaysHold = shouldHold();
+        
+        if (ruleSaysHold) {
+            // We must release on a specific digit.
             if (checkReleaseTime()) {
                 solve();
             } else {
-                strike();
+                bomb.addStrike();
             }
         } else {
-            // Should have been an immediate press.
-            // Since we can't easily measure "immediate" vs "hold" with just mouse events without a timer,
-            // let's assume any release is a "press" unless we want to enforce holding.
-            // Actually, the rule is: "If you hold the button, a colored strip lights up..."
-            // "If the rule applies, hold the button..."
-            // "If the rule doesn't apply, press and immediately release the button."
+            // Rule says press and release.
+            // If we held it long enough to see the strip, is that a strike?
+            // In the original game, if you hold when you should press, you can still solve it by releasing on the strip rule?
+            // Actually, if the rule says "Press and release", you just do it.
+            // If you hold it, the strip appears, and then you are now in "Release a Held Button" territory.
+            // So if you hold it, you MUST follow the strip rule.
+            // If you tap it, you follow the "Press" rule.
             
-            // Implementation:
-            // If shouldHold is true, we check the timer digit.
-            // If shouldHold is false, we just solve it (assuming they released it quickly enough, or we just accept it).
-            // But wait, if they hold when they shouldn't?
-            // Let's just accept it if shouldHold is false.
+            // Simplified logic:
+            // If the user held the button (saw the strip), they must follow the strip rule.
+            // If the user tapped the button (didn't see strip), they are following the initial rule.
+            
+            // Since we show the strip immediately on press in this implementation (for feedback),
+            // let's say:
+            // If the initial rule was "Press", and they release, it's correct.
+            // UNLESS they waited for a specific digit? No, that's too complex.
+            
+            // Let's stick to:
+            // If rule says Hold: You MUST release on digit.
+            // If rule says Press: You MUST release immediately (any digit).
+            // But if you release on a specific digit that matches the strip rule, maybe that's okay too?
+            // Let's just enforce the primary rule.
+            
             solve();
         }
-        
-        stripPanel.setBackground(Color.GRAY);
-        isHolding = false;
     }
 
     private boolean shouldHold() {
-        // Rule 1: If the button is blue and the button says "Abort", hold the button.
         if (color.equals("Blue") && text.equals("Abort")) return true;
-        
-        // Rule 2: If there is more than 1 battery on the bomb and the button says "Detonate", press and immediately release the button.
         if (bomb.getBatteries() > 1 && text.equals("Detonate")) return false;
-        
-        // Rule 3: If the button is white and there is a lit indicator with label CAR, hold the button.
         if (color.equals("White") && bomb.hasIndicator("CAR")) return true;
-        
-        // Rule 4: If there are more than 2 batteries on the bomb and there is a lit indicator with label FRK, press and immediately release the button.
         if (bomb.getBatteries() > 2 && bomb.hasIndicator("FRK")) return false;
-        
-        // Rule 5: If the button is yellow, hold the button.
         if (color.equals("Yellow")) return true;
-        
-        // Rule 6: If the button is red and the button says "Hold", press and immediately release the button.
         if (color.equals("Red") && text.equals("Hold")) return false;
-        
-        // Rule 7: If none of the above apply, hold the button.
         return true;
     }
 
     private boolean checkReleaseTime() {
         int time = bomb.getTimeRemaining();
-        String timeStr = String.format("%d", time); // This is total seconds, not formatted.
-        // We need the formatted timer digits.
         int minutes = time / 60;
         int seconds = time % 60;
         String formatted = String.format("%02d%02d", minutes, seconds);
         
-        int targetDigit = -1;
+        int targetDigit;
         if (stripColor.equals("Blue")) targetDigit = 4;
         else if (stripColor.equals("White")) targetDigit = 1;
         else if (stripColor.equals("Yellow")) targetDigit = 5;
@@ -166,14 +210,8 @@ public class ButtonModule implements BombModule {
 
     private void solve() {
         solved = true;
-        panel.setBackground(Color.GREEN);
-        button.setEnabled(false);
+        panel.repaint();
         bomb.checkDefused();
-    }
-
-    private void strike() {
-        bomb.addStrike();
-        stripPanel.setBackground(Color.GRAY); // Reset strip
     }
 
     private Color getColor(String colorName) {

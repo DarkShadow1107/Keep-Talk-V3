@@ -4,7 +4,11 @@ import game.Bomb;
 import game.Theme;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -13,15 +17,15 @@ public class MemoryModule implements BombModule {
     private boolean solved = false;
     private Bomb bomb;
     private int stage = 1;
-    private JLabel displayLabel;
-    private JButton[] buttons;
-    private List<Integer> stageLabels = new ArrayList<>();
-    private List<Integer> stagePositions = new ArrayList<>();
-    
-    // History of correct presses (label and position) for each stage
-    // Index 0 = Stage 1, etc.
+    private int displayVal;
+    private List<Integer> buttonLabels = new ArrayList<>();
     private int[] correctLabels = new int[5];
     private int[] correctPositions = new int[5];
+    private int expectedPos;
+    private int expectedLbl;
+    
+    private Rectangle[] buttonRects = new Rectangle[4];
+    private boolean[] buttonPressed = new boolean[4];
 
     public MemoryModule(Bomb bomb) {
         this.bomb = bomb;
@@ -30,56 +34,117 @@ public class MemoryModule implements BombModule {
     }
 
     private void setupUI() {
-        panel = new JPanel(new BorderLayout());
+        panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Draw Status LED
+                Theme.drawLed(g2, getWidth() - 25, 15, solved, true);
+
+                // Draw Main Display
+                int dispW = 80;
+                int dispH = 60;
+                int dispX = (getWidth() - dispW) / 2;
+                int dispY = 40;
+
+                g2.setColor(Color.BLACK);
+                g2.fillRoundRect(dispX, dispY, dispW, dispH, 10, 10);
+                g2.setColor(new Color(50, 50, 50));
+                g2.setStroke(new BasicStroke(3));
+                g2.drawRoundRect(dispX, dispY, dispW, dispH, 10, 10);
+
+                g2.setFont(Theme.FONT_DIGITAL.deriveFont(48f));
+                FontMetrics fm = g2.getFontMetrics();
+                String text = String.valueOf(displayVal);
+                int textX = dispX + (dispW - fm.stringWidth(text)) / 2;
+                int textY = dispY + (dispH + fm.getAscent()) / 2 - 5;
+                g2.setColor(Theme.TEXT_DIGITAL);
+                g2.drawString(text, textX, textY);
+
+                // Draw Stage Indicators
+                int stageY = dispY + dispH + 15;
+                int dotSize = 10;
+                int dotGap = 10;
+                int totalDotW = (dotSize * 5) + (dotGap * 4);
+                int startDotX = (getWidth() - totalDotW) / 2;
+
+                for (int i = 0; i < 5; i++) {
+                    g2.setColor(i < stage ? Theme.ACCENT_GREEN : new Color(50, 50, 50));
+                    if (solved) g2.setColor(Theme.ACCENT_GREEN);
+                    g2.fillOval(startDotX + i * (dotSize + dotGap), stageY, dotSize, dotSize);
+                }
+
+                // Draw Buttons
+                int btnW = 40;
+                int btnH = 50;
+                int btnGap = 10;
+                int startBtnX = (getWidth() - (btnW * 4 + btnGap * 3)) / 2;
+                int btnY = getHeight() - btnH - 20;
+
+                for (int i = 0; i < 4; i++) {
+                    int x = startBtnX + i * (btnW + btnGap);
+                    buttonRects[i] = new Rectangle(x, btnY, btnW, btnH);
+                    
+                    // Button Body
+                    if (buttonPressed[i]) {
+                        g2.setColor(new Color(180, 180, 180));
+                        g2.fillRoundRect(x, btnY + 5, btnW, btnH - 5, 5, 5);
+                    } else {
+                        g2.setColor(new Color(200, 200, 200));
+                        g2.fillRoundRect(x, btnY, btnW, btnH, 5, 5);
+                        // Shadow
+                        g2.setColor(new Color(150, 150, 150));
+                        g2.fillRoundRect(x, btnY + btnH - 5, btnW, 5, 5, 5);
+                    }
+                    
+                    // Label
+                    g2.setColor(Color.BLACK);
+                    g2.setFont(Theme.FONT_BOLD.deriveFont(24f));
+                    String lbl = String.valueOf(buttonLabels.get(i));
+                    fm = g2.getFontMetrics();
+                    int lblX = x + (btnW - fm.stringWidth(lbl)) / 2;
+                    int lblY = btnY + (btnH + fm.getAscent()) / 2 - 5;
+                    if (buttonPressed[i]) lblY += 5;
+                    g2.drawString(lbl, lblX, lblY);
+                }
+            }
+        };
         panel.setBackground(Theme.PANEL_BG);
+        panel.setPreferredSize(new Dimension(200, 200));
+        Theme.applyCursor(panel);
 
-        displayLabel = new JLabel("1", SwingConstants.CENTER);
-        displayLabel.setFont(Theme.FONT_DIGITAL.deriveFont(48f));
-        displayLabel.setForeground(Theme.TEXT_PRIMARY);
-        displayLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        panel.add(displayLabel, BorderLayout.NORTH);
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (solved) return;
+                for (int i = 0; i < 4; i++) {
+                    if (buttonRects[i].contains(e.getPoint())) {
+                        buttonPressed[i] = true;
+                        panel.repaint();
+                        handlePress(i);
+                        break;
+                    }
+                }
+            }
 
-        JPanel btnPanel = new JPanel(new GridLayout(1, 4, 5, 5));
-        btnPanel.setBackground(Theme.PANEL_BG);
-        btnPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        buttons = new JButton[4];
-        for (int i = 0; i < 4; i++) {
-            JButton btn = new JButton("");
-            btn.setFont(Theme.FONT_BOLD.deriveFont(24f));
-            btn.setBackground(Theme.PANEL_BG.brighter());
-            btn.setForeground(Theme.TEXT_PRIMARY);
-            final int pos = i;
-            btn.addActionListener(e -> handlePress(pos));
-            buttons[i] = btn;
-            btnPanel.add(btn);
-        }
-        panel.add(btnPanel, BorderLayout.CENTER);
-        
-        // Stage indicators
-        JPanel stagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        stagePanel.setBackground(Theme.PANEL_BG);
-        for(int i=0; i<5; i++) {
-            JPanel dot = new JPanel();
-            dot.setPreferredSize(new Dimension(10, 10));
-            dot.setBackground(Color.GRAY);
-            stagePanel.add(dot);
-        }
-        panel.add(stagePanel, BorderLayout.SOUTH);
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                for (int i = 0; i < 4; i++) buttonPressed[i] = false;
+                panel.repaint();
+            }
+        });
     }
 
     private void startStage() {
         Random rand = new Random();
-        int displayVal = rand.nextInt(4) + 1;
-        displayLabel.setText(String.valueOf(displayVal));
+        displayVal = rand.nextInt(4) + 1;
         
-        List<Integer> labels = new ArrayList<>();
-        for (int i = 1; i <= 4; i++) labels.add(i);
-        java.util.Collections.shuffle(labels);
-        
-        for (int i = 0; i < 4; i++) {
-            buttons[i].setText(String.valueOf(labels.get(i)));
-        }
+        buttonLabels.clear();
+        for (int i = 1; i <= 4; i++) buttonLabels.add(i);
+        Collections.shuffle(buttonLabels);
         
         // Determine correct answer logic
         int correctPos = -1;
@@ -120,62 +185,51 @@ public class MemoryModule implements BombModule {
         
         // Resolve Pos vs Label
         if (correctPos != -1) {
-            correctLbl = Integer.parseInt(buttons[correctPos].getText());
+            correctLbl = buttonLabels.get(correctPos);
         } else {
             // Find pos for label
             for(int i=0; i<4; i++) {
-                if (Integer.parseInt(buttons[i].getText()) == correctLbl) {
+                if (buttonLabels.get(i) == correctLbl) {
                     correctPos = i;
                     break;
                 }
             }
         }
         
-        // Store correct answer for this stage (but don't save to history yet)
-        // We save to history only on successful press.
-        // Wait, we need to know what the correct answer IS to check it.
-        // So we store it in a temp variable? No, we can just recalculate or store it in the class.
-        // Let's store the expected correct values for validation.
         this.expectedPos = correctPos;
         this.expectedLbl = correctLbl;
+        if (panel != null) panel.repaint();
     }
-    
-    private int expectedPos;
-    private int expectedLbl;
 
     private void handlePress(int pos) {
         if (solved) return;
         
-        int pressedLbl = Integer.parseInt(buttons[pos].getText());
+        int pressedLbl = buttonLabels.get(pos);
         
         if (pos == expectedPos && pressedLbl == expectedLbl) {
             // Correct
             correctPositions[stage-1] = pos;
             correctLabels[stage-1] = pressedLbl;
             
-            // Update stage lights
-            JPanel stagePanel = (JPanel) panel.getComponent(2);
-            stagePanel.getComponent(stage-1).setBackground(Theme.ACCENT_GREEN);
-            
             stage++;
             if (stage > 5) {
                 solved = true;
-                panel.setBackground(Theme.ACCENT_GREEN);
                 bomb.checkDefused();
             } else {
-                startStage();
+                // Delay slightly to show press
+                Timer t = new Timer(200, e -> startStage());
+                t.setRepeats(false);
+                t.start();
             }
         } else {
             // Wrong
             bomb.addStrike();
             stage = 1;
-            // Reset lights
-            JPanel stagePanel = (JPanel) panel.getComponent(2);
-            for(Component c : stagePanel.getComponents()) c.setBackground(Color.GRAY);
-            // Clear history? The game resets stage to 1 but keeps history? No, resets completely.
             correctPositions = new int[5];
             correctLabels = new int[5];
-            startStage();
+            Timer t = new Timer(200, e -> startStage());
+            t.setRepeats(false);
+            t.start();
         }
     }
 

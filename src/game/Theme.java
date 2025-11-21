@@ -4,22 +4,31 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.BasicStroke;
-import java.awt.GradientPaint;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.geom.Ellipse2D;
 
 public class Theme {
     // Colors
-    public static final Color BG_COLOR = new Color(25, 25, 30);
-    public static final Color PANEL_BG = new Color(40, 40, 45);
+    public static final Color BG_COLOR = new Color(20, 20, 25);
+    public static final Color PANEL_BG = new Color(35, 35, 40);
+    public static final Color PANEL_BORDER = new Color(60, 60, 65);
     public static final Color TEXT_PRIMARY = new Color(240, 240, 240);
     public static final Color TEXT_SECONDARY = new Color(180, 180, 180);
+    public static final Color TEXT_DIGITAL = new Color(255, 0, 0); // Red digital text
+    
     public static final Color ACCENT_RED = new Color(231, 76, 60);
     public static final Color ACCENT_GREEN = new Color(46, 204, 113);
     public static final Color ACCENT_BLUE = new Color(52, 152, 219);
     public static final Color ACCENT_YELLOW = new Color(241, 196, 15);
     public static final Color ACCENT_ORANGE = new Color(230, 126, 34);
     public static final Color ACCENT_PURPLE = new Color(155, 89, 182);
+    
     public static final Color DANGER_RED = new Color(192, 57, 43);
+    public static final Color LED_RED_ON = new Color(255, 50, 50);
+    public static final Color LED_RED_OFF = new Color(80, 0, 0);
+    public static final Color LED_GREEN_ON = new Color(50, 255, 50);
+    public static final Color LED_GREEN_OFF = new Color(0, 80, 0);
+    
     public static final Color MANUAL_BG = new Color(250, 248, 239); // Paper color
 
     // Fonts
@@ -47,11 +56,11 @@ public class Theme {
                 // Gradient
                 GradientPaint gp = new GradientPaint(0, 0, bg.brighter(), 0, getHeight(), bg.darker());
                 g2.setPaint(gp);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 
                 // Border
                 g2.setColor(new Color(255, 255, 255, 50));
-                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 15, 15);
+                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 10, 10);
 
                 g2.setColor(getForeground());
                 FontMetrics fm = g2.getFontMetrics();
@@ -62,14 +71,14 @@ public class Theme {
                 g2.dispose();
             }
         };
-        btn.setFont(FONT_BOLD.deriveFont(20f)); // Bigger font
-        btn.setBackground(PANEL_BG.brighter());
+        btn.setFont(FONT_BOLD.deriveFont(18f));
+        btn.setBackground(new Color(60, 60, 70));
         btn.setForeground(TEXT_PRIMARY);
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
         btn.setContentAreaFilled(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setPreferredSize(new Dimension(250, 60)); // Bigger default size
+        btn.setPreferredSize(new Dimension(200, 50));
         return btn;
     }
 
@@ -98,7 +107,6 @@ public class Theme {
         
         // Spark
         g2.setColor(Color.ORANGE);
-        // Star polygon
         int[] xPoints = {52, 54, 60, 55, 56, 52, 48, 49, 44, 50};
         int[] yPoints = {5, 10, 10, 14, 20, 16, 20, 14, 10, 10};
         g2.fillPolygon(xPoints, yPoints, 10);
@@ -110,6 +118,30 @@ public class Theme {
         g2.dispose();
         return image;
     }
-    
-    // Helper for fillStar if needed, but polygon above works.
+
+    public static void drawScrew(Graphics2D g2, int x, int y) {
+        g2.setColor(new Color(150, 150, 150));
+        g2.fillOval(x, y, 10, 10);
+        g2.setColor(new Color(100, 100, 100));
+        g2.drawOval(x, y, 10, 10);
+        g2.drawLine(x + 2, y + 5, x + 8, y + 5);
+        g2.drawLine(x + 5, y + 2, x + 5, y + 8);
+    }
+
+    public static void drawLed(Graphics2D g2, int x, int y, boolean on, boolean isGreen) {
+        Color cOn = isGreen ? LED_GREEN_ON : LED_RED_ON;
+        Color cOff = isGreen ? LED_GREEN_OFF : LED_RED_OFF;
+        
+        g2.setColor(on ? cOn : cOff);
+        g2.fillOval(x, y, 12, 12);
+        
+        // Shine
+        if (on) {
+            g2.setColor(new Color(255, 255, 255, 150));
+            g2.fillOval(x + 3, y + 3, 4, 4);
+        }
+        
+        g2.setColor(new Color(0, 0, 0, 100));
+        g2.drawOval(x, y, 12, 12);
+    }
 }

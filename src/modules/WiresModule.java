@@ -1,10 +1,12 @@
 package modules;
 
 import game.Bomb;
+import game.Theme;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,12 +16,24 @@ public class WiresModule implements BombModule {
     private JPanel panel;
     private boolean solved = false;
     private Bomb bomb;
-    private List<String> wireColors;
+    private List<Wire> wires;
     private int correctWireIndex;
+
+    private class Wire {
+        String color;
+        boolean cut;
+        Shape shape;
+        Rectangle clickArea;
+
+        Wire(String color) {
+            this.color = color;
+            this.cut = false;
+        }
+    }
 
     public WiresModule(Bomb bomb) {
         this.bomb = bomb;
-        this.wireColors = new ArrayList<>();
+        this.wires = new ArrayList<>();
         generateWires();
         setupUI();
         determineCorrectWire();
@@ -31,24 +45,120 @@ public class WiresModule implements BombModule {
         int numWires = rand.nextInt(4) + 3; // 3 to 6 wires
 
         for (int i = 0; i < numWires; i++) {
-            wireColors.add(colors[rand.nextInt(colors.length)]);
+            wires.add(new Wire(colors[rand.nextInt(colors.length)]));
         }
     }
 
     private void setupUI() {
-        panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Draw LED
+                Theme.drawLed(g2, getWidth() - 30, 20, solved, true);
+
+                // Draw Wires
+                int startY = 40;
+                int gap = 30;
+                int width = getWidth();
+
+                for (int i = 0; i < wires.size(); i++) {
+                    Wire wire = wires.get(i);
+                    int y = startY + (i * gap);
+                    
+                    // Define wire path
+                    CubicCurve2D curve = new CubicCurve2D.Float(
+                        20, y, 
+                        width / 3, y + 20, 
+                        2 * width / 3, y - 20, 
+                        width - 20, y
+                    );
+                    
+                    wire.shape = curve;
+                    wire.clickArea = new Rectangle(20, y - 10, width - 40, 20);
+
+                    // Draw Shadow
+                    g2.setStroke(new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    g2.setColor(new Color(0, 0, 0, 50));
+                    g2.translate(2, 2);
+                    if (!wire.cut) g2.draw(curve);
+                    else {
+                        // Draw cut wire (two parts)
+                        CubicCurve2D left = new CubicCurve2D.Float(20, y, width/3, y+20, width/2-10, y, width/2-5, y+10);
+                        CubicCurve2D right = new CubicCurve2D.Float(width/2+5, y+10, 2*width/3, y-20, width-20, y, width-20, y);
+                        g2.draw(left);
+                        g2.draw(right);
+                    }
+                    g2.translate(-2, -2);
+
+                    // Draw Wire
+                    g2.setColor(getColor(wire.color));
+                    g2.setStroke(new BasicStroke(6, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    
+                    if (!wire.cut) {
+                        g2.draw(curve);
+                        // Highlight
+                        g2.setStroke(new BasicStroke(2));
+                        g2.setColor(new Color(255, 255, 255, 100));
+                        g2.draw(curve);
+                    } else {
+                        // Draw cut wire
+                        CubicCurve2D left = new CubicCurve2D.Float(20, y, width/3, y+20, width/2-10, y, width/2-5, y+10);
+                        CubicCurve2D right = new CubicCurve2D.Float(width/2+5, y+10, 2*width/3, y-20, width-20, y, width-20, y);
+                        
+                        g2.setColor(getColor(wire.color));
+                        g2.setStroke(new BasicStroke(6, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                        g2.draw(left);
+                        g2.draw(right);
+                        
+                        // Copper ends
+                        g2.setColor(new Color(184, 115, 51));
+                        g2.fillOval(width/2-8, y+7, 6, 6);
+                        g2.fillOval(width/2+2, y+7, 6, 6);
+                    }
+                }
+            }
+        };
+        panel.setBackground(Theme.PANEL_BG);
+        panel.setPreferredSize(new Dimension(200, 200));
         
-        for (int i = 0; i < wireColors.size(); i++) {
-            String color = wireColors.get(i);
-            JButton wireButton = new JButton("Cut " + color + " Wire");
-            wireButton.setBackground(getColor(color));
-            wireButton.setForeground(isDark(color) ? Color.WHITE : Color.BLACK);
-            
-            final int index = i;
-            wireButton.addActionListener(e -> cutWire(index, wireButton));
-            panel.add(wireButton);
-        }
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (solved) return;
+                
+                for (int i = 0; i < wires.size(); i++) {
+                    Wire wire = wires.get(i);
+                    if (!wire.cut && wire.clickArea.contains(e.getPoint())) {
+                        cutWire(i);
+                        panel.repaint();
+                        break;
+                    }
+                }
+            }
+        });
+
+        panel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if (solved) {
+                    panel.setCursor(Cursor.getDefaultCursor());
+                    return;
+                }
+                
+                boolean hover = false;
+                for (Wire wire : wires) {
+                    if (!wire.cut && wire.clickArea.contains(e.getPoint())) {
+                        hover = true;
+                        break;
+                    }
+                }
+                panel.setCursor(hover ? new Cursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
+            }
+        });
     }
 
     private Color getColor(String colorName) {
@@ -62,11 +172,10 @@ public class WiresModule implements BombModule {
         }
     }
 
-    private boolean isDark(String colorName) {
-        return colorName.equals("Black") || colorName.equals("Blue") || colorName.equals("Red");
-    }
-
     private void determineCorrectWire() {
+        List<String> wireColors = new ArrayList<>();
+        for(Wire w : wires) wireColors.add(w.color);
+        
         int redCount = Collections.frequency(wireColors, "Red");
         int blueCount = Collections.frequency(wireColors, "Blue");
         int yellowCount = Collections.frequency(wireColors, "Yellow");
@@ -112,13 +221,11 @@ public class WiresModule implements BombModule {
         return Character.isDigit(lastChar) && (lastChar - '0') % 2 != 0;
     }
 
-    private void cutWire(int index, JButton button) {
-        if (solved) return;
-
-        button.setEnabled(false);
+    private void cutWire(int index) {
+        wires.get(index).cut = true;
+        
         if (index == correctWireIndex) {
             solved = true;
-            panel.setBackground(Color.GREEN);
             bomb.checkDefused();
         } else {
             bomb.addStrike();

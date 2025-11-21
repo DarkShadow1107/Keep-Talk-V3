@@ -11,9 +11,10 @@ import java.awt.event.ActionListener;
 
 public class Game extends JPanel {
     private JLabel timerLabel;
-    private JLabel strikesLabel;
+    private JPanel strikesPanel;
     private Bomb bomb;
     private App app;
+    private int strikes = 0;
 
     public Game(App app, Level level) {
         this.app = app;
@@ -25,22 +26,34 @@ public class Game extends JPanel {
 
         // Top Panel for Timer and Strikes
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBackground(Color.BLACK);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        topPanel.setBackground(new Color(10, 10, 10));
+        topPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(50, 50, 50)),
+            BorderFactory.createEmptyBorder(15, 25, 15, 25)
+        ));
         
+        // Timer
         timerLabel = new JLabel("00:00", SwingConstants.CENTER);
-        timerLabel.setFont(Theme.FONT_DIGITAL);
+        timerLabel.setFont(Theme.FONT_DIGITAL.deriveFont(56f));
         timerLabel.setForeground(Theme.ACCENT_RED);
+        timerLabel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(50, 0, 0), 2),
+            BorderFactory.createEmptyBorder(5, 20, 5, 20)
+        ));
+        timerLabel.setBackground(new Color(20, 0, 0));
+        timerLabel.setOpaque(true);
         topPanel.add(timerLabel, BorderLayout.CENTER);
 
-        strikesLabel = new JLabel("X ".repeat(0), SwingConstants.RIGHT); // Will update
-        strikesLabel.setFont(Theme.FONT_TITLE);
-        strikesLabel.setForeground(Theme.ACCENT_RED);
-        topPanel.add(strikesLabel, BorderLayout.EAST);
+        // Strikes
+        strikesPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        strikesPanel.setBackground(new Color(10, 10, 10));
+        updateStrikes(0);
+        topPanel.add(strikesPanel, BorderLayout.EAST);
 
-        JButton abortButton = Theme.createButton("GIVE UP");
-        abortButton.setBackground(Theme.ACCENT_RED);
-        abortButton.setPreferredSize(new Dimension(120, 40));
+        // Abort Button
+        JButton abortButton = Theme.createButton("ABORT");
+        abortButton.setBackground(Theme.DANGER_RED);
+        abortButton.setPreferredSize(new Dimension(140, 50));
         abortButton.addActionListener(e -> onExplode("Mission Aborted"));
         topPanel.add(abortButton, BorderLayout.WEST);
 
@@ -51,10 +64,10 @@ public class Game extends JPanel {
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
         sidePanel.setBackground(Theme.PANEL_BG);
         sidePanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 1, 0, 0, Theme.TEXT_SECONDARY),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            BorderFactory.createMatteBorder(0, 2, 0, 0, Theme.PANEL_BORDER),
+            BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
-        sidePanel.setPreferredSize(new Dimension(200, 0));
+        sidePanel.setPreferredSize(new Dimension(240, 0));
 
         addInfoLabel(sidePanel, "SERIAL #", bomb.getSerialNumber());
         addInfoLabel(sidePanel, "BATTERIES", String.valueOf(bomb.getBatteries()));
@@ -70,19 +83,20 @@ public class Game extends JPanel {
         add(sidePanel, BorderLayout.EAST);
 
         // Modules Panel
-        JPanel modulesPanel = new JPanel(new GridLayout(0, 3, 15, 15)); // Auto rows, 3 cols
-        modulesPanel.setBackground(Theme.PANEL_BG);
-        modulesPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel modulesPanel = new JPanel(new GridLayout(0, 3, 20, 20)); // Auto rows, 3 cols
+        modulesPanel.setBackground(Theme.BG_COLOR);
+        modulesPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         
         JScrollPane scrollPane = new JScrollPane(modulesPanel);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.getViewport().setBackground(Theme.BG_COLOR);
         add(scrollPane, BorderLayout.CENTER);
 
         // Add Modules dynamically based on level count
         Random rand = new Random();
         for (int i = 0; i < level.getModuleCount(); i++) {
-            int type = rand.nextInt(10); // Increased range to 10
+            int type = rand.nextInt(10); 
             BombModule module;
             switch (type) {
                 case 0: module = new WiresModule(bomb); break;
@@ -100,21 +114,43 @@ public class Game extends JPanel {
             addModuleToGame(module, modulesPanel);
         }
 
-        updateStrikes(0); // Init label
         bomb.start();
     }
 
     private void addModuleToGame(BombModule module, JPanel container) {
         bomb.addModule(module);
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Theme.TEXT_SECONDARY), 
-            module.getName(),
-            0, 0, Theme.FONT_BOLD, Theme.TEXT_PRIMARY
-        ));
-        wrapper.setBackground(Theme.BG_COLOR);
+        JPanel wrapper = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Draw metallic border
+                g2.setColor(Theme.PANEL_BORDER);
+                g2.setStroke(new BasicStroke(4));
+                g2.drawRect(2, 2, getWidth()-4, getHeight()-4);
+                
+                // Draw screws
+                Theme.drawScrew(g2, 8, 8);
+                Theme.drawScrew(g2, getWidth()-18, 8);
+                Theme.drawScrew(g2, 8, getHeight()-18);
+                Theme.drawScrew(g2, getWidth()-18, getHeight()-18);
+            }
+        };
+        wrapper.setBackground(Theme.PANEL_BG);
+        wrapper.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        
+        // Module Title
+        JLabel title = new JLabel(module.getName());
+        title.setFont(Theme.FONT_BOLD.deriveFont(14f));
+        title.setForeground(Theme.TEXT_SECONDARY);
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        wrapper.add(title, BorderLayout.NORTH);
+        
         wrapper.add(module.getPanel(), BorderLayout.CENTER);
-        wrapper.setPreferredSize(new Dimension(220, 220));
+        wrapper.setPreferredSize(new Dimension(240, 240));
         container.add(wrapper);
     }
 
@@ -123,25 +159,31 @@ public class Game extends JPanel {
         int seconds = secondsRemaining % 60;
         timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
         if (secondsRemaining < 60) {
-            timerLabel.setForeground(secondsRemaining % 2 == 0 ? Theme.ACCENT_RED : Color.WHITE);
+            timerLabel.setForeground(secondsRemaining % 2 == 0 ? Theme.ACCENT_RED : new Color(100, 0, 0));
         }
     }
 
     public void updateStrikes(int strikes) {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<strikes; i++) sb.append("X ");
-        for(int i=strikes; i<bomb.getMaxStrikes(); i++) sb.append("- ");
-        strikesLabel.setText(sb.toString());
+        this.strikes = strikes;
+        strikesPanel.removeAll();
+        for(int i=0; i<bomb.getMaxStrikes(); i++) {
+            JLabel xLabel = new JLabel("X");
+            xLabel.setFont(Theme.FONT_TITLE);
+            if (i < strikes) {
+                xLabel.setForeground(Theme.ACCENT_RED);
+            } else {
+                xLabel.setForeground(new Color(50, 0, 0));
+            }
+            strikesPanel.add(xLabel);
+        }
+        strikesPanel.revalidate();
+        strikesPanel.repaint();
     }
 
     public void onExplode(String reason) {
-        // Stop the bomb timer
         bomb.stop();
-        
-        // Trigger visual explosion
         app.triggerExplosion();
 
-        // Explosion Effect
         Timer explosionTimer = new Timer(40, new ActionListener() {
             int count = 0;
             boolean red = true;
@@ -149,20 +191,18 @@ public class Game extends JPanel {
             
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (count > 40) { // Longer explosion
+                if (count > 50) {
                     ((Timer)e.getSource()).stop();
-                    app.setLocation(originalLoc); // Reset location
-                    setBackground(Theme.BG_COLOR); // Reset background
+                    app.setLocation(originalLoc);
+                    setBackground(Theme.BG_COLOR);
                     showGameOverScreen(reason, false);
                     return;
                 }
                 
-                // Flash background
                 setBackground(red ? Theme.DANGER_RED : Color.BLACK);
                 red = !red;
                 
-                // Shake window
-                int intensity = 30; // More intense
+                int intensity = 40;
                 int xOffset = (int)(Math.random() * intensity - intensity/2);
                 int yOffset = (int)(Math.random() * intensity - intensity/2);
                 app.setLocation(originalLoc.x + xOffset, originalLoc.y + yOffset);
@@ -220,12 +260,12 @@ public class Game extends JPanel {
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         JLabel valueLabel = new JLabel(value);
-        valueLabel.setFont(Theme.FONT_DIGITAL.deriveFont(20f));
+        valueLabel.setFont(Theme.FONT_DIGITAL.deriveFont(24f));
         valueLabel.setForeground(Theme.ACCENT_ORANGE);
         valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         panel.add(titleLabel);
         panel.add(valueLabel);
-        panel.add(Box.createRigidArea(new Dimension(0, 15)));
+        panel.add(Box.createRigidArea(new Dimension(0, 20)));
     }
 }
