@@ -68,7 +68,7 @@ public class Bomb {
         game.updateTimer(timeRemaining);
 
         if (timeRemaining <= 0) {
-            explode("Time ran out!");
+            explode(Localization.get("GAME_TIME"));
         }
     }
 
@@ -78,7 +78,7 @@ public class Bomb {
         strikes++;
         game.updateStrikes(strikes);
         if (strikes >= maxStrikes) {
-            explode("Too many strikes!");
+            explode(Localization.get("GAME_STRIKES"));
         }
     }
 

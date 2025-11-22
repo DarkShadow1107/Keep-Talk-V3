@@ -14,12 +14,15 @@ public class ExplosionOverlay extends JComponent {
     private List<Particle> particles = new ArrayList<>();
     private List<Shockwave> shockwaves = new ArrayList<>();
     private List<Debris> debrisList = new ArrayList<>();
+    private List<Path2D> cracks = new ArrayList<>(); // Cracked screen effect
     private Timer animationTimer;
     private Random random = new Random();
     private float flashIntensity = 0f;
     private float shakeIntensity = 0f;
     private float glitchIntensity = 0f;
+    private float crackOpacity = 1.0f; // Opacity for fading cracks
     private BufferedImage scanlineImage;
+    private long startTime;
 
     public ExplosionOverlay() {
         setOpaque(false);
@@ -30,9 +33,12 @@ public class ExplosionOverlay extends JComponent {
         particles.clear();
         shockwaves.clear();
         debrisList.clear();
+        cracks.clear();
         flashIntensity = 1.0f;
         shakeIntensity = 20.0f;
         glitchIntensity = 1.0f;
+        crackOpacity = 1.0f;
+        startTime = System.currentTimeMillis();
 
         // Create explosion particles
         for (int i = 0; i < 400; i++) {
@@ -48,6 +54,9 @@ public class ExplosionOverlay extends JComponent {
         shockwaves.add(new Shockwave(centerX, centerY, 5));
         shockwaves.add(new Shockwave(centerX, centerY, 15));
         shockwaves.add(new Shockwave(centerX, centerY, 30));
+        
+        // Generate Cracks
+        generateCracks(centerX, centerY);
 
         if (animationTimer != null && animationTimer.isRunning()) {
             animationTimer.stop();
@@ -56,11 +65,33 @@ public class ExplosionOverlay extends JComponent {
         animationTimer = new Timer(16, e -> {
             updateEffects();
             repaint();
-            if (particles.isEmpty() && shockwaves.isEmpty() && debrisList.isEmpty() && flashIntensity <= 0.01f) {
+            // Stop only when everything is gone
+            if (particles.isEmpty() && shockwaves.isEmpty() && debrisList.isEmpty() && flashIntensity <= 0.01f && crackOpacity <= 0.01f) {
                 ((Timer)e.getSource()).stop();
             }
         });
         animationTimer.start();
+    }
+    
+    private void generateCracks(int cx, int cy) {
+        int numCracks = 5 + random.nextInt(5);
+        for (int i = 0; i < numCracks; i++) {
+            Path2D crack = new Path2D.Float();
+            double angle = random.nextDouble() * Math.PI * 2;
+            double dist = 0;
+            double maxDist = Math.max(getWidth(), getHeight()) * 0.8;
+            
+            crack.moveTo(cx, cy);
+            
+            while (dist < maxDist) {
+                dist += random.nextInt(50) + 20;
+                angle += (random.nextDouble() - 0.5) * 0.5; // Jitter angle
+                double x = cx + Math.cos(angle) * dist;
+                double y = cy + Math.sin(angle) * dist;
+                crack.lineTo(x, y);
+            }
+            cracks.add(crack);
+        }
     }
 
     private void updateEffects() {
@@ -68,6 +99,12 @@ public class ExplosionOverlay extends JComponent {
         flashIntensity *= 0.90f;
         shakeIntensity *= 0.90f;
         glitchIntensity *= 0.92f;
+        
+        // Fade out cracks after 10 seconds (10000 ms)
+        long elapsed = System.currentTimeMillis() - startTime;
+        if (elapsed > 10000) {
+            crackOpacity *= 0.95f;
+        }
 
         // Update particles
         Iterator<Particle> it = particles.iterator();
@@ -167,9 +204,24 @@ public class ExplosionOverlay extends JComponent {
             p.draw(g2);
         }
         
+        // Draw Cracks (Persist but fade)
+        if (!cracks.isEmpty() && crackOpacity > 0.01f) {
+            g2.setColor(new Color(200, 220, 255, (int)(100 * crackOpacity))); // Glass color
+            g2.setStroke(new BasicStroke(2));
+            for (Path2D crack : cracks) {
+                g2.draw(crack);
+            }
+            // Highlight
+            g2.setColor(new Color(255, 255, 255, (int)(150 * crackOpacity)));
+            g2.setStroke(new BasicStroke(1));
+             for (Path2D crack : cracks) {
+                g2.draw(crack);
+            }
+        }
+        
         // Reset transform
         if (shakeIntensity > 0.5f) {
-            g2.translate(0, 0); // Actually we should save/restore transform but this is the only thing drawn
+            g2.translate(0, 0);
         }
     }
 

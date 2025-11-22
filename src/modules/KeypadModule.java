@@ -4,71 +4,67 @@ import game.Bomb;
 import game.Theme;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class KeypadModule implements BombModule {
     private JPanel panel;
     private boolean solved = false;
     private Bomb bomb;
-    private List<Key> keys;
-    private List<String> sortedSymbols;
-    private int currentStage = 0;
+    private List<Key> keys = new ArrayList<>();
+    private List<String> solution = new ArrayList<>();
+    private int currentStep = 0;
 
-    // Simplified symbol sets (using Unicode characters)
-    private static final String[][] COLUMNS = {
-        {"Ϙ", "Ѧ", "ƛ", "Ϟ", "Ѭ", "ϗ", "Ͽ"},
-        {"Ӭ", "Ϙ", "Ͽ", "Ҩ", "☆", "ϗ", "¿"},
-        {"©", "Ѽ", "Ҩ", "Ж", "R", "ƛ", "☆"},
-        {"б", "¶", "b", "Ѭ", "Ж", "¿", "☺"}
+    // Simplified symbols (using Unicode)
+    private static final String[] SYMBOLS = {
+        "\u03A9", "\u03A8", "\u03A6", "\u039E", // Greek
+        "\u0416", "\u0429", "\u0424", "\u0414", // Cyrillic
+        "\u2605", "\u2606", "\u2660", "\u2663", // Shapes
+        "\u00A9", "\u00AE", "\u00B6", "\u00BF"  // Misc
     };
-
-    private class Key {
-        String symbol;
-        boolean pressed;
-        boolean correct;
-        Rectangle bounds;
-
-        Key(String symbol) {
-            this.symbol = symbol;
-            this.pressed = false;
-            this.correct = false;
-        }
-    }
 
     public KeypadModule(Bomb bomb) {
         this.bomb = bomb;
-        this.keys = new ArrayList<>();
         generatePuzzle();
         setupUI();
     }
 
     private void generatePuzzle() {
-        // Pick a random column
-        int colIndex = (int) (Math.random() * COLUMNS.length);
-        String[] column = COLUMNS[colIndex];
-
-        // Pick 4 random symbols from that column
-        List<String> colList = new ArrayList<>();
-        Collections.addAll(colList, column);
-        Collections.shuffle(colList);
-        
-        List<String> selectedSymbols = new ArrayList<>(colList.subList(0, 4));
-        
-        for (String sym : selectedSymbols) {
-            keys.add(new Key(sym));
+        Random rand = new Random();
+        // Pick 4 random symbols
+        List<String> chosen = new ArrayList<>();
+        while (chosen.size() < 4) {
+            String s = SYMBOLS[rand.nextInt(SYMBOLS.length)];
+            if (!chosen.contains(s)) {
+                chosen.add(s);
+            }
         }
         
-        // The correct order is the order they appear in the original column
-        sortedSymbols = new ArrayList<>();
-        for (String sym : column) {
-            if (selectedSymbols.contains(sym)) {
-                sortedSymbols.add(sym);
-            }
+        // For this simplified version, the solution is just alphabetical order of the symbols
+        // In the real game, it's column-based logic.
+        solution = new ArrayList<>(chosen);
+        solution.sort(String::compareTo);
+        
+        // Shuffle keys for display
+        keys.clear();
+        List<String> displayOrder = new ArrayList<>(chosen);
+        // Don't shuffle for now so we can debug easily, or shuffle?
+        // Let's shuffle to make it a puzzle
+        for (int i = 0; i < displayOrder.size(); i++) {
+            int swap = rand.nextInt(displayOrder.size());
+            String temp = displayOrder.get(i);
+            displayOrder.set(i, displayOrder.get(swap));
+            displayOrder.set(swap, temp);
+        }
+
+        for (String s : displayOrder) {
+            keys.add(new Key(s));
         }
     }
 
@@ -128,42 +124,63 @@ public class KeypadModule implements BombModule {
                     // Inner highlight for engraved look
                     g2.setColor(new Color(255, 255, 255, 100));
                     g2.drawString(key.symbol, textX + 1, textY + 1);
+                    
+                    // Draw Key Number (for keyboard support)
+                    g2.setColor(new Color(0, 0, 0, 100));
+                    g2.setFont(Theme.FONT_MONO.deriveFont(12f));
+                    g2.drawString(String.valueOf(i + 1), x + 5, y + 15);
                 }
             }
         };
         panel.setBackground(Theme.PANEL_BG);
         panel.setPreferredSize(new Dimension(200, 200));
         Theme.applyCursor(panel);
+        panel.setFocusable(true); // Enable focus for keyboard
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                panel.requestFocusInWindow();
                 if (solved) return;
-                
                 for (Key key : keys) {
-                    if (key.bounds.contains(e.getPoint()) && !key.correct) {
+                    if (key.bounds.contains(e.getPoint())) {
                         handlePress(key);
-                        panel.repaint();
                         break;
                     }
+                }
+            }
+        });
+        
+        panel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (solved) return;
+                int k = e.getKeyCode();
+                // Map 1-4 and Numpad 1-4
+                int index = -1;
+                if (k >= KeyEvent.VK_1 && k <= KeyEvent.VK_4) index = k - KeyEvent.VK_1;
+                if (k >= KeyEvent.VK_NUMPAD1 && k <= KeyEvent.VK_NUMPAD4) index = k - KeyEvent.VK_NUMPAD1;
+                
+                if (index >= 0 && index < keys.size()) {
+                    handlePress(keys.get(index));
                 }
             }
         });
     }
 
     private void handlePress(Key key) {
-        String expected = sortedSymbols.get(currentStage);
-        if (key.symbol.equals(expected)) {
+        if (key.correct) return; // Already pressed correctly
+
+        if (key.symbol.equals(solution.get(currentStep))) {
             key.correct = true;
-            currentStage++;
-            if (currentStage >= 4) {
+            currentStep++;
+            if (currentStep >= solution.size()) {
                 solved = true;
                 bomb.checkDefused();
             }
         } else {
             bomb.addStrike();
-            // Flash red briefly?
-            key.pressed = true;
+            key.pressed = true; // Flash red
             Timer t = new Timer(500, e -> {
                 key.pressed = false;
                 panel.repaint();
@@ -171,6 +188,7 @@ public class KeypadModule implements BombModule {
             t.setRepeats(false);
             t.start();
         }
+        panel.repaint();
     }
 
     @Override
@@ -192,5 +210,16 @@ public class KeypadModule implements BombModule {
     @Override
     public String getName() {
         return "Keypad";
+    }
+
+    private class Key {
+        String symbol;
+        Rectangle bounds;
+        boolean correct = false;
+        boolean pressed = false;
+
+        Key(String s) {
+            this.symbol = s;
+        }
     }
 }

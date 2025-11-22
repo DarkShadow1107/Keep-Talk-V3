@@ -79,7 +79,7 @@ public class FreePlayMenu extends JPanel {
         int modules = (int) modulesSpinner.getValue();
         int strikes = (int) strikesSpinner.getValue();
         
-        Level customLevel = new Level("Free Play", time, strikes, modules, "Custom Configuration", "CUSTOM");
+        Level customLevel = new Level("Free Play", time, modules, strikes);
         app.startGame(customLevel);
     }
 }

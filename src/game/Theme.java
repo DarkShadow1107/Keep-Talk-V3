@@ -2,6 +2,7 @@ package game;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.geom.RoundRectangle2D;
@@ -9,7 +10,7 @@ import java.awt.geom.Ellipse2D;
 
 public class Theme {
     // Colors
-    public static final Color BG_COLOR = new Color(20, 20, 25);
+    public static final Color BG_COLOR = new Color(10, 10, 15); // Darker Background
     public static final Color PANEL_BG = new Color(35, 35, 40);
     public static final Color PANEL_BORDER = new Color(60, 60, 65);
     public static final Color TEXT_PRIMARY = new Color(240, 240, 240);
@@ -62,6 +63,12 @@ public class Theme {
                 g2.setColor(new Color(255, 255, 255, 50));
                 g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 10, 10);
 
+                // Glow effect on hover
+                if (rollover && !pressed) {
+                    g2.setColor(new Color(255, 255, 255, 30));
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                }
+
                 g2.setColor(getForeground());
                 FontMetrics fm = g2.getFontMetrics();
                 int x = (getWidth() - fm.stringWidth(getText())) / 2;
@@ -89,6 +96,50 @@ public class Theme {
     public static void apply(JComponent comp) {
         comp.setBackground(BG_COLOR);
         comp.setForeground(TEXT_PRIMARY);
+    }
+    
+    public static void customizeScrollBar(JScrollPane scrollPane) {
+        scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(80, 80, 90);
+                this.trackColor = new Color(30, 30, 35);
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton jbutton = new JButton();
+                jbutton.setPreferredSize(new Dimension(0, 0));
+                jbutton.setMinimumSize(new Dimension(0, 0));
+                jbutton.setMaximumSize(new Dimension(0, 0));
+                return jbutton;
+            }
+            
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(new GradientPaint(0, 0, new Color(100, 100, 110), thumbBounds.width, 0, new Color(60, 60, 70)));
+                g2.fillRoundRect(thumbBounds.x + 2, thumbBounds.y + 2, thumbBounds.width - 4, thumbBounds.height - 4, 8, 8);
+                g2.dispose();
+            }
+            
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                g.setColor(new Color(20, 20, 25));
+                g.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
+            }
+        });
+        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(12, 0));
     }
     
     public static Image createIcon() {

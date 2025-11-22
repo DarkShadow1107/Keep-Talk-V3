@@ -24,10 +24,11 @@ public class LevelSelect extends JPanel {
         tabbedPane.setForeground(Theme.TEXT_PRIMARY);
         
         tabbedPane.addTab("ALL", createLevelList(null));
-        tabbedPane.addTab("EASY", createLevelList("Easy"));
-        tabbedPane.addTab("MEDIUM", createLevelList("Medium"));
-        tabbedPane.addTab("HARD", createLevelList("Hard"));
-        tabbedPane.addTab("EXPERT", createLevelList("Expert"));
+        tabbedPane.addTab("EASY", createLevelList("EASY"));
+        tabbedPane.addTab("MEDIUM", createLevelList("MEDIUM"));
+        tabbedPane.addTab("HARD", createLevelList("HARD"));
+        tabbedPane.addTab("EXPERT", createLevelList("EXPERT"));
+        tabbedPane.addTab("INSANE", createLevelList("INSANE"));
 
         add(tabbedPane, BorderLayout.CENTER);
 
@@ -96,6 +97,7 @@ public class LevelSelect extends JPanel {
         JScrollPane scrollPane = new JScrollPane(listPanel);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        Theme.customizeScrollBar(scrollPane); // Ensure scrollbar is customized
         return scrollPane;
     }
 }

@@ -2,6 +2,7 @@ package game;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class App extends JFrame {
     private CardLayout cardLayout;
@@ -23,6 +24,7 @@ public class App extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
+        mainPanel.add(new IntroScreen(this), "INTRO");
         mainPanel.add(new MainMenu(this), "MENU");
         mainPanel.add(new LevelSelect(this), "LEVEL_SELECT");
         mainPanel.add(new FreePlayMenu(this), "FREE_PLAY");
@@ -31,8 +33,17 @@ public class App extends JFrame {
 
         add(mainPanel);
         
-        showMenu();
+        cardLayout.show(mainPanel, "INTRO");
         setVisible(true);
+
+        // Global Key Listener for Navigation
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+            if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                showMenu();
+                return true;
+            }
+            return false;
+        });
     }
 
     public void showMenu() {

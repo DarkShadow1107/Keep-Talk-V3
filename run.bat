@@ -1,7 +1,7 @@
 @echo off
 if not exist bin mkdir bin
 echo Compiling...
-javac -d bin -sourcepath src src/game/Main.java
+javac -d bin -sourcepath src src/game/*.java src/modules/*.java
 if %errorlevel% neq 0 (
     echo Compilation Failed!
     pause

@@ -1,278 +1,202 @@
 package game;
 
 import javax.swing.*;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 import java.awt.*;
+import java.util.List;
 
 public class Manual extends JPanel {
+    private App app;
+
     public Manual(App app) {
+        this.app = app;
         setLayout(new BorderLayout());
         setBackground(Theme.BG_COLOR);
 
-        JEditorPane editorPane = new JEditorPane();
-        editorPane.setEditable(false);
-        editorPane.setContentType("text/html");
-        editorPane.setText(getManualHtml());
-        editorPane.setCaretPosition(0);
-        editorPane.setBackground(new Color(30, 30, 35));
-
-        JScrollPane scrollPane = new JScrollPane(editorPane);
-        scrollPane.setBorder(null);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
-        add(scrollPane, BorderLayout.CENTER);
-
-        JButton backButton = Theme.createButton("Back to Menu");
-        backButton.addActionListener(e -> app.showMenu());
+        // Header
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(Theme.PANEL_BG);
+        header.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 2, 0, Theme.ACCENT_ORANGE),
+            BorderFactory.createEmptyBorder(15, 30, 15, 30)
+        ));
         
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(Theme.BG_COLOR);
-        bottomPanel.add(backButton);
-        add(bottomPanel, BorderLayout.SOUTH);
-    }
+        JLabel title = new JLabel("BOMB DEFUSAL MANUAL");
+        title.setFont(Theme.FONT_TITLE.deriveFont(32f));
+        title.setForeground(Theme.ACCENT_ORANGE);
+        header.add(title, BorderLayout.WEST);
+        
+        JButton backBtn = Theme.createButton("RETURN TO MENU");
+        backBtn.setPreferredSize(new Dimension(200, 40));
+        backBtn.setBackground(Theme.DANGER_RED);
+        backBtn.addActionListener(e -> app.showMenu());
+        header.add(backBtn, BorderLayout.EAST);
+        
+        add(header, BorderLayout.NORTH);
 
-    private String getManualHtml() {
-        return "<html><head><style>" +
-               "body { font-family: 'Segoe UI', sans-serif; padding: 40px; color: #e0e0e0; background-color: #1e1e23; }" +
-               "h1 { font-size: 42px; color: #e74c3c; text-align: center; border-bottom: 2px solid #e74c3c; padding-bottom: 20px; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 3px; }" +
-               "h2 { font-size: 28px; color: #3498db; border-left: 5px solid #3498db; padding-left: 15px; margin-top: 40px; margin-bottom: 20px; text-transform: uppercase; background-color: #2c3e50; padding: 10px; }" +
-               "h3 { font-size: 20px; color: #f1c40f; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #555; padding-bottom: 5px; }" +
-               ".section { background-color: #25252a; border: 1px solid #444; padding: 25px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border-radius: 5px; }" +
-               ".warning { background-color: #3e1a1a; color: #e74c3c; border: 1px solid #c0392b; padding: 15px; margin: 15px 0; font-weight: bold; border-radius: 3px; }" +
-               "table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 15px; color: #ecf0f1; }" +
-               "th, td { border: 1px solid #555; padding: 12px; text-align: left; }" +
-               "th { background-color: #2c3e50; font-weight: bold; color: #3498db; }" +
-               "tr:nth-child(even) { background-color: #2a2a2f; }" +
-               "ul, ol { margin-top: 10px; margin-bottom: 10px; padding-left: 25px; }" +
-               "li { margin-bottom: 8px; line-height: 1.5; }" +
-               "strong { color: #ffffff; font-weight: bold; }" +
-               "a { color: #3498db; text-decoration: none; }" +
-               "a:hover { text-decoration: underline; }" +
-               ".toc { background-color: #25252a; padding: 20px; border: 1px solid #444; margin-bottom: 40px; }" +
-               ".toc h2 { margin-top: 0; background-color: transparent; border-left: none; padding-left: 0; color: #e74c3c; }" +
-               ".toc ul { list-style-type: none; padding-left: 0; }" +
-               ".toc li { margin-bottom: 5px; }" +
-               "</style></head><body>" +
+        // Content
+        JEditorPane content = new JEditorPane();
+        content.setEditable(false);
+        content.setContentType("text/html");
+        content.setBackground(Theme.BG_COLOR);
+        
+        // CSS Styling for Dark Theme
+        HTMLEditorKit kit = new HTMLEditorKit();
+        StyleSheet styleSheet = kit.getStyleSheet();
+        styleSheet.addRule("body { font-family: 'Segoe UI', sans-serif; margin: 30px; color: #E0E0E0; background-color: #0A0A0F; }");
+        styleSheet.addRule("h1 { font-size: 28px; color: #E74C3C; border-bottom: 2px solid #E74C3C; padding-bottom: 10px; margin-top: 40px; }");
+        styleSheet.addRule("h2 { font-size: 22px; color: #3498DB; margin-top: 30px; margin-bottom: 10px; }");
+        styleSheet.addRule("h3 { font-size: 18px; color: #F1C40F; margin-top: 20px; }");
+        styleSheet.addRule("p { font-size: 16px; line-height: 1.6; margin-bottom: 15px; }");
+        styleSheet.addRule("ul { margin-left: 20px; margin-bottom: 20px; }");
+        styleSheet.addRule("li { font-size: 16px; margin-bottom: 8px; }");
+        styleSheet.addRule(".highlight { color: #2ECC71; font-weight: bold; }");
+        styleSheet.addRule(".warning { color: #E74C3C; font-weight: bold; }");
+        styleSheet.addRule(".box { background-color: #1E1E24; padding: 15px; border: 1px solid #333; border-radius: 5px; }");
+        styleSheet.addRule("table { width: 100%; border-collapse: collapse; margin-top: 10px; }");
+        styleSheet.addRule("th { text-align: left; color: #F1C40F; border-bottom: 1px solid #555; padding: 10px; }");
+        styleSheet.addRule("td { padding: 10px; border-bottom: 1px solid #333; }");
+        content.setEditorKit(kit);
 
-               "<h1>Bomb Defusal Manual <span style='font-size: 18px; color: #7f8c8d; vertical-align: middle; font-weight: normal;'>v2.1 [CLASSIFIED]</span></h1>" +
-               
-               "<div class='toc'>" +
-               "<h2>Table of Contents</h2>" +
-               "<ul>" +
-               "<li><a href='#wires'>Section 1: Wires</a></li>" +
-               "<li><a href='#button'>Section 2: The Button</a></li>" +
-               "<li><a href='#keypad'>Section 3: Keypad</a></li>" +
-               "<li><a href='#simon'>Section 4: Simon Says</a></li>" +
-               "<li><a href='#wof'>Section 5: Who's On First</a></li>" +
-               "<li><a href='#memory'>Section 6: Memory</a></li>" +
-               "<li><a href='#morse'>Section 7: Morse Code</a></li>" +
-               "<li><a href='#password'>Section 8: Password</a></li>" +
-               "<li><a href='#maze'>Section 9: Maze</a></li>" +
-               "<li><a href='#complicated'>Section 10: Complicated Wires</a></li>" +
-               "<li><a href='#appendix'>Appendix: Indicators & Batteries</a></li>" +
-               "</ul>" +
-               "</div>" +
+        // Build Content
+        StringBuilder html = new StringBuilder();
+        html.append("<html><body>");
+        
+        html.append("<h1>INTRODUCTION</h1>");
+        html.append("<p>Welcome to the <b>Keep Talking and Nobody Explodes v3</b> Defusal Manual.</p>");
+        html.append("<p>You are the Expert. You have this manual. Your partner has the bomb.</p>");
+        html.append("<div class='box'><span class='warning'>WARNING:</span> Do not look at the bomb screen if you are the Expert. Do not look at this manual if you are the Defuser. Communication is your only tool.</div>");
 
-               "<div class='section' id='appendix'>" +
-               "<h2>Appendix: Reference</h2>" +
-               "<h3>Indicators</h3>" +
-               "<p>Common indicators found on casings:</p>" +
-               "<p style='font-family: monospace; font-size: 1.2em; color: #f1c40f;'>SND, CLR, CAR, IND, FRQ, SIG, NSA, MSA, TRN, BOB, FRK</p>" +
-               "<h3>Batteries</h3>" +
-               "<p>Batteries can be AA, D, or 9V. Count the total number of batteries on the casing.</p>" +
-               "</div>" +
+        html.append("<h1>CONTROLS</h1>");
+        html.append("<ul>");
+        html.append("<li><b>Mouse:</b> Interact with modules and UI elements.</li>");
+        html.append("<li><b>Keypad Input:</b> Use keys <span class='highlight'>1-4</span>.</li>");
+        html.append("<li><b>Wires Input:</b> Use keys <span class='highlight'>1-6</span> to cut wires.</li>");
+        html.append("<li><b>Maze Input:</b> Use <span class='highlight'>WASD</span> or <span class='highlight'>Arrow Keys</span> to move.</li>");
+        html.append("</ul>");
 
-               "<div class='section' id='wires'>" +
-               "<h2>Section 1: Wires</h2>" +
-               "<p>Wires are the lifeblood of electronics! Wait, no, electricity is. Wires are more like the arteries. The arteries that if you cut the wrong one, you die.</p>" +
-               "<h3>3 WIRES:</h3>" +
-               "<ul>" +
-               "<li>If there are no red wires, cut the second wire.</li>" +
-               "<li>Otherwise, if the last wire is white, cut the last wire.</li>" +
-               "<li>Otherwise, if there is more than one blue wire, cut the last blue wire.</li>" +
-               "<li>Otherwise, cut the last wire.</li>" +
-               "</ul>" +
-               "<h3>4 WIRES:</h3>" +
-               "<ul>" +
-               "<li>If there is more than one red wire and the last digit of the serial number is odd, cut the last red wire.</li>" +
-               "<li>Otherwise, if the last wire is yellow and there are no red wires, cut the first wire.</li>" +
-               "<li>Otherwise, if there is exactly one blue wire, cut the first wire.</li>" +
-               "<li>Otherwise, if there is more than one yellow wire, cut the last wire.</li>" +
-               "<li>Otherwise, cut the second wire.</li>" +
-               "</ul>" +
-               "<h3>5 WIRES:</h3>" +
-               "<ul>" +
-               "<li>If the last wire is black and the last digit of the serial number is odd, cut the fourth wire.</li>" +
-               "<li>Otherwise, if there is exactly one red wire and there is more than one yellow wire, cut the first wire.</li>" +
-               "<li>Otherwise, if there are no black wires, cut the second wire.</li>" +
-               "<li>Otherwise, cut the first wire.</li>" +
-               "</ul>" +
-               "<h3>6 WIRES:</h3>" +
-               "<ul>" +
-               "<li>If there are no yellow wires and the last digit of the serial number is odd, cut the third wire.</li>" +
-               "<li>Otherwise, if there is exactly one yellow wire and there is more than one white wire, cut the fourth wire.</li>" +
-               "<li>Otherwise, if there are no red wires, cut the last wire.</li>" +
-               "<li>Otherwise, cut the fourth wire.</li>" +
-               "</ul>" +
-               "</div>" +
-               
-               "<div class='section' id='button'>" +
-               "<h2>Section 2: The Button</h2>" +
-               "<ol>" +
-               "<li>If the button is blue and the button says \"Abort\", hold the button.</li>" +
-               "<li>If there is more than 1 battery on the bomb and the button says \"Detonate\", press and immediately release the button.</li>" +
-               "<li>If the button is white and there is a lit indicator with label CAR, hold the button.</li>" +
-               "<li>If there are more than 2 batteries on the bomb and there is a lit indicator with label FRK, press and immediately release the button.</li>" +
-               "<li>If the button is yellow, hold the button.</li>" +
-               "<li>If the button is red and the button says \"Hold\", press and immediately release the button.</li>" +
-               "<li>If none of the above apply, hold the button.</li>" +
-               "</ol>" +
-               "<h3>Releasing a Held Button:</h3>" +
-               "<p>If you start holding the button down, a colored strip will light up on the right of the module. Based on its color, you must release the button at a specific point in time:</p>" +
-               "<ul>" +
-               "<li><strong>Blue strip:</strong> release when the countdown timer has a 4 in any position.</li>" +
-               "<li><strong>White strip:</strong> release when the countdown timer has a 1 in any position.</li>" +
-               "<li><strong>Yellow strip:</strong> release when the countdown timer has a 5 in any position.</li>" +
-               "<li><strong>Any other color strip:</strong> release when the countdown timer has a 1 in any position.</li>" +
-               "</ul>" +
-               "</div>" +
+        html.append("<h1>MODULES</h1>");
+        
+        // Existing Modules
+        html.append("<h2>1. Wires</h2>");
+        html.append("<div class='box'><ul>");
+        html.append("<li>If there are <b>no red wires</b>, cut the second wire.</li>");
+        html.append("<li>Otherwise, if the <b>last wire is white</b>, cut the last wire.</li>");
+        html.append("<li>Otherwise, if there is <b>more than one blue wire</b>, cut the last blue wire.</li>");
+        html.append("<li>Otherwise, cut the last wire.</li>");
+        html.append("</ul></div>");
 
-               "<div class='section' id='keypad'>" +
-               "<h2>Section 3: Keypad</h2>" +
-               "<p>Only one column below has all four of the symbols from the keypad. Press the four buttons in the order their symbols appear from top to bottom within that column.</p>" +
-               "<table>" +
-               "<tr><td>Ϙ, Ѧ, ƛ, Ϟ, Ѭ, ϗ, Ͽ</td><td>Ӭ, Ϙ, Ͽ, Ҩ, ☆, ϗ, ¿</td></tr>" +
-               "<tr><td>©, Ѽ, Ҩ, Ж, R, ƛ, ☆</td><td>б, ¶, b, Ѭ, Ж, ¿, ☺</td></tr>" +
-               "</table>" +
-               "</div>" +
-               
-               "<div class='section' id='simon'>" +
-               "<h2>Section 4: Simon Says</h2>" +
-               "<p><strong>Vowel in Serial Number:</strong></p>" +
-               "<ul>" +
-               "<li><strong>0 Strikes:</strong> Red->Blue, Blue->Red, Green->Yellow, Yellow->Green</li>" +
-               "<li><strong>1 Strike:</strong> Red->Yellow, Blue->Green, Green->Blue, Yellow->Red</li>" +
-               "<li><strong>2+ Strikes:</strong> Red->Green, Blue->Red, Green->Yellow, Yellow->Blue</li>" +
-               "</ul>" +
-               "<p><strong>No Vowel in Serial Number:</strong></p>" +
-               "<ul>" +
-               "<li><strong>0 Strikes:</strong> Red->Blue, Blue->Yellow, Green->Green, Yellow->Red</li>" +
-               "<li><strong>1 Strike:</strong> Red->Red, Blue->Blue, Green->Yellow, Yellow->Green</li>" +
-               "<li><strong>2+ Strikes:</strong> Red->Yellow, Blue->Green, Green->Blue, Yellow->Red</li>" +
-               "</ul>" +
-               "</div>" +
+        html.append("<h2>2. The Button</h2>");
+        html.append("<div class='box'><ul>");
+        html.append("<li>If the button is <b>Blue</b> and says <b>Abort</b>, hold it.</li>");
+        html.append("<li>If the button says <b>Detonate</b>, press and release immediately.</li>");
+        html.append("<li>If the button is <b>White</b> and there is a lit indicator <b>CAR</b>, hold it.</li>");
+        html.append("<li>If there are > 2 batteries and a lit indicator <b>FRK</b>, press and release.</li>");
+        html.append("<li>Otherwise, hold the button.</li>");
+        html.append("</ul></div>");
 
-               "<div class='section' id='wof'>" +
-               "<h2>Section 5: Who's On First</h2>" +
-               "<p><strong>Step 1:</strong> Read the display. Use the table below to determine which button position to read.</p>" +
-               "<table>" +
-               "<tr><td>YES: Middle Left</td><td>FIRST: Top Right</td><td>DISPLAY: Bottom Right</td></tr>" +
-               "<tr><td>OKAY: Top Right</td><td>SAYS: Bottom Right</td><td>NOTHING: Middle Left</td></tr>" +
-               "<tr><td>BLANK: Middle Right</td><td>NO: Bottom Right</td><td>LED: Middle Left</td></tr>" +
-               "<tr><td>LEAD: Bottom Right</td><td>READ: Middle Right</td><td>RED: Middle Right</td></tr>" +
-               "<tr><td>REED: Bottom Left</td><td>LEED: Bottom Left</td><td>HOLD ON: Bottom Right</td></tr>" +
-               "<tr><td>YOU: Middle Right</td><td>YOU ARE: Bottom Right</td><td>YOUR: Middle Right</td></tr>" +
-               "<tr><td>YOU'RE: Middle Right</td><td>UR: Top Left</td><td>THERE: Bottom Right</td></tr>" +
-               "<tr><td>THEY'RE: Bottom Left</td><td>THEIR: Middle Right</td><td>THEY ARE: Middle Left</td></tr>" +
-               "<tr><td>SEE: Bottom Right</td><td>C: Top Right</td><td>CEE: Bottom Right</td></tr>" +
-               "</table>" +
-               "<p><strong>Step 2:</strong> Using the word from the button at that position, find the corresponding list below. Press the first word in that list that appears on any button.</p>" +
-               "<p><em>(Refer to full manual for word lists - Simplified for this view)</em></p>" +
-               "<p><strong>READY:</strong> YES, OKAY, WHAT, MIDDLE, LEFT, PRESS, RIGHT, BLANK, READY</p>" +
-               "<p><strong>FIRST:</strong> LEFT, OKAY, YES, MIDDLE, NO, RIGHT, NOTHING, UHHH, WAIT, READY, BLANK, WHAT, PRESS, FIRST</p>" +
-               "<p><strong>NO:</strong> BLANK, UHHH, WAIT, FIRST, WHAT, READY, RIGHT, YES, NOTHING, LEFT, PRESS, OKAY, NO</p>" +
-               "<p><strong>BLANK:</strong> WAIT, RIGHT, OKAY, MIDDLE, BLANK</p>" +
-               "<p><strong>NOTHING:</strong> UHHH, RIGHT, OKAY, MIDDLE, YES, BLANK, NO, PRESS, LEFT, WHAT, WAIT, FIRST, NOTHING</p>" +
-               "<p><strong>YES:</strong> OKAY, RIGHT, UHHH, MIDDLE, FIRST, WHAT, PRESS, READY, NOTHING, YES</p>" +
-               "<p><strong>WHAT:</strong> UHHH, WHAT</p>" +
-               "<p><strong>UHHH:</strong> READY, NOTHING, LEFT, WHAT, OKAY, YES, RIGHT, NO, PRESS, BLANK, UHHH</p>" +
-               "<p><strong>LEFT:</strong> RIGHT, LEFT</p>" +
-               "<p><strong>RIGHT:</strong> YES, NOTHING, READY, PRESS, NO, WAIT, WHAT, RIGHT</p>" +
-               "<p><strong>MIDDLE:</strong> BLANK, READY, OKAY, WHAT, NOTHING, PRESS, NO, WAIT, LEFT, MIDDLE</p>" +
-               "<p><strong>OKAY:</strong> MIDDLE, NO, FIRST, YES, UHHH, NOTHING, WAIT, OKAY</p>" +
-               "<p><strong>WAIT:</strong> UHHH, NO, BLANK, OKAY, YES, LEFT, FIRST, PRESS, WHAT, WAIT</p>" +
-               "<p><strong>PRESS:</strong> RIGHT, MIDDLE, YES, READY, PRESS</p>" +
-               "<p><strong>YOU:</strong> SURE, YOU ARE, YOUR, YOU'RE, NEXT, UH HUH, UR, HOLD, WHAT?, YOU</p>" +
-               "<p><strong>YOU ARE:</strong> YOUR, NEXT, LIKE, HUH, WHAT?, DONE, UH UH, HOLD, YOU, U, YOU'RE, SURE, UR, YOU ARE</p>" +
-               "<p><strong>YOUR:</strong> UH UH, YOU ARE, UH HUH, YOUR</p>" +
-               "<p><strong>YOU'RE:</strong> YOU, YOU'RE</p>" +
-               "<p><strong>UR:</strong> DONE, U, UR</p>" +
-               "<p><strong>U:</strong> UH HUH, SURE, NEXT, WHAT?, YOU'RE, UR, UH UH, DONE, U</p>" +
-               "<p><strong>UH HUH:</strong> UH HUH</p>" +
-               "<p><strong>UH UH:</strong> UR, U, YOU ARE, YOU'RE, NEXT, UH UH</p>" +
-               "<p><strong>WHAT?:</strong> YOU, HOLD, YOU'RE, YOUR, U, DONE, UH UH, LIKE, YOU ARE, UH HUH, UR, NEXT, WHAT?</p>" +
-               "<p><strong>DONE:</strong> SURE, UH HUH, NEXT, WHAT?, YOUR, UR, YOU'RE, HOLD, LIKE, YOU, U, YOU ARE, UH UH, DONE</p>" +
-               "<p><strong>NEXT:</strong> WHAT?, UH HUH, UH UH, YOUR, HOLD, SURE, NEXT</p>" +
-               "<p><strong>HOLD:</strong> YOU ARE, U, DONE, UH UH, YOU, UR, SURE, WHAT?, HOLD</p>" +
-               "<p><strong>SURE:</strong> YOU ARE, DONE, LIKE, YOU'RE, YOU, HOLD, UH HUH, UR, SURE</p>" +
-               "<p><strong>LIKE:</strong> YOU'RE, NEXT, U, UR, HOLD, DONE, UH UH, WHAT?, UH HUH, YOU, LIKE</p>" +
-               "</div>" +
+        html.append("<h2>3. Keypad</h2>");
+        html.append("<p>Identify the symbols. Press them in order of appearance in the columns below.</p>");
 
-               "<div class='section' id='memory'>" +
-               "<h2>Section 6: Memory</h2>" +
-               "<p><strong>Stage 1:</strong></p>" +
-               "<ul><li>Display 1: Press 2nd position.</li><li>Display 2: Press 2nd position.</li><li>Display 3: Press 3rd position.</li><li>Display 4: Press 4th position.</li></ul>" +
-               "<p><strong>Stage 2:</strong></p>" +
-               "<ul><li>Display 1: Press button labeled '4'.</li><li>Display 2: Press button in same position as Stage 1.</li><li>Display 3: Press 1st position.</li><li>Display 4: Press button in same position as Stage 1.</li></ul>" +
-               "<p><strong>Stage 3:</strong></p>" +
-               "<ul><li>Display 1: Press button with same label as Stage 2.</li><li>Display 2: Press button with same label as Stage 1.</li><li>Display 3: Press 3rd position.</li><li>Display 4: Press button labeled '4'.</li></ul>" +
-               "<p><strong>Stage 4:</strong></p>" +
-               "<ul><li>Display 1: Press button in same position as Stage 1.</li><li>Display 2: Press 1st position.</li><li>Display 3: Press button in same position as Stage 2.</li><li>Display 4: Press button in same position as Stage 2.</li></ul>" +
-               "<p><strong>Stage 5:</strong></p>" +
-               "<ul><li>Display 1: Press button with same label as Stage 1.</li><li>Display 2: Press button with same label as Stage 2.</li><li>Display 3: Press button with same label as Stage 4.</li><li>Display 4: Press button with same label as Stage 3.</li></ul>" +
-               "</div>" +
+        html.append("<h2>4. Simon Says</h2>");
+        html.append("<p>Flash the colors back. Mapping depends on <b>Vowel</b> in Serial Number.</p>");
+        
+        html.append("<h2>5. Maze</h2>");
+        html.append("<p>Find the path. Avoid the invisible walls. Use the circle markers to identify the maze.</p>");
 
-               "<div class='section' id='morse'>" +
-               "<h2>Section 7: Morse Code</h2>" +
-               "<p>Interpret the flashing light using the Morse Code table to spell a word.</p>" +
-               "<p>Tune the radio to the corresponding frequency for that word.</p>" +
-               "<p><strong>Frequencies:</strong></p>" +
-               "<ul>" +
-               "<li>SHELL: 3.505 MHz</li><li>HALLS: 3.515 MHz</li><li>SLICK: 3.522 MHz</li><li>TRICK: 3.532 MHz</li>" +
-               "<li>BOXES: 3.535 MHz</li><li>LEAKS: 3.542 MHz</li><li>STROBE: 3.545 MHz</li><li>BISTRO: 3.552 MHz</li>" +
-               "<li>FLICK: 3.555 MHz</li><li>BOMBS: 3.565 MHz</li><li>BREAK: 3.572 MHz</li><li>BRICK: 3.575 MHz</li>" +
-               "<li>STEAK: 3.582 MHz</li><li>STING: 3.592 MHz</li><li>VECTOR: 3.595 MHz</li><li>BEATS: 3.600 MHz</li>" +
-               "</ul>" +
-               "</div>" +
+        html.append("<h2>6. Memory</h2>");
+        html.append("<p>A 5-stage memory test. Press the correct button based on display and previous stages.</p>");
 
-               "<div class='section' id='password'>" +
-               "<h2>Section 8: Password</h2>" +
-               "<p><strong>Possible Passwords:</strong></p>" +
-               "<p>ABOUT, AFTER, AGAIN, BELOW, COULD, EVERY, FIRST, FOUND, GREAT, HOUSE, LARGE, LEARN, NEVER, OTHER, PLACE, PLANT, POINT, RIGHT, SMALL, SOUND, SPELL, STILL, STUDY, THEIR, THERE, THESE, THING, THINK, THREE, WATER, WHERE, WHICH, WORLD, WOULD, WRITE</p>" +
-               "</div>" +
+        html.append("<h2>7. Morse Code</h2>");
+        html.append("<p>Translate the flashing light to a word. Tune the radio to the corresponding frequency.</p>");
 
-               "<div class='section' id='maze'>" +
-               "<h2>Section 9: Maze</h2>" +
-               "<div class='warning'>" +
-               "<p>Find the maze with matching circular markings.</p>" +
-               "<p>The defuser must navigate the white light to the red triangle.</p>" +
-               "<p><strong>Warning:</strong> Do not cross the walls shown in the reference maze.</p>" +
-               "</div>" +
-               "</div>" +
-               
-               "<div class='section' id='complicated'>" +
-               "<h2>Section 10: Complicated Wires</h2>" +
-               "<p>Look at each wire: it has a color, a star, and an LED.</p>" +
-               "<p>Use the Venn Diagram rules to decide whether to cut the wire.</p>" +
-               "<table>" +
-               "<tr><th>Wire Properties</th><th>Instruction</th></tr>" +
-               "<tr><td>Red, Blue, Star, LED</td><td>Don't Cut</td></tr>" +
-               "<tr><td>Red, Blue, Star</td><td>Parallel Port</td></tr>" +
-               "<tr><td>Red, Blue, LED</td><td>Serial Even</td></tr>" +
-               "<tr><td>Red, Blue</td><td>Serial Even</td></tr>" +
-               "<tr><td>Red, Star, LED</td><td>Batteries >= 2</td></tr>" +
-               "<tr><td>Red, Star</td><td>Cut</td></tr>" +
-               "<tr><td>Red, LED</td><td>Batteries >= 2</td></tr>" +
-               "<tr><td>Red</td><td>Serial Even</td></tr>" +
-               "<tr><td>Blue, Star, LED</td><td>Parallel Port</td></tr>" +
-               "<tr><td>Blue, Star</td><td>Don't Cut</td></tr>" +
-               "<tr><td>Blue, LED</td><td>Parallel Port</td></tr>" +
-               "<tr><td>Blue</td><td>Serial Even</td></tr>" +
-               "<tr><td>Star, LED</td><td>Batteries >= 2</td></tr>" +
-               "<tr><td>Star</td><td>Cut</td></tr>" +
-               "<tr><td>LED</td><td>Don't Cut</td></tr>" +
-               "<tr><td>Nothing</td><td>Cut</td></tr>" +
-               "</table>" +
-               "</div>" +
+        html.append("<h2>8. Complicated Wires</h2>");
+        html.append("<p>Wires with LEDs and Stars. Use the Venn Diagram to decide: Cut (C), Don't Cut (D), Cut if Serial is Even (S), Cut if Parallel Port (P), Cut if Batteries >= 2 (B).</p>");
 
-               "</body></html>";
+        html.append("<h2>9. Wire Sequences</h2>");
+        html.append("<p>Cut wires based on their color and connection (A, B, C) according to the occurrence count.</p>");
+
+        html.append("<h2>10. Password</h2>");
+        html.append("<p>Find the correct 5-letter word from the scrolling letters.</p>");
+
+        html.append("<h2>11. Who's On First</h2>");
+        html.append("<p>Read the display. Find the button label to read. Press the first button that appears in the list.</p>");
+
+        html.append("<h2>12. Binary</h2>");
+        html.append("<div class='box'><p>Convert the decimal number to 5-bit binary (16, 8, 4, 2, 1). Example: 21 = 10101.</p></div>");
+
+        html.append("<h2>13. Logic Gates</h2>");
+        html.append("<div class='box'><p>Determine output (AND, OR, XOR, NAND, NOR) based on inputs.</p></div>");
+
+        // New Modules (14-25)
+        html.append("<h2>14. Rhythm</h2>");
+        html.append("<p>Press the button in time with the flashing LED. The tempo increases with each stage.</p>");
+
+        html.append("<h2>15. Coordinates</h2>");
+        html.append("<p>Locate the grid coordinate (e.g., B-4) and press the button. Avoid the mines.</p>");
+
+        html.append("<h2>16. Color Math</h2>");
+        html.append("<p>Add the values of the colored numbers: Red=1, Blue=2, Green=3, Yellow=4. If the sum is > 10, subtract 10.</p>");
+
+        html.append("<h2>17. Shapes</h2>");
+        html.append("<p>Count the total number of edges on the displayed shapes. Enter the last digit of the count.</p>");
+
+        html.append("<h2>18. Piano</h2>");
+        html.append("<p>Play the melody displayed on the sheet music. Keys are labeled C, D, E, F, G, A, B.</p>");
+
+        html.append("<h2>19. Anagrams</h2>");
+        html.append("<p>Unscramble the displayed word. Select the correct word from the list of options.</p>");
+
+        html.append("<h2>20. The Clock</h2>");
+        html.append("<p>Set the time to match the target time zone displayed (e.g., UTC+2). Current time is UTC.</p>");
+
+        html.append("<h2>21. Chemistry</h2>");
+        html.append("<p>Mix the colored liquids in the correct order: Red -> Blue -> Green. Do not shake.</p>");
+
+        html.append("<h2>22. Black Hole</h2>");
+        html.append("<p>Do NOT interact with this module unless the digit sum of the timer is 7. Otherwise, wait.</p>");
+
+        html.append("<h2>23. Foreign Exchange</h2>");
+        html.append("<p>Convert the currency amount based on the daily rate displayed on the ticker.</p>");
+
+        html.append("<h2>24. Astrology</h2>");
+        html.append("<p>Select the Zodiac sign that corresponds to the displayed date range.</p>");
+
+        html.append("<h2>25. Hacking</h2>");
+        html.append("<p>Match the scrolling IP address segments to the static target IP. Press 'Connect' when aligned.</p>");
+
+        html.append("<h1>MISSION DOSSIERS</h1>");
+        html.append("<p>The following missions are available for deployment:</p>");
+        
+        html.append("<table>");
+        html.append("<tr><th>Mission</th><th>Difficulty</th><th>Time</th><th>Modules</th></tr>");
+        
+        for (Level l : Level.getLevels()) {
+            String color = "#E0E0E0";
+            if (l.getDifficulty().equals("EASY")) color = "#2ECC71";
+            if (l.getDifficulty().equals("MEDIUM")) color = "#3498DB";
+            if (l.getDifficulty().equals("HARD")) color = "#F1C40F";
+            if (l.getDifficulty().equals("EXPERT")) color = "#E67E22";
+            if (l.getDifficulty().equals("INSANE")) color = "#E74C3C";
+            
+            html.append("<tr>");
+            html.append("<td><b>").append(l.getName()).append("</b><br><span style='font-size:12px; color:#888'>").append(l.getDescription()).append("</span></td>");
+            html.append("<td style='color:").append(color).append("'>").append(l.getDifficulty()).append("</td>");
+            html.append("<td>").append(l.getTime()).append("s</td>");
+            html.append("<td>").append(l.getModuleCount()).append("</td>");
+            html.append("</tr>");
+        }
+        html.append("</table>");
+
+        html.append("</body></html>");
+        
+        content.setText(html.toString());
+        content.setCaretPosition(0);
+
+        JScrollPane scroll = new JScrollPane(content);
+        scroll.setBorder(null);
+        Theme.customizeScrollBar(scroll);
+        add(scroll, BorderLayout.CENTER);
     }
 }

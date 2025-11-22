@@ -51,10 +51,10 @@ public class Game extends JPanel {
         topPanel.add(strikesPanel, BorderLayout.EAST);
 
         // Abort Button
-        JButton abortButton = Theme.createButton("ABORT");
+        JButton abortButton = Theme.createButton(Localization.get("GAME_ABORT"));
         abortButton.setBackground(Theme.DANGER_RED);
         abortButton.setPreferredSize(new Dimension(140, 50));
-        abortButton.addActionListener(e -> onExplode("Mission Aborted"));
+        abortButton.addActionListener(e -> onExplode(Localization.get("GAME_ABORTED")));
         topPanel.add(abortButton, BorderLayout.WEST);
 
         add(topPanel, BorderLayout.NORTH);
@@ -69,15 +69,15 @@ public class Game extends JPanel {
         ));
         sidePanel.setPreferredSize(new Dimension(240, 0));
 
-        addInfoLabel(sidePanel, "SERIAL #", bomb.getSerialNumber());
-        addInfoLabel(sidePanel, "BATTERIES", String.valueOf(bomb.getBatteries()));
-        addInfoLabel(sidePanel, "PARALLEL", bomb.hasParallelPort() ? "YES" : "NO");
+        addInfoLabel(sidePanel, Localization.get("GAME_SERIAL"), bomb.getSerialNumber());
+        addInfoLabel(sidePanel, Localization.get("GAME_BATTERIES"), String.valueOf(bomb.getBatteries()));
+        addInfoLabel(sidePanel, Localization.get("GAME_PARALLEL"), bomb.hasParallelPort() ? Localization.get("GAME_YES") : Localization.get("GAME_NO"));
         
         List<String> indicators = bomb.getIndicators();
         if (!indicators.isEmpty()) {
-            addInfoLabel(sidePanel, "INDICATORS", String.join(", ", indicators));
+            addInfoLabel(sidePanel, Localization.get("GAME_INDICATORS"), String.join(", ", indicators));
         } else {
-            addInfoLabel(sidePanel, "INDICATORS", "NONE");
+            addInfoLabel(sidePanel, Localization.get("GAME_INDICATORS"), Localization.get("GAME_NONE"));
         }
         
         add(sidePanel, BorderLayout.EAST);
@@ -91,12 +91,13 @@ public class Game extends JPanel {
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.getViewport().setBackground(Theme.BG_COLOR);
+        Theme.customizeScrollBar(scrollPane);
         add(scrollPane, BorderLayout.CENTER);
 
         // Add Modules dynamically based on level count
         Random rand = new Random();
         for (int i = 0; i < level.getModuleCount(); i++) {
-            int type = rand.nextInt(10); 
+            int type = rand.nextInt(12); // Increased range for new modules
             BombModule module;
             switch (type) {
                 case 0: module = new WiresModule(bomb); break;
@@ -109,6 +110,8 @@ public class Game extends JPanel {
                 case 7: module = new MemoryModule(bomb); break;
                 case 8: module = new WhosOnFirstModule(bomb); break;
                 case 9: module = new ComplicatedWiresModule(bomb); break;
+                case 10: module = new BinaryModule(bomb); break;
+                case 11: module = new LogicModule(bomb); break;
                 default: module = new WiresModule(bomb); break;
             }
             addModuleToGame(module, modulesPanel);
@@ -214,7 +217,7 @@ public class Game extends JPanel {
     }
 
     public void onDefused() {
-        showGameOverScreen("Bomb Defused!", true);
+        showGameOverScreen(Localization.get("GAME_DEFUSED"), true);
     }
 
     private void showGameOverScreen(String message, boolean won) {
@@ -226,7 +229,7 @@ public class Game extends JPanel {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.insets = new Insets(20, 0, 20, 0);
         
-        JLabel statusLabel = new JLabel(won ? "MISSION ACCOMPLISHED" : "MISSION FAILED");
+        JLabel statusLabel = new JLabel(won ? Localization.get("GAME_WIN") : Localization.get("GAME_LOSE"));
         statusLabel.setFont(Theme.FONT_TITLE);
         statusLabel.setForeground(Color.WHITE);
         add(statusLabel, gbc);
@@ -237,13 +240,13 @@ public class Game extends JPanel {
         add(reasonLabel, gbc);
         
         if (won) {
-            JLabel timeLabel = new JLabel("Time Remaining: " + timerLabel.getText());
+            JLabel timeLabel = new JLabel(Localization.get("LBL_TIME_REMAINING") + timerLabel.getText());
             timeLabel.setFont(Theme.FONT_MONO);
             timeLabel.setForeground(Color.WHITE);
             add(timeLabel, gbc);
         }
         
-        JButton backButton = Theme.createButton("RETURN TO MENU");
+        JButton backButton = Theme.createButton(Localization.get("BTN_RETURN"));
         backButton.setBackground(Color.WHITE);
         backButton.setForeground(won ? new Color(39, 174, 96) : new Color(192, 57, 43));
         backButton.addActionListener(e -> app.endGame());
