@@ -16,10 +16,14 @@ public class Credits extends JPanel {
 
         JTextArea text = new JTextArea();
         text.setText("\n\nOriginal Game by Steel Crate Games\n\n" +
-                     "Java Implementation by GitHub Copilot\n\n" +
-                     "Programming: Copilot\n" +
-                     "Design: Copilot\n" +
-                     "Testing: You\n\n" +
+                     "Java Implementation by:\n" +
+                     "Alexandru Gabriel, Caldararu Denisa & Dumitru Claudia\n\n" +
+                     "Programming:\n" +
+                     "Alexandru Gabriel, Caldararu Denisa & Dumitru Claudia\n\n" +
+                     "Design:\n" +
+                     "Alexandru Gabriel\n\n" +
+                     "Testing:\n" +
+                     "Caldararu Denisa & Dumitru Claudia\n\n" +
                      "Thanks for playing!");
         text.setFont(Theme.FONT_MONO);
         text.setForeground(Theme.TEXT_PRIMARY);

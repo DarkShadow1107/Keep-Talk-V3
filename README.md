@@ -1,35 +1,59 @@
-# Keep Talking and Nobody Explodes - Java Edition
+# Keep Talking and Nobody Explodes V3
 
-This is a Java implementation of a bomb defusal game inspired by "Keep Talking and Nobody Explodes".
+A Java-based recreation and expansion of the popular bomb defusal game. This version features a complete visual overhaul, new unique modules, and a professional installer.
 
-## Features
+## 🎮 Game Overview
 
--   **Modern UI**: Dark theme with neon accents, gradients, and custom components.
--   **Main Menu**: Navigate between game modes, manual, and credits.
--   **Level System**: Choose from multiple difficulty levels (Easy, Medium, Hard, Expert) and a Training mode.
--   **Modules**:
-    -   **Wires**: Cut the correct wire.
-    -   **The Button**: Press or hold based on complex rules.
-    -   **Keypad**: Press symbols in the correct order.
-    -   **Simon Says**: Repeat the flashing color sequence.
-    -   **Password**: Guess the 5-letter word.
-    -   **Maze**: Navigate a hidden maze.
-    -   **Morse Code**: Decode the flashing light and tune the frequency.
--   **In-Game Manual**: View the rules directly within the game with improved formatting.
--   **Visual Effects**: Explosion animations and dynamic feedback.
+You are the Defuser. You are alone in a room with a bomb. Your friends are the Experts. They have the manual. You must talk to them to defuse the bomb before time runs out!
 
-## How to Run
+### Key Features
+*   **25 Unique Modules**: Including classic favorites and 12 brand new custom modules like Binary, Logic Gates, Rhythm, and more.
+*   **5 Difficulty Tiers**: Easy, Medium, Hard, Expert, and Insane.
+*   **25 Custom Missions**: From "Baby Steps" to "The Gauntlet".
+*   **Premium Dark UI**: A sleek, modern interface with immersive animations and sound effects.
+*   **Interactive Manual**: A fully integrated, high-quality manual within the game.
+*   **Matrix Intro**: A cinematic startup sequence.
 
-1. Ensure you have Java installed (Java 21 is recommended).
-2. Open a terminal in the project root.
-3. Run the `run.bat` file (Windows) or compile manually:
-    ```bash
-    cd src
-    javac -d ../out game/Main.java game/App.java game/MainMenu.java game/LevelSelect.java game/Level.java game/Manual.java game/Credits.java game/Game.java game/Bomb.java game/Theme.java modules/BombModule.java modules/WiresModule.java modules/ButtonModule.java modules/KeypadModule.java modules/SimonSaysModule.java modules/PasswordModule.java modules/MazeModule.java modules/MorseCodeModule.java
-    java -cp ../out game.Main
-    ```
+## 🚀 Installation
 
-## Credits
+### Windows
+1.  Download the latest release.
+2.  Run `KeepTalkingV3_Setup.exe`.
+3.  Follow the installation wizard.
+4.  Launch the game from your Desktop.
 
-Original game concept by Steel Crate Games.
-Java implementation by GitHub Copilot.
+### Manual Build
+If you want to build from source:
+1.  Ensure you have JDK installed.
+2.  Run `build_installer.bat` to compile and generate the installer.
+3.  Run `run.bat` to play immediately without installing.
+
+## 🛠️ Controls
+*   **Mouse**: Interact with modules and UI.
+*   **ESC**: Return to Menu / Back.
+*   **Keypad Module**: Keys `1-4` or Numpad `1-4`.
+*   **Wires Module**: Keys `1-6` to cut wires.
+*   **Maze Module**: `WASD` or Arrow Keys to move.
+
+## 👥 Credits
+
+**Java Implementation:**
+*   Alexandru Gabriel
+*   Caldararu Denisa
+*   Dumitru Claudia
+
+**Programming:**
+*   Alexandru Gabriel
+*   Caldararu Denisa
+*   Dumitru Claudia
+
+**Design:**
+*   Alexandru Gabriel
+
+**Testing:**
+*   Caldararu Denisa
+*   Dumitru Claudia
+
+---
+*Original Game Concept by Steel Crate Games.*
+*Licensed under MIT License 2025.*
