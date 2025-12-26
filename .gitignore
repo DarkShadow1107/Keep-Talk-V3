@@ -1,3 +1,4 @@
 installer/KeepTalkingV3/runtime/
 bin/
 out/
+dist/portable/runtime/
