@@ -12,7 +12,7 @@ public class LevelSelect extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Theme.BG_COLOR);
 
-        JLabel title = new JLabel("SELECT MISSION", SwingConstants.CENTER);
+        JLabel title = new JLabel(Localization.get("LEVEL_SELECT"), SwingConstants.CENTER);
         title.setFont(Theme.FONT_TITLE);
         title.setForeground(Theme.ACCENT_ORANGE);
         title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
@@ -23,16 +23,16 @@ public class LevelSelect extends JPanel {
         tabbedPane.setBackground(Theme.PANEL_BG);
         tabbedPane.setForeground(Theme.TEXT_PRIMARY);
         
-        tabbedPane.addTab("ALL", createLevelList(null));
-        tabbedPane.addTab("EASY", createLevelList("EASY"));
-        tabbedPane.addTab("MEDIUM", createLevelList("MEDIUM"));
-        tabbedPane.addTab("HARD", createLevelList("HARD"));
-        tabbedPane.addTab("EXPERT", createLevelList("EXPERT"));
-        tabbedPane.addTab("INSANE", createLevelList("INSANE"));
+        tabbedPane.addTab(Localization.get("GAME_NONE").equals("NONE") ? "ALL" : "ALL", createLevelList(null));
+        tabbedPane.addTab(Localization.get("DIFF_EASY"), createLevelList("EASY"));
+        tabbedPane.addTab(Localization.get("DIFF_MEDIUM"), createLevelList("MEDIUM"));
+        tabbedPane.addTab(Localization.get("DIFF_HARD"), createLevelList("HARD"));
+        tabbedPane.addTab(Localization.get("DIFF_EXPERT"), createLevelList("EXPERT"));
+        tabbedPane.addTab(Localization.get("DIFF_INSANE"), createLevelList("INSANE"));
 
         add(tabbedPane, BorderLayout.CENTER);
 
-        JButton backButton = Theme.createButton("ABORT");
+        JButton backButton = Theme.createButton(Localization.get("GAME_ABORT"));
         backButton.setBackground(Theme.BG_COLOR);
         backButton.setForeground(Theme.ACCENT_RED);
         backButton.addActionListener(e -> app.showMenu());
@@ -73,9 +73,9 @@ public class LevelSelect extends JPanel {
             descLabel.setForeground(Theme.TEXT_SECONDARY);
             descLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 0));
 
-            JButton playButton = Theme.createButton("DEPLOY");
+            JButton playButton = Theme.createButton(Localization.get("BTN_START"));
             playButton.setBackground(Theme.ACCENT_RED);
-            playButton.setPreferredSize(new Dimension(120, 40));
+            playButton.setPreferredSize(new Dimension(150, 40));
             playButton.addActionListener(e -> app.startGame(level));
             
             JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -97,7 +97,7 @@ public class LevelSelect extends JPanel {
         JScrollPane scrollPane = new JScrollPane(listPanel);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        Theme.customizeScrollBar(scrollPane); // Ensure scrollbar is customized
+        Theme.customizeScrollBar(scrollPane);
         return scrollPane;
     }
 }

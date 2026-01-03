@@ -8,23 +8,23 @@ public class Credits extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Theme.BG_COLOR);
 
-        JLabel title = new JLabel("CREDENTIALS", SwingConstants.CENTER);
+        JLabel title = new JLabel(Localization.get("CREDITS_TITLE"), SwingConstants.CENTER);
         title.setFont(Theme.FONT_TITLE);
         title.setForeground(Theme.ACCENT_GREEN);
         title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         add(title, BorderLayout.NORTH);
 
         JTextArea text = new JTextArea();
-        text.setText("\n\nOriginal Game by Steel Crate Games\n\n" +
-                     "Java Implementation by:\n" +
+        text.setText("\n\n" + Localization.get("CREDITS_ORIGINAL") + "\n\n" +
+                     Localization.get("CREDITS_JAVA") + "\n" +
                      "Alexandru Gabriel, Caldararu Denisa & Dumitru Claudia\n\n" +
-                     "Programming:\n" +
+                     Localization.get("CREDITS_PROGRAMMING") + "\n" +
                      "Alexandru Gabriel, Caldararu Denisa & Dumitru Claudia\n\n" +
-                     "Design:\n" +
+                     Localization.get("CREDITS_DESIGN") + "\n" +
                      "Alexandru Gabriel\n\n" +
-                     "Testing:\n" +
+                     Localization.get("CREDITS_TESTING") + "\n" +
                      "Caldararu Denisa & Dumitru Claudia\n\n" +
-                     "Thanks for playing!");
+                     Localization.get("CREDITS_THANKS"));
         text.setFont(Theme.FONT_MONO);
         text.setForeground(Theme.TEXT_PRIMARY);
         text.setBackground(Theme.BG_COLOR);
@@ -33,7 +33,7 @@ public class Credits extends JPanel {
         
         add(text, BorderLayout.CENTER);
 
-        JButton backButton = Theme.createButton("Back");
+        JButton backButton = Theme.createButton(Localization.get("BTN_BACK"));
         backButton.addActionListener(e -> app.showMenu());
         
         JPanel bottomPanel = new JPanel();

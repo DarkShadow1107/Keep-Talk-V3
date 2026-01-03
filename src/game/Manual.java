@@ -22,12 +22,12 @@ public class Manual extends JPanel {
             BorderFactory.createEmptyBorder(15, 30, 15, 30)
         ));
         
-        JLabel title = new JLabel("BOMB DEFUSAL MANUAL");
+        JLabel title = new JLabel(Localization.get("MANUAL_TITLE"));
         title.setFont(Theme.FONT_TITLE.deriveFont(32f));
         title.setForeground(Theme.ACCENT_ORANGE);
         header.add(title, BorderLayout.WEST);
         
-        JButton backBtn = Theme.createButton("RETURN TO MENU");
+        JButton backBtn = Theme.createButton(Localization.get("BTN_RETURN"));
         backBtn.setPreferredSize(new Dimension(200, 40));
         backBtn.setBackground(Theme.DANGER_RED);
         backBtn.addActionListener(e -> app.showMenu());
@@ -38,13 +38,13 @@ public class Manual extends JPanel {
         // Content
         JEditorPane content = new JEditorPane();
         content.setEditable(false);
-        content.setContentType("text/html");
+        content.setContentType("text/html; charset=UTF-8");
         content.setBackground(Theme.BG_COLOR);
         
         // CSS Styling for Dark Theme
         HTMLEditorKit kit = new HTMLEditorKit();
         StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule("body { font-family: 'Segoe UI', sans-serif; margin: 30px; color: #E0E0E0; background-color: #0A0A0F; }");
+        styleSheet.addRule("body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; color: #E0E0E0; background-color: #0A0A0F; }");
         styleSheet.addRule("h1 { font-size: 28px; color: #E74C3C; border-bottom: 2px solid #E74C3C; padding-bottom: 10px; margin-top: 40px; }");
         styleSheet.addRule("h2 { font-size: 22px; color: #3498DB; margin-top: 30px; margin-bottom: 10px; }");
         styleSheet.addRule("h3 { font-size: 18px; color: #F1C40F; margin-top: 20px; }");
@@ -59,141 +59,200 @@ public class Manual extends JPanel {
         styleSheet.addRule("td { padding: 10px; border-bottom: 1px solid #333; }");
         content.setEditorKit(kit);
 
-        // Build Content
+        String html = buildManualContent();
+        content.setText(html);
+        content.setCaretPosition(0);
+        
+        JScrollPane scroll = new JScrollPane(content);
+        scroll.setBorder(null);
+        Theme.customizeScrollBar(scroll);
+        add(scroll, BorderLayout.CENTER);
+    }
+
+    private String buildManualContent() {
         StringBuilder html = new StringBuilder();
-        html.append("<html><body>");
+        html.append("<html><head><meta charset='UTF-8'></head><body>");
         
-        html.append("<h1>INTRODUCTION</h1>");
-        html.append("<p>Welcome to the <b>Keep Talking and Nobody Explodes v3</b> Defusal Manual.</p>");
-        html.append("<div class='box'><span class='warning'>WARNING:</span> Do not look at the bomb screen if you are the Expert. Communication is your only tool.</div>");
+        // Introduction
+        html.append("<h1>").append(Localization.get("MANUAL_INTRO")).append("</h1>");
+        html.append("<p>").append(Localization.get("MANUAL_INTRO_TEXT")).append("</p>");
+        html.append("<div class='box'><span class='warning'>").append(Localization.get("MANUAL_WARNING")).append("</span> ");
+        html.append(Localization.get("MANUAL_WARNING_TEXT")).append("</div>");
 
-        html.append("<h1>MODULES</h1>");
+        html.append("<h1>").append(Localization.get("MANUAL_MODULES")).append("</h1>");
         
-        // 1. Wires
-        html.append("<h2>1. Wires</h2>");
-        html.append("<div class='box'><p>Wires are arranged horizontally. To defuse this module:</p><ul>");
-        html.append("<li><span class='highlight'>Always cut the last wire.</span></li>");
-        html.append("</ul></div>");
-
-        // 2. The Button
-        html.append("<h2>2. The Button</h2>");
+        // 1. Wires - More Explicit
+        html.append("<h2>1. ").append(Localization.get("MOD_WIRES")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<h3>Step 1: Determine whether to Tap or Hold</h3>");
-        html.append("<ul>");
-        html.append("<li>If the button is <b>Blue</b> and says <b>Abort</b>, <span class='highlight'>Hold</span> it.</li>");
-        html.append("<li>If there is more than 1 battery and the button says <b>Detonate</b>, <span class='highlight'>Tap</span> it.</li>");
-        html.append("<li>If the button is <b>White</b> and there is a lit indicator <b>CAR</b>, <span class='highlight'>Hold</span> it.</li>");
-        html.append("<li>If there are more than 2 batteries and a lit indicator <b>FRK</b>, <span class='highlight'>Tap</span> it.</li>");
-        html.append("<li>If the button is <b>Yellow</b>, <span class='highlight'>Hold</span> it.</li>");
-        html.append("<li>If the button is <b>Red</b> and says <b>Hold</b>, <span class='highlight'>Tap</span> it.</li>");
-        html.append("<li>Otherwise, <span class='highlight'>Hold</span> it.</li>");
-        html.append("</ul>");
-        html.append("<h3>Step 2: Releasing a Held Button</h3>");
-        html.append("<p>If you hold the button, a colored strip will light up. Release the button when the timer contains the corresponding digit:</p>");
-        html.append("<ul>");
-        html.append("<li><b>Blue Strip:</b> 4</li>");
-        html.append("<li><b>White Strip:</b> 1</li>");
-        html.append("<li><b>Yellow Strip:</b> 5</li>");
-        html.append("<li><b>Any other color:</b> 1</li>");
-        html.append("</ul></div>");
+        html.append("<p>").append(Localization.get("WIRES_DESC")).append("</p>");
+        html.append("<p><span class='highlight'>").append(Localization.get("WIRES_RULE")).append("</span></p>");
+        html.append("<p><b>Note:</b> The module displays 3 to 6 colored wires. Count from top (1) to bottom (6). The correct wire to cut is always the last one in the sequence.</p>");
+        html.append("</div>");
+
+        // 2. The Button - Complete Rules
+        html.append("<h2>2. ").append(Localization.get("MOD_BUTTON")).append("</h2>");
+        html.append("<div class='box'>");
+        html.append("<h3>").append(Localization.get("BTN_STEP1")).append("</h3>");
+        html.append("<p>Follow these rules <b>in order</b>. Stop at the first rule that applies:</p>");
+        html.append("<ol>");
+        html.append("<li>").append(Localization.get("BTN_BLUE_ABORT")).append("</li>");
+        html.append("<li>").append(Localization.get("BTN_DETONATE")).append("</li>");
+        html.append("<li>").append(Localization.get("BTN_WHITE_CAR")).append("</li>");
+        html.append("<li>").append(Localization.get("BTN_FRK")).append("</li>");
+        html.append("<li>").append(Localization.get("BTN_YELLOW")).append("</li>");
+        html.append("<li>").append(Localization.get("BTN_RED_HOLD")).append("</li>");
+        html.append("<li>").append(Localization.get("BTN_OTHERWISE")).append("</li>");
+        html.append("</ol>");
+        html.append("<h3>").append(Localization.get("BTN_STEP2")).append("</h3>");
+        html.append("<p>").append(Localization.get("BTN_STRIP_INFO")).append("</p>");
+        html.append("<table>");
+        html.append("<tr><th>Strip Color</th><th>Release when timer contains:</th></tr>");
+        html.append("<tr><td>").append(Localization.get("BTN_STRIP_BLUE")).append("</td><td><b>4</b></td></tr>");
+        html.append("<tr><td>").append(Localization.get("BTN_STRIP_WHITE")).append("</td><td><b>1</b></td></tr>");
+        html.append("<tr><td>").append(Localization.get("BTN_STRIP_YELLOW")).append("</td><td><b>5</b></td></tr>");
+        html.append("<tr><td>").append(Localization.get("BTN_STRIP_OTHER")).append("</td><td><b>1</b></td></tr>");
+        html.append("</table>");
+        html.append("</div>");
 
         // 3. Keypad
-        html.append("<h2>3. Keypad</h2>");
-        html.append("<div class='box'><p>Press the four symbols in <span class='highlight'>alphabetical order</span> (based on their character code).</p></div>");
+        html.append("<h2>3. ").append(Localization.get("MOD_KEYPAD")).append("</h2>");
+        html.append("<div class='box'>");
+        html.append("<p>The keypad displays 4 symbols. Press them in <span class='highlight'>alphabetical order</span> based on their Unicode character values.</p>");
+        html.append("<p><b>Tip:</b> Compare the symbols visually - Greek letters (Ω, Ψ, Φ) come before Cyrillic letters, which come before special symbols.</p>");
+        html.append("</div>");
 
-        // 4. Simon Says
-        html.append("<h2>4. Simon Says</h2>");
-        html.append("<div class='box'><p>Flash the colors back. The mapping depends on whether the Serial Number contains a <b>Vowel</b> (A, E, I, O, U) and the current number of <b>Strikes</b>.</p>");
+        // 4. Simon Says - Complete Tables
+        html.append("<h2>4. ").append(Localization.get("MOD_SIMON")).append("</h2>");
+        html.append("<div class='box'>");
+        html.append("<p>Watch the colored lights flash. Press buttons in the correct order based on the serial number and current strikes.</p>");
+        html.append("<p><b>Check the SERIAL NUMBER:</b> Does it contain a vowel (A, E, I, O, U)?</p>");
         html.append("<table>");
         html.append("<tr><th>Flash</th><th>0 Strikes</th><th>1 Strike</th><th>2+ Strikes</th></tr>");
-        html.append("<tr><td colspan='4' style='background:#222; text-align:center;'><b>Serial Number with Vowel</b></td></tr>");
-        html.append("<tr><td>Red</td><td>Blue</td><td>Yellow</td><td>Green</td></tr>");
-        html.append("<tr><td>Blue</td><td>Red</td><td>Green</td><td>Red</td></tr>");
-        html.append("<tr><td>Green</td><td>Yellow</td><td>Blue</td><td>Yellow</td></tr>");
-        html.append("<tr><td>Yellow</td><td>Green</td><td>Red</td><td>Blue</td></tr>");
-        html.append("<tr><td colspan='4' style='background:#222; text-align:center;'><b>Serial Number without Vowel</b></td></tr>");
-        html.append("<tr><td>Red</td><td>Blue</td><td>Red</td><td>Yellow</td></tr>");
-        html.append("<tr><td>Blue</td><td>Yellow</td><td>Blue</td><td>Green</td></tr>");
-        html.append("<tr><td>Green</td><td>Green</td><td>Yellow</td><td>Blue</td></tr>");
-        html.append("<tr><td>Yellow</td><td>Red</td><td>Green</td><td>Red</td></tr>");
-        html.append("</table></div>");
+        html.append("<tr style='background:#222'><td colspan='4'><b>Serial Number WITH Vowel</b></td></tr>");
+        html.append("<tr><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td></tr>");
+        html.append("<tr><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td></tr>");
+        html.append("<tr><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td></tr>");
+        html.append("<tr><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td></tr>");
+        html.append("<tr style='background:#222'><td colspan='4'><b>Serial Number WITHOUT Vowel</b></td></tr>");
+        html.append("<tr><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td></tr>");
+        html.append("<tr><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td></tr>");
+        html.append("<tr><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td></tr>");
+        html.append("<tr><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td></tr>");
+        html.append("</table>");
+        html.append("<p><b>Complete 3 stages</b> to solve the module. Each stage adds one more color to remember.</p>");
+        html.append("</div>");
 
         // 5. Maze
-        html.append("<h2>5. Maze</h2>");
-        html.append("<div class='box'><p>Navigate the white triangle to the red circle. <span class='highlight'>Walls are visible as dark green blocks.</span> Moving into a wall causes a strike.</p></div>");
-
-        // 6. Memory
-        html.append("<h2>6. Memory</h2>");
+        html.append("<h2>5. ").append(Localization.get("MOD_MAZE")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p><b>Stage 1:</b><br>If display is 1: Pos 2 | If 2: Pos 2 | If 3: Pos 3 | If 4: Pos 4</p>");
-        html.append("<p><b>Stage 2:</b><br>If 1: Label 4 | If 2: Pos Stage 1 | If 3: Pos 1 | If 4: Pos Stage 1</p>");
-        html.append("<p><b>Stage 3:</b><br>If 1: Label Stage 2 | If 2: Label Stage 1 | If 3: Pos 3 | If 4: Label 4</p>");
-        html.append("<p><b>Stage 4:</b><br>If 1: Pos Stage 1 | If 2: Pos 1 | If 3: Pos Stage 2 | If 4: Pos Stage 2</p>");
-        html.append("<p><b>Stage 5:</b><br>If 1: Label Stage 1 | If 2: Label Stage 2 | If 3: Label Stage 4 | If 4: Label Stage 3</p>");
+        html.append("<p>Navigate the <b>white triangle</b> (you) to the <b>red circle</b> (target).</p>");
+        html.append("<p>Use <span class='highlight'>WASD</span> or <span class='highlight'>Arrow Keys</span> to move.</p>");
+        html.append("<p><b>Walls are visible</b> as dark green blocks. Moving into a wall causes a STRIKE!</p>");
+        html.append("<p>You can also click the directional buttons below the maze.</p>");
+        html.append("</div>");
+
+        // 6. Memory - Full Stage Details
+        html.append("<h2>6. ").append(Localization.get("MOD_MEMORY")).append("</h2>");
+        html.append("<div class='box'>");
+        html.append("<p>A 5-stage memory test. Remember positions AND labels from previous stages.</p>");
+        html.append("<table>");
+        html.append("<tr><th>Stage</th><th>Display</th><th>Action</th></tr>");
+        html.append("<tr><td rowspan='4'><b>Stage 1</b></td><td>1</td><td>Press Position 2</td></tr>");
+        html.append("<tr><td>2</td><td>Press Position 2</td></tr>");
+        html.append("<tr><td>3</td><td>Press Position 3</td></tr>");
+        html.append("<tr><td>4</td><td>Press Position 4</td></tr>");
+        html.append("<tr><td rowspan='4'><b>Stage 2</b></td><td>1</td><td>Press Label '4'</td></tr>");
+        html.append("<tr><td>2</td><td>Press same Position as Stage 1</td></tr>");
+        html.append("<tr><td>3</td><td>Press Position 1</td></tr>");
+        html.append("<tr><td>4</td><td>Press same Position as Stage 1</td></tr>");
+        html.append("<tr><td rowspan='4'><b>Stage 3</b></td><td>1</td><td>Press same Label as Stage 2</td></tr>");
+        html.append("<tr><td>2</td><td>Press same Label as Stage 1</td></tr>");
+        html.append("<tr><td>3</td><td>Press Position 3</td></tr>");
+        html.append("<tr><td>4</td><td>Press Label '4'</td></tr>");
+        html.append("<tr><td rowspan='4'><b>Stage 4</b></td><td>1</td><td>Press same Position as Stage 1</td></tr>");
+        html.append("<tr><td>2</td><td>Press Position 1</td></tr>");
+        html.append("<tr><td>3</td><td>Press same Position as Stage 2</td></tr>");
+        html.append("<tr><td>4</td><td>Press same Position as Stage 2</td></tr>");
+        html.append("<tr><td rowspan='4'><b>Stage 5</b></td><td>1</td><td>Press same Label as Stage 1</td></tr>");
+        html.append("<tr><td>2</td><td>Press same Label as Stage 2</td></tr>");
+        html.append("<tr><td>3</td><td>Press same Label as Stage 4</td></tr>");
+        html.append("<tr><td>4</td><td>Press same Label as Stage 3</td></tr>");
+        html.append("</table>");
         html.append("</div>");
 
         // 7. Morse Code
-        html.append("<h2>7. Morse Code</h2>");
-        html.append("<div class='box'><table>");
-        html.append("<tr><th>Word</th><th>Freq</th><th>Word</th><th>Freq</th></tr>");
-        html.append("<tr><td>SHELL</td><td>3.505</td><td>BOMBS</td><td>3.565</td></tr>");
-        html.append("<tr><td>HALLS</td><td>3.515</td><td>BREAK</td><td>3.572</td></tr>");
-        html.append("<tr><td>SLICK</td><td>3.522</td><td>BRICK</td><td>3.575</td></tr>");
-        html.append("<tr><td>TRICK</td><td>3.532</td><td>STEAK</td><td>3.582</td></tr>");
-        html.append("<tr><td>BOXES</td><td>3.535</td><td>STING</td><td>3.592</td></tr>");
-        html.append("<tr><td>LEAKS</td><td>3.542</td><td>VECTOR</td><td>3.595</td></tr>");
-        html.append("<tr><td>STROBE</td><td>3.545</td><td>BEATS</td><td>3.600</td></tr>");
-        html.append("<tr><td>BISTRO</td><td>3.552</td><td>FLICK</td><td>3.555</td></tr>");
-        html.append("</table></div>");
+        html.append("<h2>7. ").append(Localization.get("MOD_MORSE")).append("</h2>");
+        html.append("<div class='box'>");
+        html.append("<p>Watch the flashing light and decode the Morse code word. Use the < and > buttons to tune to the correct frequency, then press TX.</p>");
+        html.append("<table>");
+        html.append("<tr><th>Word</th><th>Frequency</th><th>Word</th><th>Frequency</th></tr>");
+        html.append("<tr><td>SHELL</td><td>3.505 MHz</td><td>BOMBS</td><td>3.565 MHz</td></tr>");
+        html.append("<tr><td>HALLS</td><td>3.515 MHz</td><td>BREAK</td><td>3.572 MHz</td></tr>");
+        html.append("<tr><td>SLICK</td><td>3.522 MHz</td><td>BRICK</td><td>3.575 MHz</td></tr>");
+        html.append("<tr><td>TRICK</td><td>3.532 MHz</td><td>STEAK</td><td>3.582 MHz</td></tr>");
+        html.append("<tr><td>BOXES</td><td>3.535 MHz</td><td>STING</td><td>3.592 MHz</td></tr>");
+        html.append("<tr><td>LEAKS</td><td>3.542 MHz</td><td>VECTOR</td><td>3.595 MHz</td></tr>");
+        html.append("<tr><td>STROBE</td><td>3.545 MHz</td><td>BEATS</td><td>3.600 MHz</td></tr>");
+        html.append("<tr><td>BISTRO</td><td>3.552 MHz</td><td>FLICK</td><td>3.555 MHz</td></tr>");
+        html.append("</table>");
+        html.append("</div>");
 
         // 8. Complicated Wires
-        html.append("<h2>8. Complicated Wires</h2>");
-        html.append("<div class='box'><p>Look at each wire: does it have <b>Red</b> coloring, <b>Blue</b> coloring, a <b>Star</b>, and a lit <b>LED</b>?</p>");
-        html.append("<table><tr><th>R</th><th>B</th><th>S</th><th>L</th><th>Action</th></tr>");
-        html.append("<tr><td>X</td><td>X</td><td>X</td><td>X</td><td>D</td></tr>");
-        html.append("<tr><td>X</td><td>X</td><td>X</td><td></td><td>P</td></tr>");
-        html.append("<tr><td>X</td><td>X</td><td></td><td>X</td><td>S</td></tr>");
-        html.append("<tr><td>X</td><td>X</td><td></td><td></td><td>S</td></tr>");
-        html.append("<tr><td>X</td><td></td><td>X</td><td>X</td><td>B</td></tr>");
-        html.append("<tr><td>X</td><td></td><td>X</td><td></td><td>C</td></tr>");
-        html.append("<tr><td>X</td><td></td><td></td><td>X</td><td>B</td></tr>");
-        html.append("<tr><td>X</td><td></td><td></td><td></td><td>S</td></tr>");
-        html.append("<tr><td></td><td>X</td><td>X</td><td>X</td><td>P</td></tr>");
-        html.append("<tr><td></td><td>X</td><td>X</td><td></td><td>D</td></tr>");
-        html.append("<tr><td></td><td>X</td><td></td><td>X</td><td>P</td></tr>");
-        html.append("<tr><td></td><td>X</td><td></td><td></td><td>S</td></tr>");
-        html.append("<tr><td></td><td></td><td>X</td><td>X</td><td>B</td></tr>");
-        html.append("<tr><td></td><td></td><td>X</td><td></td><td>C</td></tr>");
-        html.append("<tr><td></td><td></td><td></td><td>X</td><td>D</td></tr>");
-        html.append("<tr><td></td><td></td><td></td><td></td><td>C</td></tr>");
+        html.append("<h2>8. ").append(Localization.get("MOD_COMPWIRES")).append("</h2>");
+        html.append("<div class='box'>");
+        html.append("<p>Each wire may have: <b>Red</b> coloring, <b>Blue</b> coloring, a <b>★ Star</b> symbol, and a lit <b>LED</b>.</p>");
+        html.append("<p>Use this table - X means the feature is present:</p>");
+        html.append("<table><tr><th>Red</th><th>Blue</th><th>Star</th><th>LED</th><th>Action</th></tr>");
+        html.append("<tr><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>Don't Cut</td></tr>");
+        html.append("<tr><td>✓</td><td>✓</td><td>✓</td><td></td><td>Cut if Parallel Port</td></tr>");
+        html.append("<tr><td>✓</td><td>✓</td><td></td><td>✓</td><td>Cut if Serial # ends Even</td></tr>");
+        html.append("<tr><td>✓</td><td>✓</td><td></td><td></td><td>Cut if Serial # ends Even</td></tr>");
+        html.append("<tr><td>✓</td><td></td><td>✓</td><td>✓</td><td>Cut if Batteries ≥ 2</td></tr>");
+        html.append("<tr><td>✓</td><td></td><td>✓</td><td></td><td><b>CUT</b></td></tr>");
+        html.append("<tr><td>✓</td><td></td><td></td><td>✓</td><td>Cut if Batteries ≥ 2</td></tr>");
+        html.append("<tr><td>✓</td><td></td><td></td><td></td><td>Cut if Serial # ends Even</td></tr>");
+        html.append("<tr><td></td><td>✓</td><td>✓</td><td>✓</td><td>Cut if Parallel Port</td></tr>");
+        html.append("<tr><td></td><td>✓</td><td>✓</td><td></td><td>Don't Cut</td></tr>");
+        html.append("<tr><td></td><td>✓</td><td></td><td>✓</td><td>Cut if Parallel Port</td></tr>");
+        html.append("<tr><td></td><td>✓</td><td></td><td></td><td>Cut if Serial # ends Even</td></tr>");
+        html.append("<tr><td></td><td></td><td>✓</td><td>✓</td><td>Cut if Batteries ≥ 2</td></tr>");
+        html.append("<tr><td></td><td></td><td>✓</td><td></td><td><b>CUT</b></td></tr>");
+        html.append("<tr><td></td><td></td><td></td><td>✓</td><td>Don't Cut</td></tr>");
+        html.append("<tr><td></td><td></td><td></td><td></td><td><b>CUT</b></td></tr>");
         html.append("</table>");
-        html.append("<p><b>C:</b> Cut | <b>D:</b> Don't Cut | <b>S:</b> Cut if Serial Even | <b>P:</b> Cut if Parallel Port | <b>B:</b> Cut if Batteries >= 2</p></div>");
+        html.append("<p><b>Cut all wires that should be cut</b> to defuse the module.</p>");
+        html.append("</div>");
 
         // 9. Password
-        html.append("<h2>9. Password</h2>");
-        html.append("<div class='box'><p>Possible words: ABOUT, AFTER, AGAIN, BELOW, COULD, EVERY, FIRST, FOUND, GREAT, HOUSE, LARGE, LEARN, NEVER, OTHER, PLACE, PLANT, POINT, RIGHT, SMALL, SOUND, SPELL, STILL, STUDY, THEIR, THERE, THESE, THING, THINK, THREE, WATER, WHERE, WHICH, WORLD, WOULD, WRITE.</p></div>");
+        html.append("<h2>9. ").append(Localization.get("MOD_PASSWORD")).append("</h2>");
+        html.append("<div class='box'>");
+        html.append("<p>Use the ▲ and ▼ arrows to scroll through letters in each column. Find and submit the 5-letter word.</p>");
+        html.append("<p><b>Possible passwords:</b></p>");
+        html.append("<p style='font-size:12px'>ABOUT, AFTER, AGAIN, BELOW, COULD, EVERY, FIRST, FOUND, GREAT, HOUSE, LARGE, LEARN, NEVER, OTHER, PLACE, PLANT, POINT, RIGHT, SMALL, SOUND, SPELL, STILL, STUDY, THEIR, THERE, THESE, THING, THINK, THREE, WATER, WHERE, WHICH, WORLD, WOULD, WRITE</p>");
+        html.append("</div>");
 
         // 10. Who's on First
-        html.append("<h2>10. Who's on First</h2>");
-        html.append("<div class='box'><p><b>Step 1:</b> Look at display and find button position.</p>");
-        html.append("<table><tr><th>Display</th><th>Pos</th><th>Display</th><th>Pos</th></tr>");
-        html.append("<tr><td>YES</td><td>ML</td><td>FIRST</td><td>TR</td></tr>");
-        html.append("<tr><td>DISPLAY</td><td>BR</td><td>OKAY</td><td>TR</td></tr>");
-        html.append("<tr><td>SAYS</td><td>BR</td><td>NOTHING</td><td>ML</td></tr>");
-        html.append("<tr><td>(BLANK)</td><td>BL</td><td>BLANK</td><td>MR</td></tr>");
-        html.append("<tr><td>NO</td><td>BR</td><td>LED</td><td>ML</td></tr>");
-        html.append("<tr><td>LEAD</td><td>BR</td><td>READ</td><td>MR</td></tr>");
-        html.append("<tr><td>RED</td><td>MR</td><td>REED</td><td>BL</td></tr>");
-        html.append("<tr><td>LEED</td><td>BL</td><td>HOLD ON</td><td>BR</td></tr>");
-        html.append("<tr><td>YOU</td><td>MR</td><td>YOU ARE</td><td>BR</td></tr>");
-        html.append("<tr><td>YOUR</td><td>MR</td><td>YOU'RE</td><td>MR</td></tr>");
-        html.append("<tr><td>UR</td><td>TL</td><td>THERE</td><td>BR</td></tr>");
-        html.append("<tr><td>THEY'RE</td><td>BL</td><td>THEIR</td><td>MR</td></tr>");
-        html.append("<tr><td>THEY ARE</td><td>ML</td><td>SEE</td><td>BR</td></tr>");
-        html.append("<tr><td>C</td><td>TR</td><td>CEE</td><td>BR</td></tr>");
+        html.append("<h2>10. ").append(Localization.get("MOD_WHOSONFIRST")).append("</h2>");
+        html.append("<div class='box'>");
+        html.append("<p><b>Step 1:</b> Read the DISPLAY word, find which button POSITION to look at:</p>");
+        html.append("<table><tr><th>Display</th><th>Look At</th><th>Display</th><th>Look At</th></tr>");
+        html.append("<tr><td>YES</td><td>Middle-Left</td><td>FIRST</td><td>Top-Right</td></tr>");
+        html.append("<tr><td>DISPLAY</td><td>Bottom-Right</td><td>OKAY</td><td>Top-Right</td></tr>");
+        html.append("<tr><td>SAYS</td><td>Bottom-Right</td><td>NOTHING</td><td>Middle-Left</td></tr>");
+        html.append("<tr><td>(empty)</td><td>Bottom-Left</td><td>BLANK</td><td>Middle-Right</td></tr>");
+        html.append("<tr><td>NO</td><td>Bottom-Right</td><td>LED</td><td>Middle-Left</td></tr>");
+        html.append("<tr><td>LEAD</td><td>Bottom-Right</td><td>READ</td><td>Middle-Right</td></tr>");
+        html.append("<tr><td>RED</td><td>Middle-Right</td><td>REED</td><td>Bottom-Left</td></tr>");
+        html.append("<tr><td>LEED</td><td>Bottom-Left</td><td>HOLD ON</td><td>Bottom-Right</td></tr>");
+        html.append("<tr><td>YOU</td><td>Middle-Right</td><td>YOU ARE</td><td>Bottom-Right</td></tr>");
+        html.append("<tr><td>YOUR</td><td>Middle-Right</td><td>YOU'RE</td><td>Middle-Right</td></tr>");
+        html.append("<tr><td>UR</td><td>Top-Left</td><td>THERE</td><td>Bottom-Right</td></tr>");
+        html.append("<tr><td>THEY'RE</td><td>Bottom-Left</td><td>THEIR</td><td>Middle-Right</td></tr>");
+        html.append("<tr><td>THEY ARE</td><td>Middle-Left</td><td>SEE</td><td>Bottom-Right</td></tr>");
+        html.append("<tr><td>C</td><td>Top-Right</td><td>CEE</td><td>Bottom-Right</td></tr>");
         html.append("</table>");
-        html.append("<p><b>Step 2:</b> Read the word on that button and press the first word in its list that ALSO appears on one of the 6 buttons:</p>");
-        html.append("<div style='font-size:12px'>");
+        html.append("<p><b>Step 2:</b> Read the LABEL on that button. Find it in the word lists below. Press the first word from the list that appears on any button:</p>");
+        html.append("<div style='font-size:11px; line-height:1.4'>");
         html.append("<b>READY:</b> YES, OKAY, WHAT, MIDDLE, LEFT, PRESS, RIGHT, BLANK, READY<br>");
         html.append("<b>FIRST:</b> LEFT, OKAY, YES, MIDDLE, NO, RIGHT, NOTHING, UHHH, WAIT, READY, BLANK, WHAT, PRESS, FIRST<br>");
         html.append("<b>NO:</b> BLANK, UHHH, WAIT, FIRST, WHAT, READY, RIGHT, YES, NOTHING, LEFT, PRESS, OKAY, NO<br>");
@@ -222,36 +281,61 @@ public class Manual extends JPanel {
         html.append("<b>HOLD:</b> YOU ARE, U, DONE, UH UH, YOU, UR, SURE, WHAT?, HOLD<br>");
         html.append("<b>SURE:</b> YOU ARE, DONE, LIKE, YOU'RE, YOU, HOLD, UH HUH, UR, SURE<br>");
         html.append("<b>LIKE:</b> YOU'RE, NEXT, U, UR, HOLD, DONE, UH UH, WHAT?, UH HUH, YOU, LIKE<br>");
-        html.append("</div></div>");
+        html.append("</div>");
+        html.append("<p><b>Complete 3 stages</b> to solve.</p>");
+        html.append("</div>");
 
         // 11. Binary
-        html.append("<h2>11. Binary</h2>");
-        html.append("<div class='box'><p>Convert decimal to 5-bit binary. Switch values from left to right: <span class='highlight'>16, 8, 4, 2, 1</span>.</p></div>");
+        html.append("<h2>11. ").append(Localization.get("MOD_BINARY")).append("</h2>");
+        html.append("<div class='box'>");
+        html.append("<p>Convert the decimal number shown to 5-bit binary.</p>");
+        html.append("<p>The switches represent (from left to right): <span class='highlight'>16, 8, 4, 2, 1</span></p>");
+        html.append("<p><b>Example:</b> Number 21 = 16 + 4 + 1 = switches ON for 16, 4, and 1 = <b>10101</b></p>");
+        html.append("<table>");
+        html.append("<tr><th>Decimal</th><th>Binary</th><th>Decimal</th><th>Binary</th></tr>");
+        html.append("<tr><td>0</td><td>00000</td><td>16</td><td>10000</td></tr>");
+        html.append("<tr><td>1</td><td>00001</td><td>17</td><td>10001</td></tr>");
+        html.append("<tr><td>5</td><td>00101</td><td>20</td><td>10100</td></tr>");
+        html.append("<tr><td>10</td><td>01010</td><td>25</td><td>11001</td></tr>");
+        html.append("<tr><td>15</td><td>01111</td><td>31</td><td>11111</td></tr>");
+        html.append("</table>");
+        html.append("</div>");
 
-        // 12. Logic
-        html.append("<h2>12. Logic</h2>");
-        html.append("<div class='box'><p>Complete 3 stages of logic gates: <b>AND, OR, XOR, NAND, NOR</b>.</p></div>");
+        // 12. Logic Gates
+        html.append("<h2>12. ").append(Localization.get("MOD_LOGIC")).append("</h2>");
+        html.append("<div class='box'>");
+        html.append("<p>Complete 3 stages. Each stage shows two inputs (A and B) and a logic gate. Set the OUTPUT correctly.</p>");
+        html.append("<table>");
+        html.append("<tr><th>Gate</th><th>A=0, B=0</th><th>A=0, B=1</th><th>A=1, B=0</th><th>A=1, B=1</th></tr>");
+        html.append("<tr><td><b>AND</b></td><td>0</td><td>0</td><td>0</td><td>1</td></tr>");
+        html.append("<tr><td><b>OR</b></td><td>0</td><td>1</td><td>1</td><td>1</td></tr>");
+        html.append("<tr><td><b>XOR</b></td><td>0</td><td>1</td><td>1</td><td>0</td></tr>");
+        html.append("<tr><td><b>NAND</b></td><td>1</td><td>1</td><td>1</td><td>0</td></tr>");
+        html.append("<tr><td><b>NOR</b></td><td>1</td><td>0</td><td>0</td><td>0</td></tr>");
+        html.append("</table>");
+        html.append("<p>Click the OUTPUT circle to toggle it ON/OFF, then press CHECK.</p>");
+        html.append("</div>");
 
-        html.append("<h1>MISSION DOSSIERS</h1>");
+        // Mission Dossiers
+        html.append("<h1>").append(Localization.get("MANUAL_MISSIONS")).append("</h1>");
         html.append("<table><tr><th>Mission</th><th>Difficulty</th><th>Time</th><th>Modules</th></tr>");
         for (Level l : Level.getLevels()) {
             String color = "#E0E0E0";
-            if (l.getDifficulty().equals("EASY")) color = "#2ECC71";
-            if (l.getDifficulty().equals("MEDIUM")) color = "#3498DB";
-            if (l.getDifficulty().equals("HARD")) color = "#F1C40F";
-            if (l.getDifficulty().equals("EXPERT")) color = "#E67E22";
-            if (l.getDifficulty().equals("INSANE")) color = "#E74C3C";
-            html.append("<tr><td><b>").append(l.getName()).append("</b><br><span style='font-size:12px; color:#888'>").append(l.getDescription()).append("</span></td>");
-            html.append("<td style='color:").append(color).append("'>").append(l.getDifficulty()).append("</td>");
+            String diff = l.getDifficulty();
+            if (diff.equals("EASY")) color = "#2ECC71";
+            else if (diff.equals("MEDIUM")) color = "#3498DB";
+            else if (diff.equals("HARD")) color = "#F1C40F";
+            else if (diff.equals("EXPERT")) color = "#E67E22";
+            else if (diff.equals("INSANE")) color = "#E74C3C";
+            
+            html.append("<tr><td><b>").append(l.getName()).append("</b><br><span style='font-size:12px; color:#888'>")
+                .append(l.getDescription()).append("</span></td>");
+            html.append("<td style='color:").append(color).append("'>").append(diff).append("</td>");
             html.append("<td>").append(l.getTime()).append("s</td><td>").append(l.getModuleCount()).append("</td></tr>");
         }
-        html.append("</table></body></html>");
+        html.append("</table>");
         
-        content.setText(html.toString());
-        content.setCaretPosition(0);
-        JScrollPane scroll = new JScrollPane(content);
-        scroll.setBorder(null);
-        Theme.customizeScrollBar(scroll);
-        add(scroll, BorderLayout.CENTER);
+        html.append("</body></html>");
+        return html.toString();
     }
 }

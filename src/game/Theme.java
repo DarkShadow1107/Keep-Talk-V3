@@ -32,13 +32,25 @@ public class Theme {
     
     public static final Color MANUAL_BG = new Color(250, 248, 239); // Paper color
 
-    // Fonts
-    public static final Font FONT_TITLE = new Font("Segoe UI", Font.BOLD, 48);
-    public static final Font FONT_SUBTITLE = new Font("Segoe UI", Font.PLAIN, 24);
-    public static final Font FONT_REGULAR = new Font("Segoe UI", Font.PLAIN, 16);
-    public static final Font FONT_BOLD = new Font("Segoe UI", Font.BOLD, 16);
+    // Fonts - Using Unicode-compatible fonts for international character support
+    public static final Font FONT_TITLE = createUnicodeFont(Font.BOLD, 48);
+    public static final Font FONT_SUBTITLE = createUnicodeFont(Font.PLAIN, 24);
+    public static final Font FONT_REGULAR = createUnicodeFont(Font.PLAIN, 16);
+    public static final Font FONT_BOLD = createUnicodeFont(Font.BOLD, 16);
     public static final Font FONT_MONO = new Font("Consolas", Font.PLAIN, 18);
     public static final Font FONT_DIGITAL = new Font("Monospaced", Font.BOLD, 48);
+    
+    private static Font createUnicodeFont(int style, int size) {
+        // Try fonts in order of preference for Unicode support
+        String[] fontNames = {"Segoe UI", "Arial Unicode MS", "Noto Sans", "DejaVu Sans", "Arial"};
+        for (String name : fontNames) {
+            Font f = new Font(name, style, size);
+            if (f.canDisplayUpTo("АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯаöäåæøñ") == -1) {
+                return f;
+            }
+        }
+        return new Font("SansSerif", style, size);
+    }
 
     public static JButton createButton(String text) {
         JButton btn = new JButton(text) {

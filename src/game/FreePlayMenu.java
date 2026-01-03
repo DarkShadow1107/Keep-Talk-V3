@@ -19,7 +19,7 @@ public class FreePlayMenu extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        JLabel title = new JLabel("FREE PLAY SETUP", SwingConstants.CENTER);
+        JLabel title = new JLabel(Localization.get("FREEPLAY_TITLE"), SwingConstants.CENTER);
         title.setFont(Theme.FONT_TITLE);
         title.setForeground(Theme.ACCENT_BLUE);
         add(title, gbc);
@@ -27,31 +27,31 @@ public class FreePlayMenu extends JPanel {
         add(Box.createRigidArea(new Dimension(0, 20)), gbc);
 
         // Time Setup
-        addLabel("Time (Seconds):", gbc);
+        addLabel(Localization.get("FREEPLAY_TIME"), gbc);
         timeSpinner = new JSpinner(new SpinnerNumberModel(300, 30, 3600, 30));
         styleSpinner(timeSpinner);
         add(timeSpinner, gbc);
 
         // Modules Setup
-        addLabel("Modules Count:", gbc);
+        addLabel(Localization.get("FREEPLAY_MODULES"), gbc);
         modulesSpinner = new JSpinner(new SpinnerNumberModel(3, 1, 20, 1));
         styleSpinner(modulesSpinner);
         add(modulesSpinner, gbc);
 
         // Strikes Setup
-        addLabel("Max Strikes:", gbc);
+        addLabel(Localization.get("FREEPLAY_STRIKES"), gbc);
         strikesSpinner = new JSpinner(new SpinnerNumberModel(3, 1, 10, 1));
         styleSpinner(strikesSpinner);
         add(strikesSpinner, gbc);
 
         add(Box.createRigidArea(new Dimension(0, 30)), gbc);
 
-        JButton startButton = Theme.createButton("START MISSION");
+        JButton startButton = Theme.createButton(Localization.get("FREEPLAY_START"));
         startButton.setBackground(Theme.ACCENT_GREEN);
         startButton.addActionListener(e -> startFreePlay());
         add(startButton, gbc);
 
-        JButton backButton = Theme.createButton("BACK");
+        JButton backButton = Theme.createButton(Localization.get("BTN_BACK"));
         backButton.addActionListener(e -> app.showMenu());
         add(backButton, gbc);
     }
@@ -79,7 +79,7 @@ public class FreePlayMenu extends JPanel {
         int modules = (int) modulesSpinner.getValue();
         int strikes = (int) strikesSpinner.getValue();
         
-        Level customLevel = new Level("Free Play", time, modules, strikes);
+        Level customLevel = new Level(Localization.get("FREEPLAY_TITLE"), time, modules, strikes);
         app.startGame(customLevel);
     }
 }
