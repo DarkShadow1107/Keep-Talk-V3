@@ -1,0 +1,41 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Main.java",
+			"type": "shell",
+			"command": "javac -d bin src/game/*.java && java -cp bin game.Main",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Compile Main.java",
+			"type": "shell",
+			"command": "javac -d bin src/game/*.java",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Compile all modules",
+			"type": "shell",
+			"command": "javac -d bin src/game/*.java src/modules/*.java",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Compile and Run Main.java",
+			"type": "shell",
+			"command": "javac -d bin src/game/*.java src/modules/*.java; java -cp bin game.Main",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}
