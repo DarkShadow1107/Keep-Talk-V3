@@ -31,18 +31,17 @@ public class WiresModule implements BombModule {
         int numWires = rand.nextInt(4) + 3; // 3 to 6 wires
         
         for (int i = 0; i < numWires; i++) {
-            Color color;
             int c = rand.nextInt(7);
-            switch (c) {
-                case 0: color = Color.RED; break;
-                case 1: color = Color.BLUE; break;
-                case 2: color = Color.YELLOW; break;
-                case 3: color = Color.BLACK; break;
-                case 4: color = Color.WHITE; break;
-                case 5: color = Color.ORANGE; break;
-                case 6: color = Color.GREEN; break;
-                default: color = Color.WHITE; break;
-            }
+            Color color = switch (c) {
+                case 0 -> Color.RED;
+                case 1 -> Color.BLUE;
+                case 2 -> Color.YELLOW;
+                case 3 -> Color.BLACK;
+                case 4 -> Color.WHITE;
+                case 5 -> Color.ORANGE;
+                case 6 -> Color.GREEN;
+                default -> Color.WHITE;
+            };
             wires.add(new Wire(color));
         }
 

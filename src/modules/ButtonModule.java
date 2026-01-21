@@ -17,7 +17,7 @@ public class ButtonModule implements BombModule {
     private String text;
     private String stripColor;
     private boolean isPressed = false;
-    private long pressTime = 0;
+    private long pressTime;
 
     public ButtonModule(Bomb bomb) {
         this.bomb = bomb;
@@ -185,8 +185,7 @@ public class ButtonModule implements BombModule {
         if (color.equals("White") && bomb.hasIndicator("CAR")) return true;
         if (bomb.getBatteries() > 2 && bomb.hasIndicator("FRK")) return false;
         if (color.equals("Yellow")) return true;
-        if (color.equals("Red") && text.equals("Hold")) return false;
-        return true;
+        return !(color.equals("Red") && text.equals("Hold"));
     }
 
     private boolean checkReleaseTime() {

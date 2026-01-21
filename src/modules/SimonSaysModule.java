@@ -33,7 +33,6 @@ public class SimonSaysModule implements BombModule {
     };
     private boolean[] litState = new boolean[4];
     private Timer flashTimer;
-    private boolean showingSequence = false;
     private int pressedButton = -1;
 
     public SimonSaysModule(Bomb bomb) {
@@ -155,7 +154,6 @@ public class SimonSaysModule implements BombModule {
     }
 
     private void startFlashing() {
-        showingSequence = true;
         final int[] flashIndex = {0};
         
         if (flashTimer != null && flashTimer.isRunning()) flashTimer.stop();
@@ -232,49 +230,57 @@ public class SimonSaysModule implements BombModule {
         // 0:Red, 1:Blue, 2:Green, 3:Yellow
         
         if (hasVowel) {
-            if (strikes == 0) {
-                switch (flashIndex) {
-                    case 0: return 1; // Red -> Blue
-                    case 1: return 0; // Blue -> Red
-                    case 2: return 3; // Green -> Yellow
-                    case 3: return 2; // Yellow -> Green
+            switch (strikes) {
+                case 0 -> {
+                    switch (flashIndex) {
+                        case 0 -> { return 1; }
+                        case 1 -> { return 0; }
+                        case 2 -> { return 3; }
+                        case 3 -> { return 2; }
+                    }
                 }
-            } else if (strikes == 1) {
-                switch (flashIndex) {
-                    case 0: return 3; // Red -> Yellow
-                    case 1: return 2; // Blue -> Green
-                    case 2: return 1; // Green -> Blue
-                    case 3: return 0; // Yellow -> Red
+                case 1 -> {
+                    switch (flashIndex) {
+                        case 0 -> { return 3; }
+                        case 1 -> { return 2; }
+                        case 2 -> { return 1; }
+                        case 3 -> { return 0; }
+                    }
                 }
-            } else { // 2+ strikes
-                switch (flashIndex) {
-                    case 0: return 2; // Red -> Green
-                    case 1: return 0; // Blue -> Red
-                    case 2: return 3; // Green -> Yellow
-                    case 3: return 1; // Yellow -> Blue
+                default -> {
+                    switch (flashIndex) {
+                        case 0 -> { return 2; }
+                        case 1 -> { return 0; }
+                        case 2 -> { return 3; }
+                        case 3 -> { return 1; }
+                    }
                 }
             }
         } else { // No Vowel
-            if (strikes == 0) {
-                switch (flashIndex) {
-                    case 0: return 1; // Red -> Blue
-                    case 1: return 3; // Blue -> Yellow
-                    case 2: return 2; // Green -> Green
-                    case 3: return 0; // Yellow -> Red
+            switch (strikes) {
+                case 0 -> {
+                    switch (flashIndex) {
+                        case 0 -> { return 1; }
+                        case 1 -> { return 3; }
+                        case 2 -> { return 2; }
+                        case 3 -> { return 0; }
+                    }
                 }
-            } else if (strikes == 1) {
-                switch (flashIndex) {
-                    case 0: return 0; // Red -> Red
-                    case 1: return 1; // Blue -> Blue
-                    case 2: return 3; // Green -> Yellow
-                    case 3: return 2; // Yellow -> Green
+                case 1 -> {
+                    switch (flashIndex) {
+                        case 0 -> { return 0; }
+                        case 1 -> { return 1; }
+                        case 2 -> { return 3; }
+                        case 3 -> { return 2; }
+                    }
                 }
-            } else { // 2+ strikes
-                switch (flashIndex) {
-                    case 0: return 3; // Red -> Yellow
-                    case 1: return 2; // Blue -> Green
-                    case 2: return 1; // Green -> Blue
-                    case 3: return 0; // Yellow -> Red
+                default -> {
+                    switch (flashIndex) {
+                        case 0 -> { return 3; }
+                        case 1 -> { return 2; }
+                        case 2 -> { return 1; }
+                        case 3 -> { return 0; }
+                    }
                 }
             }
         }

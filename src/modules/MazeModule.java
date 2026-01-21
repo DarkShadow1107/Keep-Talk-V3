@@ -111,18 +111,22 @@ public class MazeModule implements BombModule {
 
         // Interaction
         panel.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 panel.requestFocusInWindow();
             }
         });
 
         panel.addKeyListener(new KeyAdapter() {
+            @Override
             public void keyPressed(KeyEvent e) {
                 int k = e.getKeyCode();
-                if (k == KeyEvent.VK_UP || k == KeyEvent.VK_W) move(0, -1);
-                else if (k == KeyEvent.VK_DOWN || k == KeyEvent.VK_S) move(0, 1);
-                else if (k == KeyEvent.VK_LEFT || k == KeyEvent.VK_A) move(-1, 0);
-                else if (k == KeyEvent.VK_RIGHT || k == KeyEvent.VK_D) move(1, 0);
+                switch (k) {
+                    case KeyEvent.VK_UP, KeyEvent.VK_W -> move(0, -1);
+                    case KeyEvent.VK_DOWN, KeyEvent.VK_S -> move(0, 1);
+                    case KeyEvent.VK_LEFT, KeyEvent.VK_A -> move(-1, 0);
+                    case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> move(1, 0);
+                }
             }
         });
         

@@ -13,7 +13,6 @@ public class Game extends JPanel {
     private JPanel strikesPanel;
     private Bomb bomb;
     private App app;
-    private int strikes = 0;
 
     public Game(App app, Level level) {
         this.app = app;
@@ -174,7 +173,6 @@ public class Game extends JPanel {
     }
 
     public void updateStrikes(int strikes) {
-        this.strikes = strikes;
         strikesPanel.removeAll();
         for(int i=0; i<bomb.getMaxStrikes(); i++) {
             JLabel xLabel = new JLabel("X");

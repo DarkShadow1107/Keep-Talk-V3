@@ -147,36 +147,43 @@ public class MemoryModule implements BombModule {
         int correctLbl = -1;
         
         switch (stage) {
-            case 1:
-                if (displayVal == 1) correctPos = 1; // 2nd pos
-                else if (displayVal == 2) correctPos = 1;
-                else if (displayVal == 3) correctPos = 2; // 3rd pos
-                else correctPos = 3; // 4th pos
-                break;
-            case 2:
-                if (displayVal == 1) correctLbl = 4;
-                else if (displayVal == 2) correctPos = correctPositions[0];
-                else if (displayVal == 3) correctPos = 0;
-                else correctPos = correctPositions[0];
-                break;
-            case 3:
-                if (displayVal == 1) correctLbl = correctLabels[1];
-                else if (displayVal == 2) correctLbl = correctLabels[0];
-                else if (displayVal == 3) correctPos = 2;
-                else correctLbl = 4;
-                break;
-            case 4:
-                if (displayVal == 1) correctPos = correctPositions[0];
-                else if (displayVal == 2) correctPos = 0;
-                else if (displayVal == 3) correctPos = correctPositions[1];
-                else correctPos = correctPositions[1];
-                break;
-            case 5:
-                if (displayVal == 1) correctLbl = correctLabels[0];
-                else if (displayVal == 2) correctLbl = correctLabels[1];
-                else if (displayVal == 3) correctLbl = correctLabels[3];
-                else correctLbl = correctLabels[2];
-                break;
+            case 1 -> {
+                switch (displayVal) {
+                    case 1, 2 -> correctPos = 1;
+                    case 3 -> correctPos = 2;
+                    default -> correctPos = 3;
+                }
+            }
+            case 2 -> {
+                switch (displayVal) {
+                    case 1 -> correctLbl = 4;
+                    case 3 -> correctPos = 0;
+                    default -> correctPos = correctPositions[0];
+                }
+            }
+            case 3 -> {
+                switch (displayVal) {
+                    case 1 -> correctLbl = correctLabels[1];
+                    case 2 -> correctLbl = correctLabels[0];
+                    case 3 -> correctPos = 2;
+                    default -> correctLbl = 4;
+                }
+            }
+            case 4 -> {
+                switch (displayVal) {
+                    case 1 -> correctPos = correctPositions[0];
+                    case 2 -> correctPos = 0;
+                    default -> correctPos = correctPositions[1];
+                }
+            }
+            case 5 -> {
+                switch (displayVal) {
+                    case 1 -> correctLbl = correctLabels[0];
+                    case 2 -> correctLbl = correctLabels[1];
+                    case 3 -> correctLbl = correctLabels[3];
+                    default -> correctLbl = correctLabels[2];
+                }
+            }
         }
         
         // Resolve Pos vs Label

@@ -16,7 +16,6 @@ public class MorseCodeModule implements BombModule {
     private int currentFreqIndex = 0;
     private JLabel freqLabel;
     private JPanel lightPanel;
-    private Timer flashTimer;
     
     private static final String[] WORDS = {"SHELL", "HALLS", "SLICK", "TRICK", "BOXES", "LEAKS", "STROBE", "BISTRO", "FLICK", "BOMBS", "BREAK", "BRICK", "STEAK", "STING", "VECTOR", "BEATS"};
     private static final Map<String, String> MORSE_CODE = new HashMap<>();
@@ -118,11 +117,12 @@ public class MorseCodeModule implements BombModule {
         final int DOT = 200;
         
         new Thread(() -> {
-            while (!solved) {
+            while (!solved && !bomb.isExploded()) {
                 for (char c : targetWord.toCharArray()) {
                     String code = MORSE_CODE.get(String.valueOf(c));
+                    if (code == null) continue;
                     for (char s : code.toCharArray()) {
-                        if (solved) return;
+                        if (solved || bomb.isExploded()) return;
                         lightPanel.setBackground(Theme.ACCENT_ORANGE);
                         try { Thread.sleep(s == '.' ? DOT : DOT * 3); } catch (InterruptedException e) {}
                         lightPanel.setBackground(Color.BLACK);

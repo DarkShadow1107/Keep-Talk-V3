@@ -1,11 +1,9 @@
 package game;
 
-import modules.BombModule;
-import javax.swing.Timer;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.Timer;
+import modules.BombModule;
 
 public class Bomb {
     private int timeRemaining; // in seconds
@@ -37,12 +35,7 @@ public class Bomb {
         if (rand.nextBoolean()) indicators.add("FRK");
         if (rand.nextBoolean()) indicators.add("CAR");
 
-        timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                tick();
-            }
-        });
+        timer = new Timer(1000, e -> tick());
     }
 
     public void addModule(BombModule module) {
@@ -113,6 +106,10 @@ public class Bomb {
 
     public int getStrikes() {
         return strikes;
+    }
+    
+    public boolean isExploded() {
+        return exploded;
     }
     
     public String getSerialNumber() {
