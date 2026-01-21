@@ -2,11 +2,11 @@ package modules;
 
 import game.Bomb;
 import game.Theme;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Random;
+import javax.swing.*;
 
 public class BinaryModule implements BombModule {
     private JPanel panel;
@@ -37,26 +37,23 @@ public class BinaryModule implements BombModule {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Draw Status LED
-                Theme.drawLed(g2, getWidth() - 25, 15, solved, true);
-
                 // Draw Target Number Display
                 g2.setColor(new Color(20, 20, 20));
-                g2.fillRoundRect(20, 40, getWidth() - 40, 50, 10, 10);
+                g2.fillRoundRect(20, 30, getWidth() - 40, 50, 10, 10);
                 g2.setColor(new Color(50, 50, 50));
-                g2.drawRoundRect(20, 40, getWidth() - 40, 50, 10, 10);
+                g2.drawRoundRect(20, 30, getWidth() - 40, 50, 10, 10);
 
                 g2.setFont(Theme.FONT_DIGITAL.deriveFont(40f));
                 g2.setColor(Theme.ACCENT_BLUE);
                 String text = String.valueOf(targetValue);
                 FontMetrics fm = g2.getFontMetrics();
                 int tx = (getWidth() - fm.stringWidth(text)) / 2;
-                int ty = 40 + (50 + fm.getAscent()) / 2 - 5;
+                int ty = 30 + (50 + fm.getAscent()) / 2 - 7;
                 g2.drawString(text, tx, ty);
 
                 // Draw Bits (LEDs/Switches)
                 int startX = (getWidth() - (5 * 35)) / 2;
-                int bitY = 110;
+                int bitY = 90;
                 
                 for (int i = 0; i < 5; i++) {
                     int x = startX + i * 35;
@@ -89,7 +86,7 @@ public class BinaryModule implements BombModule {
                 }
 
                 // Submit Button
-                submitBtnRect = new Rectangle((getWidth() - 100) / 2, 170, 100, 30);
+                submitBtnRect = new Rectangle((getWidth() - 100) / 2, 145, 100, 30);
                 g2.setColor(submitPressed ? Theme.ACCENT_BLUE.darker() : Theme.ACCENT_BLUE);
                 g2.fillRoundRect(submitBtnRect.x, submitBtnRect.y, submitBtnRect.width, submitBtnRect.height, 10, 10);
                 
@@ -101,7 +98,7 @@ public class BinaryModule implements BombModule {
             }
         };
         panel.setBackground(Theme.PANEL_BG);
-        panel.setPreferredSize(new Dimension(200, 240));
+        panel.setPreferredSize(new Dimension(180, 180));
         Theme.applyCursor(panel);
 
         panel.addMouseListener(new MouseAdapter() {

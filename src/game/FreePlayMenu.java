@@ -1,7 +1,7 @@
 package game;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class FreePlayMenu extends JPanel {
     private App app;
@@ -75,9 +75,9 @@ public class FreePlayMenu extends JPanel {
     }
 
     private void startFreePlay() {
-        int time = (int) timeSpinner.getValue();
-        int modules = (int) modulesSpinner.getValue();
-        int strikes = (int) strikesSpinner.getValue();
+        int time = ((Number)timeSpinner.getValue()).intValue();
+        int modules = ((Number)modulesSpinner.getValue()).intValue();
+        int strikes = ((Number)strikesSpinner.getValue()).intValue();
         
         Level customLevel = new Level(Localization.get("FREEPLAY_TITLE"), time, modules, strikes);
         app.startGame(customLevel);

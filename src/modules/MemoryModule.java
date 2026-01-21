@@ -2,15 +2,14 @@ package modules;
 
 import game.Bomb;
 import game.Theme;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import javax.swing.*;
 
 public class MemoryModule implements BombModule {
     private JPanel panel;
@@ -41,14 +40,11 @@ public class MemoryModule implements BombModule {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Draw Status LED
-                Theme.drawLed(g2, getWidth() - 25, 15, solved, true);
-
                 // Draw Main Display
                 int dispW = 80;
                 int dispH = 60;
                 int dispX = (getWidth() - dispW) / 2;
-                int dispY = 40;
+                int dispY = 30; // Moved up slightly
 
                 g2.setColor(Color.BLACK);
                 g2.fillRoundRect(dispX, dispY, dispW, dispH, 10, 10);
@@ -113,7 +109,7 @@ public class MemoryModule implements BombModule {
             }
         };
         panel.setBackground(Theme.PANEL_BG);
-        panel.setPreferredSize(new Dimension(200, 200));
+        panel.setPreferredSize(new Dimension(180, 180));
         Theme.applyCursor(panel);
 
         panel.addMouseListener(new MouseAdapter() {

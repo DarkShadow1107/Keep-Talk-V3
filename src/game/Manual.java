@@ -1,10 +1,9 @@
 package game;
 
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
-import java.awt.*;
-import java.util.List;
 
 public class Manual extends JPanel {
     private App app;
@@ -44,7 +43,7 @@ public class Manual extends JPanel {
         // CSS Styling for Dark Theme
         HTMLEditorKit kit = new HTMLEditorKit();
         StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule("body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; color: #E0E0E0; background-color: #0A0A0F; }");
+        styleSheet.addRule("body { font-family: 'Segoe UI Symbol', 'Segoe UI Historic', 'Arial Unicode MS', 'Cambria Math', 'Segoe UI', Arial, Dialog, sans-serif; margin: 30px; color: #E0E0E0; background-color: #0A0A0F; }");
         styleSheet.addRule("h1 { font-size: 28px; color: #E74C3C; border-bottom: 2px solid #E74C3C; padding-bottom: 10px; margin-top: 40px; }");
         styleSheet.addRule("h2 { font-size: 22px; color: #3498DB; margin-top: 30px; margin-bottom: 10px; }");
         styleSheet.addRule("h3 { font-size: 18px; color: #F1C40F; margin-top: 20px; }");
@@ -119,6 +118,17 @@ public class Manual extends JPanel {
         html.append("<div class='box'>");
         html.append("<p>").append(Localization.get("KEYPAD_DESC")).append("</p>");
         html.append("<p>").append(Localization.get("KEYPAD_TIP")).append("</p>");
+        
+        html.append("<table border='1' cellpadding='10' cellspacing='0' align='center' style='border-collapse: collapse; background: white; color: black; font-family: \"Segoe UI Symbol\", \"Segoe UI Historic\", \"Arial Unicode MS\", \"Cambria Math\", Dialog, sans-serif;'>");
+        for (int row = 0; row < 7; row++) {
+            html.append("<tr>");
+            for (int col = 0; col < 6; col++) {
+                String symbol = modules.KeypadModule.COLUMNS[col][row];
+                html.append("<td align='center' style='font-size: 24px; padding: 10px; font-family: \"Segoe UI Symbol\", \"Segoe UI Historic\", \"Arial Unicode MS\", \"Cambria Math\", Dialog, sans-serif;'>").append(symbol).append("</td>");
+            }
+            html.append("</tr>");
+        }
+        html.append("</table>");
         html.append("</div>");
 
         // 4. Simon Says - Complete Tables
@@ -146,9 +156,52 @@ public class Manual extends JPanel {
         html.append("<h2>5. ").append(Localization.get("MOD_MAZE")).append("</h2>");
         html.append("<div class='box'>");
         html.append("<p>").append(Localization.get("MAZE_DESC1")).append("</p>");
-        html.append("<p>").append(Localization.get("MAZE_DESC2")).append("</p>");
-        html.append("<p>").append(Localization.get("MAZE_WALLS")).append("</p>");
-        html.append("<p>").append(Localization.get("MAZE_BUTTONS")).append("</p>");
+        html.append("<ul>");
+        html.append("<li>").append(Localization.get("MAZE_IDENTIFY")).append("</li>");
+        html.append("<li>").append(Localization.get("MAZE_NAVIGATE")).append("</li>");
+        html.append("<li>").append(Localization.get("MAZE_STRIKE")).append("</li>");
+        html.append("</ul>");
+        html.append("<p><b>").append(Localization.get("MAZE_MARKERS_TABLE")).append("</b></p>");
+        html.append("<p style='font-size:12px'>").append(Localization.get("MAZE_MARKERS_DESC")).append("</p>");
+        
+        // Render 9 Mazes with Walls using a layout table for compatibility
+        html.append("<table border='0' cellpadding='5' cellspacing='0' align='center'>");
+        for (int i = 0; i < 9; i++) {
+            if (i % 3 == 0) html.append("<tr>");
+            
+            html.append("<td valign='top' align='center' style='padding: 15px;'>");
+            html.append("<p style='margin-bottom: 5px; font-family: sans-serif;'><b>Maze ").append(i + 1).append("</b></p>");
+            html.append("<table border='0' cellpadding='0' cellspacing='0' style='border-collapse: collapse; background: white; width: 156px; height: 156px; border: 2px solid black;'>");
+            
+            modules.MazeData.Layout layout = modules.MazeData.ALL_MAZES.get(i);
+            for (int y = 0; y < 6; y++) {
+                html.append("<tr>");
+                for (int x = 0; x < 6; x++) {
+                    String borderRight = (x < 5 && layout.hWalls[x][y]) ? "3px solid black" : (x < 5 ? "1px solid #ddd" : "");
+                    String borderBottom = (y < 5 && layout.vWalls[x][y]) ? "3px solid black" : (y < 5 ? "1px solid #ddd" : "");
+                    
+                    boolean isMarker = false;
+                    for (java.awt.Point p : layout.markers) {
+                        if (p.x == x && p.y == y) { isMarker = true; break; }
+                    }
+                    
+                    // Mark with a green circle character to match the description "green circles"
+                    String content = isMarker ? "<font color='green' size='5'>\u25CF</font>" : "&nbsp;";
+                    html.append("<td width='26' height='26' align='center' valign='middle'")
+                        .append(" style='width: 26px; height: 26px; border-right: ").append(borderRight)
+                        .append("; border-bottom: ").append(borderBottom).append(";'>")
+                        .append(content)
+                        .append("</td>");
+                }
+                html.append("</tr>");
+            }
+            html.append("</table>");
+            html.append("</td>");
+            
+            if (i % 3 == 2) html.append("</tr>");
+        }
+        html.append("</table>");
+
         html.append("</div>");
 
         // 6. Memory - Full Stage Details
@@ -184,17 +237,52 @@ public class Manual extends JPanel {
         html.append("<h2>7. ").append(Localization.get("MOD_MORSE")).append("</h2>");
         html.append("<div class='box'>");
         html.append("<p>").append(Localization.get("MORSE_DESC")).append("</p>");
-        html.append("<table>");
-        html.append("<tr><th>").append(Localization.get("MORSE_WORD")).append("</th><th>").append(Localization.get("MORSE_FREQUENCY")).append("</th><th>").append(Localization.get("MORSE_WORD")).append("</th><th>").append(Localization.get("MORSE_FREQUENCY")).append("</th></tr>");
-        html.append("<tr><td>SHELL</td><td>3.505 MHz</td><td>BOMBS</td><td>3.565 MHz</td></tr>");
-        html.append("<tr><td>HALLS</td><td>3.515 MHz</td><td>BREAK</td><td>3.572 MHz</td></tr>");
-        html.append("<tr><td>SLICK</td><td>3.522 MHz</td><td>BRICK</td><td>3.575 MHz</td></tr>");
-        html.append("<tr><td>TRICK</td><td>3.532 MHz</td><td>STEAK</td><td>3.582 MHz</td></tr>");
-        html.append("<tr><td>BOXES</td><td>3.535 MHz</td><td>STING</td><td>3.592 MHz</td></tr>");
-        html.append("<tr><td>LEAKS</td><td>3.542 MHz</td><td>VECTOR</td><td>3.595 MHz</td></tr>");
-        html.append("<tr><td>STROBE</td><td>3.545 MHz</td><td>BEATS</td><td>3.600 MHz</td></tr>");
-        html.append("<tr><td>BISTRO</td><td>3.552 MHz</td><td>FLICK</td><td>3.555 MHz</td></tr>");
+        
+        html.append("<table border='0' width='100%'><tr><td valign='top' width='45%'>");
+        html.append("<h3>").append(Localization.get("MORSE_INTERPRET")).append("</h3>");
+        html.append("<p style='font-size:12px'>").append(Localization.get("MORSE_LEGEND")).append("</p>");
+        
+        // Morse Alphabet Table
+        html.append("<table border='0' style='font-family:monospace; font-size:11px;'>");
+        String[][] alphabet = {
+            {"A", ".-", "N", "-."}, {"B", "-...", "O", "---"}, {"C", "-.-.", "P", ".--."},
+            {"D", "-..", "Q", "--.-"}, {"E", ".", "R", ".-."}, {"F", "..-.", "S", "..."},
+            {"G", "--.", "T", "-"}, {"H", "....", "U", "..-"}, {"I", "..", "V", "...-"},
+            {"J", ".---", "W", ".--"}, {"K", "-.-", "X", "-..-"}, {"L", ".-..", "Y", "-.--"},
+            {"M", "--", "Z", "--.."}
+        };
+        for (String[] row : alphabet) {
+            html.append("<tr><td>").append(row[0]).append("</td><td>").append(row[1]).append("</td>")
+                .append("<td width='20'></td><td>").append(row[2]).append("</td><td>").append(row[3]).append("</td></tr>");
+        }
+        // Numbers
+        html.append("<tr><td colspan='5' height='10'></td></tr>");
+        String[][] numbers = {
+            {"0", "-----", "5", "....."}, {"1", ".----", "6", "-...."}, {"2", "..---", "7", "--..."},
+            {"3", "...--", "8", "---.."}, {"4", "....-", "9", "----."}
+        };
+        for (String[] row : numbers) {
+            html.append("<tr><td>").append(row[0]).append("</td><td>").append(row[1]).append("</td>")
+                .append("<td width='20'></td><td>").append(row[2]).append("</td><td>").append(row[3]).append("</td></tr>");
+        }
         html.append("</table>");
+        
+        html.append("</td><td valign='top'>");
+        
+        // Frequencies Table
+        html.append("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; background: white; color: black; margin-top: 20px;'>");
+        html.append("<tr><th>").append(Localization.get("MORSE_WORD")).append("</th><th>").append(Localization.get("MORSE_FREQUENCY")).append("</th></tr>");
+        String[][] freqs = {
+            {"shell", "3.505 MHz"}, {"halls", "3.515 MHz"}, {"slick", "3.522 MHz"}, {"trick", "3.532 MHz"},
+            {"boxes", "3.535 MHz"}, {"leaks", "3.542 MHz"}, {"strobe", "3.545 MHz"}, {"bistro", "3.552 MHz"},
+            {"flick", "3.555 MHz"}, {"bombs", "3.565 MHz"}, {"break", "3.572 MHz"}, {"brick", "3.575 MHz"},
+            {"steak", "3.582 MHz"}, {"sting", "3.592 MHz"}, {"vector", "3.595 MHz"}, {"beats", "3.600 MHz"}
+        };
+        for (String[] f : freqs) {
+            html.append("<tr><td>").append(f[0]).append("</td><td>").append(f[1]).append("</td></tr>");
+        }
+        html.append("</table>");
+        html.append("</td></tr></table>");
         html.append("</div>");
 
         // 8. Complicated Wires

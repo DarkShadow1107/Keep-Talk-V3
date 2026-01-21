@@ -2,13 +2,12 @@ package modules;
 
 import game.Bomb;
 import game.Theme;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.RoundRectangle2D;
 import java.util.Random;
+import javax.swing.*;
 
 public class ButtonModule implements BombModule {
     private JPanel panel;
@@ -43,13 +42,10 @@ public class ButtonModule implements BombModule {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Draw Status LED
-                Theme.drawLed(g2, getWidth() - 30, 20, solved, true);
-
                 // Draw Strip
-                int stripX = getWidth() - 40;
-                int stripY = 60;
-                int stripW = 20;
+                int stripX = getWidth() - 35;
+                int stripY = 50;
+                int stripW = 18;
                 int stripH = 100;
                 
                 g2.setColor(new Color(20, 20, 20));
@@ -104,7 +100,7 @@ public class ButtonModule implements BombModule {
             }
         };
         panel.setBackground(Theme.PANEL_BG);
-        panel.setPreferredSize(new Dimension(200, 200));
+        panel.setPreferredSize(new Dimension(180, 180));
 
         panel.addMouseListener(new MouseAdapter() {
             @Override

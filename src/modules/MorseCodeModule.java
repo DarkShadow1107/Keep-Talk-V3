@@ -2,13 +2,11 @@ package modules;
 
 import game.Bomb;
 import game.Theme;
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import javax.swing.*;
 
 public class MorseCodeModule implements BombModule {
     private JPanel panel;
@@ -95,6 +93,7 @@ public class MorseCodeModule implements BombModule {
         controlPanel.add(txBtn, BorderLayout.SOUTH);
 
         panel.add(controlPanel, BorderLayout.CENTER);
+        panel.setPreferredSize(new Dimension(180, 180));
     }
 
     private void changeFreq(int dir) {

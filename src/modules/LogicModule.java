@@ -2,12 +2,11 @@ package modules;
 
 import game.Bomb;
 import game.Theme;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Path2D;
 import java.util.Random;
+import javax.swing.*;
 
 public class LogicModule implements BombModule {
     private JPanel panel;
@@ -46,9 +45,6 @@ public class LogicModule implements BombModule {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                // Draw Status LED
-                Theme.drawLed(g2, getWidth() - 25, 15, solved, true);
                 
                 // Draw Stage LEDs
                 int stageX = 20;
@@ -97,7 +93,7 @@ public class LogicModule implements BombModule {
             }
         };
         panel.setBackground(Theme.PANEL_BG);
-        panel.setPreferredSize(new Dimension(200, 200));
+        panel.setPreferredSize(new Dimension(180, 180));
         Theme.applyCursor(panel);
 
         panel.addMouseListener(new MouseAdapter() {

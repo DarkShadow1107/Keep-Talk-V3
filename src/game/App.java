@@ -1,8 +1,8 @@
 package game;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import javax.swing.*;
 
 public class App extends JFrame {
     private CardLayout cardLayout;
@@ -67,16 +67,30 @@ public class App extends JFrame {
     }
 
     public void startGame(Level level) {
+        // Remove existing game panel if it exists
+        for (Component comp : mainPanel.getComponents()) {
+            if (comp instanceof Game) {
+                mainPanel.remove(comp);
+            }
+        }
+        
         // Create a new Game instance for the level
         Game gamePanel = new Game(this, level);
         mainPanel.add(gamePanel, "GAME");
         cardLayout.show(mainPanel, "GAME");
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     public void endGame() {
-        // Remove the game panel to reset state next time
-        // Ideally we'd find the component "GAME" and remove it, but for now just showing menu is okay.
-        // A better way is to keep track of the current game panel.
+        // Remove existing game panel to reset state next time
+        for (Component comp : mainPanel.getComponents()) {
+            if (comp instanceof Game) {
+                mainPanel.remove(comp);
+            }
+        }
+        mainPanel.revalidate();
+        mainPanel.repaint();
         showMenu();
     }
 

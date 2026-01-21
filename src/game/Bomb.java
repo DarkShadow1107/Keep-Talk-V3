@@ -98,6 +98,7 @@ public class Bomb {
             stop();
             game.onDefused();
         }
+        game.repaint();
     }
 
     private void explode(String reason) {

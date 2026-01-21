@@ -2,7 +2,6 @@ package modules;
 
 import game.Bomb;
 import game.Theme;
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import javax.swing.*;
 
 public class WhosOnFirstModule implements BombModule {
     private JPanel panel;
@@ -104,6 +104,7 @@ public class WhosOnFirstModule implements BombModule {
             btnPanel.add(btn);
         }
         panel.add(btnPanel, BorderLayout.CENTER);
+        panel.setPreferredSize(new Dimension(180, 180));
     }
 
     private void startStage() {

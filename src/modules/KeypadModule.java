@@ -2,7 +2,6 @@ package modules;
 
 import game.Bomb;
 import game.Theme;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -12,6 +11,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import javax.swing.*;
 
 public class KeypadModule implements BombModule {
     private JPanel panel;
@@ -21,12 +21,14 @@ public class KeypadModule implements BombModule {
     private List<String> solution = new ArrayList<>();
     private int currentStep = 0;
 
-    // Simplified symbols (using Unicode)
-    private static final String[] SYMBOLS = {
-        "\u03A9", "\u03A8", "\u03A6", "\u039E", // Greek
-        "\u0416", "\u0429", "\u0424", "\u0414", // Cyrillic
-        "\u2605", "\u2606", "\u2660", "\u2663", // Shapes
-        "\u00A9", "\u00AE", "\u00B6", "\u00BF"  // Misc
+    // Official KTANE Keypad Columns
+    public static final String[][] COLUMNS = {
+        {"\u03D8", "\u0466", "\u03BB", "\u03DE", "\u046C", "\u03D7", "\u03F6"}, // Ϙ, Ѧ, λ, Ϟ, Ѭ, ϗ, ϶
+        {"\u04EC", "\u03D8", "\u03F6", "\u0480", "\u2606", "\u03D7", "\u00BF"}, // Ӭ, Ϙ, ϶, Ҁ, ☆, ϗ, ¿
+        {"\u00A9", "\u047C", "\u0480", "\u0496", "\u0506", "\u03BB", "\u2606"}, // ©, Ѽ, Ҁ, Җ, Ԇ, λ, ☆
+        {"\u03EC", "\u00B6", "\u0462", "\u046C", "\u0496", "\u00BF", "\u263A"}, // Ϭ, ¶, Ѣ, Ѭ, Җ, ¿, ☺
+        {"\u03A8", "\u263A", "\u0462", "\u03FE", "\u00B6", "\u046E", "\u2605"}, // Ψ, ☺, Ѣ, Ͼ, ¶, Ѯ, ★
+        {"\u03EC", "\u04EC", "\u0482", "\u00E6", "\u03A8", "\u048A", "\u03A9"}  // Ϭ, Ӭ, ҂, æ, Ψ, Ҋ, Ω
     };
 
     public KeypadModule(Bomb bomb) {
@@ -37,25 +39,32 @@ public class KeypadModule implements BombModule {
 
     private void generatePuzzle() {
         Random rand = new Random();
-        // Pick 4 random symbols
+        
+        // 1. Pick a random column
+        String[] column = COLUMNS[rand.nextInt(COLUMNS.length)];
+        
+        // 2. Pick 4 random symbols from that column
         List<String> chosen = new ArrayList<>();
-        while (chosen.size() < 4) {
-            String s = SYMBOLS[rand.nextInt(SYMBOLS.length)];
-            if (!chosen.contains(s)) {
-                chosen.add(s);
+        List<Integer> indices = new ArrayList<>();
+        while (indices.size() < 4) {
+            int idx = rand.nextInt(column.length);
+            if (!indices.contains(idx)) {
+                indices.add(idx);
             }
         }
         
-        // For this simplified version, the solution is just alphabetical order of the symbols
-        // In the real game, it's column-based logic.
-        solution = new ArrayList<>(chosen);
-        solution.sort(String::compareTo);
+        // 3. The solution is these 4 symbols, ordered as they appear in the column (by their index)
+        indices.sort(Integer::compareTo);
+        solution = new ArrayList<>();
+        for (int idx : indices) {
+            String s = column[idx];
+            solution.add(s);
+            chosen.add(s); // chosen list for shuffling
+        }
         
-        // Shuffle keys for display
+        // 4. Shuffle keys for display
         keys.clear();
         List<String> displayOrder = new ArrayList<>(chosen);
-        // Don't shuffle for now so we can debug easily, or shuffle?
-        // Let's shuffle to make it a puzzle
         for (int i = 0; i < displayOrder.size(); i++) {
             int swap = rand.nextInt(displayOrder.size());
             String temp = displayOrder.get(i);
@@ -75,9 +84,6 @@ public class KeypadModule implements BombModule {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                // Draw Status LED
-                Theme.drawLed(g2, getWidth() - 25, 15, solved, true);
 
                 int padding = 15;
                 int gap = 15;
@@ -113,7 +119,7 @@ public class KeypadModule implements BombModule {
                     g2.draw(rect);
                     
                     // Symbol
-                    g2.setFont(new Font("Segoe UI Symbol", Font.BOLD, 36));
+                    g2.setFont(Theme.FONT_SYMBOL);
                     FontMetrics fm = g2.getFontMetrics();
                     int textX = x + (width - fm.stringWidth(key.symbol)) / 2;
                     int textY = y + (height + fm.getAscent()) / 2 - 5;
@@ -133,7 +139,7 @@ public class KeypadModule implements BombModule {
             }
         };
         panel.setBackground(Theme.PANEL_BG);
-        panel.setPreferredSize(new Dimension(200, 200));
+        panel.setPreferredSize(new Dimension(180, 180));
         Theme.applyCursor(panel);
         panel.setFocusable(true); // Enable focus for keyboard
 

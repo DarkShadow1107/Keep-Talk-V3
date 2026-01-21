@@ -1,12 +1,9 @@
 package game;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.geom.RoundRectangle2D;
-import java.awt.geom.Ellipse2D;
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class Theme {
     // Colors
@@ -38,18 +35,30 @@ public class Theme {
     public static final Font FONT_REGULAR = createUnicodeFont(Font.PLAIN, 16);
     public static final Font FONT_BOLD = createUnicodeFont(Font.BOLD, 16);
     public static final Font FONT_MONO = new Font("Consolas", Font.PLAIN, 18);
+    public static final Font FONT_SYMBOL = createUnicodeFont(Font.BOLD, 36);
     public static final Font FONT_DIGITAL = new Font("Monospaced", Font.BOLD, 48);
     
     private static Font createUnicodeFont(int style, int size) {
         // Try fonts in order of preference for Unicode support
-        String[] fontNames = {"Segoe UI", "Arial Unicode MS", "Noto Sans", "DejaVu Sans", "Arial"};
+        // Segoe UI Historic and Symbol are standard on Windows 10/11 and cover these ranges well
+        String[] fontNames = {
+            "Segoe UI Symbol", "Segoe UI Historic", "Arial Unicode MS", 
+            "Cambria Math", "Malgun Gothic", "MS Gothic", "Dialog"
+        };
+        
+        // Comprehensive test string containing all characters used in Keypad columns
+        String testChars = "\u03D8\u0466\u03BB\u03DE\u046C\u03D7\u03F6\u04EC\u0480\u2606\u00BF\u00A9\u047C\u0480\u0496\u0506\u03EC\u00B6\u0462\u263A\u03A8\u263A\u03FE\u00B6\u046E\u2605\u0482\u00E6\u048A\u03A9";
+        
         for (String name : fontNames) {
             Font f = new Font(name, style, size);
-            if (f.canDisplayUpTo("АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯаöäåæøñ") == -1) {
+            // If the font can display at least the first character of each range, it's a good candidate
+            if (f.canDisplayUpTo(testChars) == -1) {
                 return f;
             }
         }
-        return new Font("SansSerif", style, size);
+        
+        // If no perfect match, return Dialog which has best OS-level fallback
+        return new Font("Dialog", style, size);
     }
 
     public static JButton createButton(String text) {

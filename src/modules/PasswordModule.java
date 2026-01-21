@@ -1,12 +1,12 @@
 package modules;
 
 import game.Bomb;
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import javax.swing.*;
 
 public class PasswordModule implements BombModule {
     private JPanel panel;
@@ -94,6 +94,7 @@ public class PasswordModule implements BombModule {
         
         // Re-assign panel to this wrapper
         panel = mainPanel;
+        panel.setPreferredSize(new Dimension(180, 180));
     }
 
     private void cycleColumn(int col, int direction) {

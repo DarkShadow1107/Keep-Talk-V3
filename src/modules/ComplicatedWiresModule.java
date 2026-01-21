@@ -2,11 +2,11 @@ package modules;
 
 import game.Bomb;
 import game.Theme;
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import javax.swing.*;
 
 public class ComplicatedWiresModule implements BombModule {
     private JPanel panel;
@@ -146,6 +146,7 @@ public class ComplicatedWiresModule implements BombModule {
             
             panel.add(wirePanel);
         }
+        panel.setPreferredSize(new Dimension(180, 180));
     }
 
     private void checkSolved() {

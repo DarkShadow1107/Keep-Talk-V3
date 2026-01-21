@@ -7,6 +7,9 @@ if %errorlevel% neq 0 (
     pause
     exit /b
 )
+echo Copying resources...
+if not exist bin\resources mkdir bin\resources
+xcopy /y /s src\resources\* bin\resources\
 echo Starting Game...
 java -cp bin game.Main
 pause

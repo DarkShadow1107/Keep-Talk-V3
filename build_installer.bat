@@ -17,6 +17,10 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
+echo [1.5/3] Copying resources...
+if not exist bin\resources mkdir bin\resources
+xcopy /y /s src\resources\* bin\resources\
+
 echo [2/3] Creating JAR file...
 echo Main-Class: game.Main > Manifest.txt
 jar cfm dist\KeepTalking.jar Manifest.txt -C bin .

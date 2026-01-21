@@ -2,16 +2,15 @@ package modules;
 
 import game.Bomb;
 import game.Theme;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Arc2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import javax.swing.*;
 
 public class SimonSaysModule implements BombModule {
     private JPanel panel;
@@ -55,9 +54,6 @@ public class SimonSaysModule implements BombModule {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Draw Status LED
-                Theme.drawLed(g2, getWidth() - 20, 20, solved, true);
-
                 int cx = getWidth() / 2;
                 int cy = getHeight() / 2 + 10;
                 int size = 140;
@@ -83,7 +79,7 @@ public class SimonSaysModule implements BombModule {
             }
         };
         panel.setBackground(Theme.PANEL_BG);
-        panel.setPreferredSize(new Dimension(200, 200));
+        panel.setPreferredSize(new Dimension(180, 180));
         Theme.applyCursor(panel);
 
         panel.addMouseListener(new MouseAdapter() {

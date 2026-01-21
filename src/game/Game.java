@@ -1,13 +1,12 @@
 package game;
 
-import modules.*;
-
-import javax.swing.*;
 import java.awt.*;
-import java.util.Random;
-import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Random;
+import javax.swing.*;
+import modules.*;
 
 public class Game extends JPanel {
     private JLabel timerLabel;
@@ -139,6 +138,9 @@ public class Game extends JPanel {
                 Theme.drawScrew(g2, getWidth()-18, 8);
                 Theme.drawScrew(g2, 8, getHeight()-18);
                 Theme.drawScrew(g2, getWidth()-18, getHeight()-18);
+
+                // Draw Status LED in the wrapper (Top Right, slightly left of screw)
+                Theme.drawLed(g2, getWidth() - 45, 12, module.isSolved(), true);
             }
         };
         wrapper.setBackground(Theme.PANEL_BG);
@@ -152,8 +154,13 @@ public class Game extends JPanel {
         title.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         wrapper.add(title, BorderLayout.NORTH);
         
-        wrapper.add(module.getPanel(), BorderLayout.CENTER);
-        wrapper.setPreferredSize(new Dimension(240, 240));
+        JPanel modulePanel = module.getPanel();
+        modulePanel.setPreferredSize(new Dimension(180, 180));
+        modulePanel.setMinimumSize(new Dimension(180, 180));
+        modulePanel.setMaximumSize(new Dimension(180, 180));
+        
+        wrapper.add(modulePanel, BorderLayout.CENTER);
+        wrapper.setPreferredSize(new Dimension(220, 260)); // Fixed identical size
         container.add(wrapper);
     }
 
@@ -181,6 +188,7 @@ public class Game extends JPanel {
         }
         strikesPanel.revalidate();
         strikesPanel.repaint();
+        this.repaint();
     }
 
     public void onExplode(String reason) {
