@@ -138,6 +138,6 @@ public class PasswordModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Password";
+        return game.Localization.get("MOD_PASSWORD");
     }
 }

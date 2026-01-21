@@ -167,6 +167,6 @@ public class MorseCodeModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Morse Code";
+        return game.Localization.get("MOD_MORSE");
     }
 }

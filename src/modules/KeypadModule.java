@@ -209,7 +209,7 @@ public class KeypadModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Keypad";
+        return game.Localization.get("MOD_KEYPAD");
     }
 
     private class Key {

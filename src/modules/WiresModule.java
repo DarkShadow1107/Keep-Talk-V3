@@ -218,7 +218,7 @@ public class WiresModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Wires";
+        return game.Localization.get("MOD_WIRES");
     }
 
     private class Wire {

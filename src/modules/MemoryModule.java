@@ -251,6 +251,6 @@ public class MemoryModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Memory";
+        return game.Localization.get("MOD_MEMORY");
     }
 }

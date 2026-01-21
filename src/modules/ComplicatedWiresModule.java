@@ -182,6 +182,6 @@ public class ComplicatedWiresModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Comp. Wires";
+        return game.Localization.get("MOD_COMPWIRES");
     }
 }

@@ -174,6 +174,6 @@ public class BinaryModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Binary";
+        return game.Localization.get("MOD_BINARY");
     }
 }

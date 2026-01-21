@@ -188,6 +188,6 @@ public class LogicModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Logic";
+        return game.Localization.get("MOD_LOGIC");
     }
 }

@@ -193,6 +193,6 @@ public class WhosOnFirstModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Who's on First";
+        return game.Localization.get("MOD_WHOSONFIRST");
     }
 }

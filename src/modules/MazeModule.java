@@ -235,6 +235,6 @@ public class MazeModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Maze";
+        return game.Localization.get("MOD_MAZE");
     }
 }

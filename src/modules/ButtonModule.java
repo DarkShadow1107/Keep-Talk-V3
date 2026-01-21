@@ -246,6 +246,6 @@ public class ButtonModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Button";
+        return game.Localization.get("MOD_BUTTON");
     }
 }

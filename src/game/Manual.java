@@ -86,14 +86,14 @@ public class Manual extends JPanel {
         html.append("<div class='box'>");
         html.append("<p>").append(Localization.get("WIRES_DESC")).append("</p>");
         html.append("<p><span class='highlight'>").append(Localization.get("WIRES_RULE")).append("</span></p>");
-        html.append("<p><b>Note:</b> The module displays 3 to 6 colored wires. Count from top (1) to bottom (6). The correct wire to cut is always the last one in the sequence.</p>");
+        html.append("<p>").append(Localization.get("WIRES_NOTE")).append("</p>");
         html.append("</div>");
 
         // 2. The Button - Complete Rules
         html.append("<h2>2. ").append(Localization.get("MOD_BUTTON")).append("</h2>");
         html.append("<div class='box'>");
         html.append("<h3>").append(Localization.get("BTN_STEP1")).append("</h3>");
-        html.append("<p>Follow these rules <b>in order</b>. Stop at the first rule that applies:</p>");
+        html.append("<p>").append(Localization.get("BTN_FOLLOW_RULES")).append("</p>");
         html.append("<ol>");
         html.append("<li>").append(Localization.get("BTN_BLUE_ABORT")).append("</li>");
         html.append("<li>").append(Localization.get("BTN_DETONATE")).append("</li>");
@@ -106,7 +106,7 @@ public class Manual extends JPanel {
         html.append("<h3>").append(Localization.get("BTN_STEP2")).append("</h3>");
         html.append("<p>").append(Localization.get("BTN_STRIP_INFO")).append("</p>");
         html.append("<table>");
-        html.append("<tr><th>Strip Color</th><th>Release when timer contains:</th></tr>");
+        html.append("<tr><th>").append(Localization.get("BTN_STRIP_HEADER_COLOR")).append("</th><th>").append(Localization.get("BTN_STRIP_HEADER_RELEASE")).append("</th></tr>");
         html.append("<tr><td>").append(Localization.get("BTN_STRIP_BLUE")).append("</td><td><b>4</b></td></tr>");
         html.append("<tr><td>").append(Localization.get("BTN_STRIP_WHITE")).append("</td><td><b>1</b></td></tr>");
         html.append("<tr><td>").append(Localization.get("BTN_STRIP_YELLOW")).append("</td><td><b>5</b></td></tr>");
@@ -117,75 +117,75 @@ public class Manual extends JPanel {
         // 3. Keypad
         html.append("<h2>3. ").append(Localization.get("MOD_KEYPAD")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p>The keypad displays 4 symbols. Press them in <span class='highlight'>alphabetical order</span> based on their Unicode character values.</p>");
-        html.append("<p><b>Tip:</b> Compare the symbols visually - Greek letters (Ω, Ψ, Φ) come before Cyrillic letters, which come before special symbols.</p>");
+        html.append("<p>").append(Localization.get("KEYPAD_DESC")).append("</p>");
+        html.append("<p>").append(Localization.get("KEYPAD_TIP")).append("</p>");
         html.append("</div>");
 
         // 4. Simon Says - Complete Tables
         html.append("<h2>4. ").append(Localization.get("MOD_SIMON")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p>Watch the colored lights flash. Press buttons in the correct order based on the serial number and current strikes.</p>");
-        html.append("<p><b>Check the SERIAL NUMBER:</b> Does it contain a vowel (A, E, I, O, U)?</p>");
+        html.append("<p>").append(Localization.get("SIMON_DESC")).append("</p>");
+        html.append("<p>").append(Localization.get("SIMON_SERIAL_CHECK")).append("</p>");
         html.append("<table>");
-        html.append("<tr><th>Flash</th><th>0 Strikes</th><th>1 Strike</th><th>2+ Strikes</th></tr>");
-        html.append("<tr style='background:#222'><td colspan='4'><b>Serial Number WITH Vowel</b></td></tr>");
+        html.append("<tr><th>").append(Localization.get("SIMON_FLASH")).append("</th><th>").append(Localization.get("SIMON_0_STRIKES")).append("</th><th>").append(Localization.get("SIMON_1_STRIKE")).append("</th><th>").append(Localization.get("SIMON_2_STRIKES")).append("</th></tr>");
+        html.append("<tr style='background:#222'><td colspan='4'><b>").append(Localization.get("SIMON_WITH_VOWEL")).append("</b></td></tr>");
         html.append("<tr><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td></tr>");
         html.append("<tr><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td></tr>");
         html.append("<tr><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td></tr>");
         html.append("<tr><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td></tr>");
-        html.append("<tr style='background:#222'><td colspan='4'><b>Serial Number WITHOUT Vowel</b></td></tr>");
+        html.append("<tr style='background:#222'><td colspan='4'><b>").append(Localization.get("SIMON_WITHOUT_VOWEL")).append("</b></td></tr>");
         html.append("<tr><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td></tr>");
         html.append("<tr><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td></tr>");
         html.append("<tr><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_BLUE")).append("</td></tr>");
         html.append("<tr><td>").append(Localization.get("COLOR_YELLOW")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td><td>").append(Localization.get("COLOR_GREEN")).append("</td><td>").append(Localization.get("COLOR_RED")).append("</td></tr>");
         html.append("</table>");
-        html.append("<p><b>Complete 3 stages</b> to solve the module. Each stage adds one more color to remember.</p>");
+        html.append("<p>").append(Localization.get("SIMON_COMPLETE")).append("</p>");
         html.append("</div>");
 
         // 5. Maze
         html.append("<h2>5. ").append(Localization.get("MOD_MAZE")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p>Navigate the <b>white triangle</b> (you) to the <b>red circle</b> (target).</p>");
-        html.append("<p>Use <span class='highlight'>WASD</span> or <span class='highlight'>Arrow Keys</span> to move.</p>");
-        html.append("<p><b>Walls are visible</b> as dark green blocks. Moving into a wall causes a STRIKE!</p>");
-        html.append("<p>You can also click the directional buttons below the maze.</p>");
+        html.append("<p>").append(Localization.get("MAZE_DESC1")).append("</p>");
+        html.append("<p>").append(Localization.get("MAZE_DESC2")).append("</p>");
+        html.append("<p>").append(Localization.get("MAZE_WALLS")).append("</p>");
+        html.append("<p>").append(Localization.get("MAZE_BUTTONS")).append("</p>");
         html.append("</div>");
 
         // 6. Memory - Full Stage Details
         html.append("<h2>6. ").append(Localization.get("MOD_MEMORY")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p>A 5-stage memory test. Remember positions AND labels from previous stages.</p>");
+        html.append("<p>").append(Localization.get("MEMORY_DESC")).append("</p>");
         html.append("<table>");
-        html.append("<tr><th>Stage</th><th>Display</th><th>Action</th></tr>");
-        html.append("<tr><td rowspan='4'><b>Stage 1</b></td><td>1</td><td>Press Position 2</td></tr>");
-        html.append("<tr><td>2</td><td>Press Position 2</td></tr>");
-        html.append("<tr><td>3</td><td>Press Position 3</td></tr>");
-        html.append("<tr><td>4</td><td>Press Position 4</td></tr>");
-        html.append("<tr><td rowspan='4'><b>Stage 2</b></td><td>1</td><td>Press Label '4'</td></tr>");
-        html.append("<tr><td>2</td><td>Press same Position as Stage 1</td></tr>");
-        html.append("<tr><td>3</td><td>Press Position 1</td></tr>");
-        html.append("<tr><td>4</td><td>Press same Position as Stage 1</td></tr>");
-        html.append("<tr><td rowspan='4'><b>Stage 3</b></td><td>1</td><td>Press same Label as Stage 2</td></tr>");
-        html.append("<tr><td>2</td><td>Press same Label as Stage 1</td></tr>");
-        html.append("<tr><td>3</td><td>Press Position 3</td></tr>");
-        html.append("<tr><td>4</td><td>Press Label '4'</td></tr>");
-        html.append("<tr><td rowspan='4'><b>Stage 4</b></td><td>1</td><td>Press same Position as Stage 1</td></tr>");
-        html.append("<tr><td>2</td><td>Press Position 1</td></tr>");
-        html.append("<tr><td>3</td><td>Press same Position as Stage 2</td></tr>");
-        html.append("<tr><td>4</td><td>Press same Position as Stage 2</td></tr>");
-        html.append("<tr><td rowspan='4'><b>Stage 5</b></td><td>1</td><td>Press same Label as Stage 1</td></tr>");
-        html.append("<tr><td>2</td><td>Press same Label as Stage 2</td></tr>");
-        html.append("<tr><td>3</td><td>Press same Label as Stage 4</td></tr>");
-        html.append("<tr><td>4</td><td>Press same Label as Stage 3</td></tr>");
+        html.append("<tr><th>").append(Localization.get("MEMORY_STAGE")).append("</th><th>").append(Localization.get("MEMORY_DISPLAY")).append("</th><th>").append(Localization.get("MEMORY_ACTION")).append("</th></tr>");
+        html.append("<tr><td rowspan='4'><b>").append(Localization.get("MEMORY_STAGE_1")).append("</b></td><td>1</td><td>").append(Localization.get("MEMORY_PRESS_POS")).append(" 2</td></tr>");
+        html.append("<tr><td>2</td><td>").append(Localization.get("MEMORY_PRESS_POS")).append(" 2</td></tr>");
+        html.append("<tr><td>3</td><td>").append(Localization.get("MEMORY_PRESS_POS")).append(" 3</td></tr>");
+        html.append("<tr><td>4</td><td>").append(Localization.get("MEMORY_PRESS_POS")).append(" 4</td></tr>");
+        html.append("<tr><td rowspan='4'><b>").append(Localization.get("MEMORY_STAGE_2")).append("</b></td><td>1</td><td>").append(Localization.get("MEMORY_PRESS_LABEL")).append(" '4'</td></tr>");
+        html.append("<tr><td>2</td><td>").append(Localization.get("MEMORY_SAME_POS_AS")).append(" 1</td></tr>");
+        html.append("<tr><td>3</td><td>").append(Localization.get("MEMORY_PRESS_POS")).append(" 1</td></tr>");
+        html.append("<tr><td>4</td><td>").append(Localization.get("MEMORY_SAME_POS_AS")).append(" 1</td></tr>");
+        html.append("<tr><td rowspan='4'><b>").append(Localization.get("MEMORY_STAGE_3")).append("</b></td><td>1</td><td>").append(Localization.get("MEMORY_SAME_LABEL_AS")).append(" 2</td></tr>");
+        html.append("<tr><td>2</td><td>").append(Localization.get("MEMORY_SAME_LABEL_AS")).append(" 1</td></tr>");
+        html.append("<tr><td>3</td><td>").append(Localization.get("MEMORY_PRESS_POS")).append(" 3</td></tr>");
+        html.append("<tr><td>4</td><td>").append(Localization.get("MEMORY_PRESS_LABEL")).append(" '4'</td></tr>");
+        html.append("<tr><td rowspan='4'><b>").append(Localization.get("MEMORY_STAGE_4")).append("</b></td><td>1</td><td>").append(Localization.get("MEMORY_SAME_POS_AS")).append(" 1</td></tr>");
+        html.append("<tr><td>2</td><td>").append(Localization.get("MEMORY_PRESS_POS")).append(" 1</td></tr>");
+        html.append("<tr><td>3</td><td>").append(Localization.get("MEMORY_SAME_POS_AS")).append(" 2</td></tr>");
+        html.append("<tr><td>4</td><td>").append(Localization.get("MEMORY_SAME_POS_AS")).append(" 2</td></tr>");
+        html.append("<tr><td rowspan='4'><b>").append(Localization.get("MEMORY_STAGE_5")).append("</b></td><td>1</td><td>").append(Localization.get("MEMORY_SAME_LABEL_AS")).append(" 1</td></tr>");
+        html.append("<tr><td>2</td><td>").append(Localization.get("MEMORY_SAME_LABEL_AS")).append(" 2</td></tr>");
+        html.append("<tr><td>3</td><td>").append(Localization.get("MEMORY_SAME_LABEL_AS")).append(" 4</td></tr>");
+        html.append("<tr><td>4</td><td>").append(Localization.get("MEMORY_SAME_LABEL_AS")).append(" 3</td></tr>");
         html.append("</table>");
         html.append("</div>");
 
         // 7. Morse Code
         html.append("<h2>7. ").append(Localization.get("MOD_MORSE")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p>Watch the flashing light and decode the Morse code word. Use the < and > buttons to tune to the correct frequency, then press TX.</p>");
+        html.append("<p>").append(Localization.get("MORSE_DESC")).append("</p>");
         html.append("<table>");
-        html.append("<tr><th>Word</th><th>Frequency</th><th>Word</th><th>Frequency</th></tr>");
+        html.append("<tr><th>").append(Localization.get("MORSE_WORD")).append("</th><th>").append(Localization.get("MORSE_FREQUENCY")).append("</th><th>").append(Localization.get("MORSE_WORD")).append("</th><th>").append(Localization.get("MORSE_FREQUENCY")).append("</th></tr>");
         html.append("<tr><td>SHELL</td><td>3.505 MHz</td><td>BOMBS</td><td>3.565 MHz</td></tr>");
         html.append("<tr><td>HALLS</td><td>3.515 MHz</td><td>BREAK</td><td>3.572 MHz</td></tr>");
         html.append("<tr><td>SLICK</td><td>3.522 MHz</td><td>BRICK</td><td>3.575 MHz</td></tr>");
@@ -200,58 +200,58 @@ public class Manual extends JPanel {
         // 8. Complicated Wires
         html.append("<h2>8. ").append(Localization.get("MOD_COMPWIRES")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p>Each wire may have: <b>Red</b> coloring, <b>Blue</b> coloring, a <b>★ Star</b> symbol, and a lit <b>LED</b>.</p>");
-        html.append("<p>Use this table - X means the feature is present:</p>");
-        html.append("<table><tr><th>Red</th><th>Blue</th><th>Star</th><th>LED</th><th>Action</th></tr>");
-        html.append("<tr><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>Don't Cut</td></tr>");
-        html.append("<tr><td>✓</td><td>✓</td><td>✓</td><td></td><td>Cut if Parallel Port</td></tr>");
-        html.append("<tr><td>✓</td><td>✓</td><td></td><td>✓</td><td>Cut if Serial # ends Even</td></tr>");
-        html.append("<tr><td>✓</td><td>✓</td><td></td><td></td><td>Cut if Serial # ends Even</td></tr>");
-        html.append("<tr><td>✓</td><td></td><td>✓</td><td>✓</td><td>Cut if Batteries ≥ 2</td></tr>");
-        html.append("<tr><td>✓</td><td></td><td>✓</td><td></td><td><b>CUT</b></td></tr>");
-        html.append("<tr><td>✓</td><td></td><td></td><td>✓</td><td>Cut if Batteries ≥ 2</td></tr>");
-        html.append("<tr><td>✓</td><td></td><td></td><td></td><td>Cut if Serial # ends Even</td></tr>");
-        html.append("<tr><td></td><td>✓</td><td>✓</td><td>✓</td><td>Cut if Parallel Port</td></tr>");
-        html.append("<tr><td></td><td>✓</td><td>✓</td><td></td><td>Don't Cut</td></tr>");
-        html.append("<tr><td></td><td>✓</td><td></td><td>✓</td><td>Cut if Parallel Port</td></tr>");
-        html.append("<tr><td></td><td>✓</td><td></td><td></td><td>Cut if Serial # ends Even</td></tr>");
-        html.append("<tr><td></td><td></td><td>✓</td><td>✓</td><td>Cut if Batteries ≥ 2</td></tr>");
-        html.append("<tr><td></td><td></td><td>✓</td><td></td><td><b>CUT</b></td></tr>");
-        html.append("<tr><td></td><td></td><td></td><td>✓</td><td>Don't Cut</td></tr>");
-        html.append("<tr><td></td><td></td><td></td><td></td><td><b>CUT</b></td></tr>");
+        html.append("<p>").append(Localization.get("COMPWIRES_DESC")).append("</p>");
+        html.append("<p>").append(Localization.get("COMPWIRES_TABLE_INFO")).append("</p>");
+        html.append("<table><tr><th>").append(Localization.get("COMPWIRES_RED")).append("</th><th>").append(Localization.get("COMPWIRES_BLUE")).append("</th><th>").append(Localization.get("COMPWIRES_STAR")).append("</th><th>").append(Localization.get("COMPWIRES_LED")).append("</th><th>").append(Localization.get("COMPWIRES_ACTION")).append("</th></tr>");
+        html.append("<tr><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>").append(Localization.get("COMPWIRES_DONT_CUT")).append("</td></tr>");
+        html.append("<tr><td>✓</td><td>✓</td><td>✓</td><td></td><td>").append(Localization.get("COMPWIRES_CUT_IF_PARALLEL")).append("</td></tr>");
+        html.append("<tr><td>✓</td><td>✓</td><td></td><td>✓</td><td>").append(Localization.get("COMPWIRES_CUT_IF_EVEN")).append("</td></tr>");
+        html.append("<tr><td>✓</td><td>✓</td><td></td><td></td><td>").append(Localization.get("COMPWIRES_CUT_IF_EVEN")).append("</td></tr>");
+        html.append("<tr><td>✓</td><td></td><td>✓</td><td>✓</td><td>").append(Localization.get("COMPWIRES_CUT_IF_BATTERIES")).append("</td></tr>");
+        html.append("<tr><td>✓</td><td></td><td>✓</td><td></td><td><b>").append(Localization.get("COMPWIRES_CUT")).append("</b></td></tr>");
+        html.append("<tr><td>✓</td><td></td><td></td><td>✓</td><td>").append(Localization.get("COMPWIRES_CUT_IF_BATTERIES")).append("</td></tr>");
+        html.append("<tr><td>✓</td><td></td><td></td><td></td><td>").append(Localization.get("COMPWIRES_CUT_IF_EVEN")).append("</td></tr>");
+        html.append("<tr><td></td><td>✓</td><td>✓</td><td>✓</td><td>").append(Localization.get("COMPWIRES_CUT_IF_PARALLEL")).append("</td></tr>");
+        html.append("<tr><td></td><td>✓</td><td>✓</td><td></td><td>").append(Localization.get("COMPWIRES_DONT_CUT")).append("</td></tr>");
+        html.append("<tr><td></td><td>✓</td><td></td><td>✓</td><td>").append(Localization.get("COMPWIRES_CUT_IF_PARALLEL")).append("</td></tr>");
+        html.append("<tr><td></td><td>✓</td><td></td><td></td><td>").append(Localization.get("COMPWIRES_CUT_IF_EVEN")).append("</td></tr>");
+        html.append("<tr><td></td><td></td><td>✓</td><td>✓</td><td>").append(Localization.get("COMPWIRES_CUT_IF_BATTERIES")).append("</td></tr>");
+        html.append("<tr><td></td><td></td><td>✓</td><td></td><td><b>").append(Localization.get("COMPWIRES_CUT")).append("</b></td></tr>");
+        html.append("<tr><td></td><td></td><td></td><td>✓</td><td>").append(Localization.get("COMPWIRES_DONT_CUT")).append("</td></tr>");
+        html.append("<tr><td></td><td></td><td></td><td></td><td><b>").append(Localization.get("COMPWIRES_CUT")).append("</b></td></tr>");
         html.append("</table>");
-        html.append("<p><b>Cut all wires that should be cut</b> to defuse the module.</p>");
+        html.append("<p>").append(Localization.get("COMPWIRES_FINAL")).append("</p>");
         html.append("</div>");
 
         // 9. Password
         html.append("<h2>9. ").append(Localization.get("MOD_PASSWORD")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p>Use the ▲ and ▼ arrows to scroll through letters in each column. Find and submit the 5-letter word.</p>");
-        html.append("<p><b>Possible passwords:</b></p>");
-        html.append("<p style='font-size:12px'>ABOUT, AFTER, AGAIN, BELOW, COULD, EVERY, FIRST, FOUND, GREAT, HOUSE, LARGE, LEARN, NEVER, OTHER, PLACE, PLANT, POINT, RIGHT, SMALL, SOUND, SPELL, STILL, STUDY, THEIR, THERE, THESE, THING, THINK, THREE, WATER, WHERE, WHICH, WORLD, WOULD, WRITE</p>");
+        html.append("<p>").append(Localization.get("PASSWORD_DESC")).append("</p>");
+        html.append("<p>").append(Localization.get("PASSWORD_POSSIBLE")).append("</p>");
+        html.append("<p style='font-size:12px'>").append(Localization.get("PASSWORD_LIST")).append("</p>");
         html.append("</div>");
 
         // 10. Who's on First
         html.append("<h2>10. ").append(Localization.get("MOD_WHOSONFIRST")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p><b>Step 1:</b> Read the DISPLAY word, find which button POSITION to look at:</p>");
-        html.append("<table><tr><th>Display</th><th>Look At</th><th>Display</th><th>Look At</th></tr>");
-        html.append("<tr><td>YES</td><td>Middle-Left</td><td>FIRST</td><td>Top-Right</td></tr>");
-        html.append("<tr><td>DISPLAY</td><td>Bottom-Right</td><td>OKAY</td><td>Top-Right</td></tr>");
-        html.append("<tr><td>SAYS</td><td>Bottom-Right</td><td>NOTHING</td><td>Middle-Left</td></tr>");
-        html.append("<tr><td>(empty)</td><td>Bottom-Left</td><td>BLANK</td><td>Middle-Right</td></tr>");
-        html.append("<tr><td>NO</td><td>Bottom-Right</td><td>LED</td><td>Middle-Left</td></tr>");
-        html.append("<tr><td>LEAD</td><td>Bottom-Right</td><td>READ</td><td>Middle-Right</td></tr>");
-        html.append("<tr><td>RED</td><td>Middle-Right</td><td>REED</td><td>Bottom-Left</td></tr>");
-        html.append("<tr><td>LEED</td><td>Bottom-Left</td><td>HOLD ON</td><td>Bottom-Right</td></tr>");
-        html.append("<tr><td>YOU</td><td>Middle-Right</td><td>YOU ARE</td><td>Bottom-Right</td></tr>");
-        html.append("<tr><td>YOUR</td><td>Middle-Right</td><td>YOU'RE</td><td>Middle-Right</td></tr>");
-        html.append("<tr><td>UR</td><td>Top-Left</td><td>THERE</td><td>Bottom-Right</td></tr>");
-        html.append("<tr><td>THEY'RE</td><td>Bottom-Left</td><td>THEIR</td><td>Middle-Right</td></tr>");
-        html.append("<tr><td>THEY ARE</td><td>Middle-Left</td><td>SEE</td><td>Bottom-Right</td></tr>");
-        html.append("<tr><td>C</td><td>Top-Right</td><td>CEE</td><td>Bottom-Right</td></tr>");
+        html.append("<p>").append(Localization.get("WHOSONFIRST_STEP1")).append("</p>");
+        html.append("<table><tr><th>").append(Localization.get("WHOSONFIRST_DISPLAY")).append("</th><th>").append(Localization.get("WHOSONFIRST_LOOK_AT")).append("</th><th>").append(Localization.get("WHOSONFIRST_DISPLAY")).append("</th><th>").append(Localization.get("WHOSONFIRST_LOOK_AT")).append("</th></tr>");
+        html.append("<tr><td>YES</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_LEFT")).append("</td><td>FIRST</td><td>").append(Localization.get("WHOSONFIRST_TOP_RIGHT")).append("</td></tr>");
+        html.append("<tr><td>DISPLAY</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_RIGHT")).append("</td><td>OKAY</td><td>").append(Localization.get("WHOSONFIRST_TOP_RIGHT")).append("</td></tr>");
+        html.append("<tr><td>SAYS</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_RIGHT")).append("</td><td>NOTHING</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_LEFT")).append("</td></tr>");
+        html.append("<tr><td>").append(Localization.get("WHOSONFIRST_EMPTY")).append("</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_LEFT")).append("</td><td>BLANK</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_RIGHT")).append("</td></tr>");
+        html.append("<tr><td>NO</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_RIGHT")).append("</td><td>LED</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_LEFT")).append("</td></tr>");
+        html.append("<tr><td>LEAD</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_RIGHT")).append("</td><td>READ</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_RIGHT")).append("</td></tr>");
+        html.append("<tr><td>RED</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_RIGHT")).append("</td><td>REED</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_LEFT")).append("</td></tr>");
+        html.append("<tr><td>LEED</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_LEFT")).append("</td><td>HOLD ON</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_RIGHT")).append("</td></tr>");
+        html.append("<tr><td>YOU</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_RIGHT")).append("</td><td>YOU ARE</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_RIGHT")).append("</td></tr>");
+        html.append("<tr><td>YOUR</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_RIGHT")).append("</td><td>YOU'RE</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_RIGHT")).append("</td></tr>");
+        html.append("<tr><td>UR</td><td>").append(Localization.get("WHOSONFIRST_TOP_LEFT")).append("</td><td>THERE</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_RIGHT")).append("</td></tr>");
+        html.append("<tr><td>THEY'RE</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_LEFT")).append("</td><td>THEIR</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_RIGHT")).append("</td></tr>");
+        html.append("<tr><td>THEY ARE</td><td>").append(Localization.get("WHOSONFIRST_MIDDLE_LEFT")).append("</td><td>SEE</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_RIGHT")).append("</td></tr>");
+        html.append("<tr><td>C</td><td>").append(Localization.get("WHOSONFIRST_TOP_RIGHT")).append("</td><td>CEE</td><td>").append(Localization.get("WHOSONFIRST_BOTTOM_RIGHT")).append("</td></tr>");
         html.append("</table>");
-        html.append("<p><b>Step 2:</b> Read the LABEL on that button. Find it in the word lists below. Press the first word from the list that appears on any button:</p>");
+        html.append("<p>").append(Localization.get("WHOSONFIRST_STEP2")).append("</p>");
         html.append("<div style='font-size:11px; line-height:1.4'>");
         html.append("<b>READY:</b> YES, OKAY, WHAT, MIDDLE, LEFT, PRESS, RIGHT, BLANK, READY<br>");
         html.append("<b>FIRST:</b> LEFT, OKAY, YES, MIDDLE, NO, RIGHT, NOTHING, UHHH, WAIT, READY, BLANK, WHAT, PRESS, FIRST<br>");
@@ -282,17 +282,17 @@ public class Manual extends JPanel {
         html.append("<b>SURE:</b> YOU ARE, DONE, LIKE, YOU'RE, YOU, HOLD, UH HUH, UR, SURE<br>");
         html.append("<b>LIKE:</b> YOU'RE, NEXT, U, UR, HOLD, DONE, UH UH, WHAT?, UH HUH, YOU, LIKE<br>");
         html.append("</div>");
-        html.append("<p><b>Complete 3 stages</b> to solve.</p>");
+        html.append("<p>").append(Localization.get("WHOSONFIRST_COMPLETE")).append("</p>");
         html.append("</div>");
 
         // 11. Binary
         html.append("<h2>11. ").append(Localization.get("MOD_BINARY")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p>Convert the decimal number shown to 5-bit binary.</p>");
-        html.append("<p>The switches represent (from left to right): <span class='highlight'>16, 8, 4, 2, 1</span></p>");
-        html.append("<p><b>Example:</b> Number 21 = 16 + 4 + 1 = switches ON for 16, 4, and 1 = <b>10101</b></p>");
+        html.append("<p>").append(Localization.get("BINARY_DESC")).append("</p>");
+        html.append("<p>").append(Localization.get("BINARY_SWITCHES")).append("</p>");
+        html.append("<p>").append(Localization.get("BINARY_EXAMPLE")).append("</p>");
         html.append("<table>");
-        html.append("<tr><th>Decimal</th><th>Binary</th><th>Decimal</th><th>Binary</th></tr>");
+        html.append("<tr><th>").append(Localization.get("BINARY_DECIMAL")).append("</th><th>").append(Localization.get("BINARY_BINARY")).append("</th><th>").append(Localization.get("BINARY_DECIMAL")).append("</th><th>").append(Localization.get("BINARY_BINARY")).append("</th></tr>");
         html.append("<tr><td>0</td><td>00000</td><td>16</td><td>10000</td></tr>");
         html.append("<tr><td>1</td><td>00001</td><td>17</td><td>10001</td></tr>");
         html.append("<tr><td>5</td><td>00101</td><td>20</td><td>10100</td></tr>");
@@ -304,21 +304,21 @@ public class Manual extends JPanel {
         // 12. Logic Gates
         html.append("<h2>12. ").append(Localization.get("MOD_LOGIC")).append("</h2>");
         html.append("<div class='box'>");
-        html.append("<p>Complete 3 stages. Each stage shows two inputs (A and B) and a logic gate. Set the OUTPUT correctly.</p>");
+        html.append("<p>").append(Localization.get("LOGIC_DESC")).append("</p>");
         html.append("<table>");
-        html.append("<tr><th>Gate</th><th>A=0, B=0</th><th>A=0, B=1</th><th>A=1, B=0</th><th>A=1, B=1</th></tr>");
+        html.append("<tr><th>").append(Localization.get("LOGIC_GATE")).append("</th><th>A=0, B=0</th><th>A=0, B=1</th><th>A=1, B=0</th><th>A=1, B=1</th></tr>");
         html.append("<tr><td><b>AND</b></td><td>0</td><td>0</td><td>0</td><td>1</td></tr>");
         html.append("<tr><td><b>OR</b></td><td>0</td><td>1</td><td>1</td><td>1</td></tr>");
         html.append("<tr><td><b>XOR</b></td><td>0</td><td>1</td><td>1</td><td>0</td></tr>");
         html.append("<tr><td><b>NAND</b></td><td>1</td><td>1</td><td>1</td><td>0</td></tr>");
         html.append("<tr><td><b>NOR</b></td><td>1</td><td>0</td><td>0</td><td>0</td></tr>");
         html.append("</table>");
-        html.append("<p>Click the OUTPUT circle to toggle it ON/OFF, then press CHECK.</p>");
+        html.append("<p>").append(Localization.get("LOGIC_CLICK_OUTPUT")).append("</p>");
         html.append("</div>");
 
         // Mission Dossiers
         html.append("<h1>").append(Localization.get("MANUAL_MISSIONS")).append("</h1>");
-        html.append("<table><tr><th>Mission</th><th>Difficulty</th><th>Time</th><th>Modules</th></tr>");
+        html.append("<table><tr><th>").append(Localization.get("MISSION_NAME")).append("</th><th>").append(Localization.get("MISSION_DIFFICULTY")).append("</th><th>").append(Localization.get("MISSION_TIME")).append("</th><th>").append(Localization.get("MISSION_MODULES")).append("</th></tr>");
         for (Level l : Level.getLevels()) {
             String color = "#E0E0E0";
             String diff = l.getDifficulty();

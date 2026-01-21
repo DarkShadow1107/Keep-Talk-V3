@@ -311,6 +311,6 @@ public class SimonSaysModule implements BombModule {
 
     @Override
     public String getName() {
-        return "Simon Says";
+        return game.Localization.get("MOD_SIMON");
     }
 }
