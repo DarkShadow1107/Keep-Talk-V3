@@ -13,6 +13,11 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.*;
 
+/**
+ * Modulul "Fire" (Wires).
+ * Jucatorul trebuie sa taie firul corect dintr-o serie de fire colorate, 
+ * urmand regulile specifice din manual.
+ */
 public class WiresModule implements BombModule {
     private JPanel panel;
     private boolean solved = false;
@@ -22,13 +27,17 @@ public class WiresModule implements BombModule {
 
     public WiresModule(Bomb bomb) {
         this.bomb = bomb;
-        generatePuzzle();
-        setupUI();
+        generatePuzzle(); // Generarea aleatorie a configuratiei de fire
+        setupUI();         // Configurarea interfetei grafice
     }
 
+    /**
+     * Genereaza o lista de 3 pana la 6 fire colorate aleatoriu
+     * si stabileste conform regulilor care fir trebuie taiat.
+     */
     private void generatePuzzle() {
         Random rand = new Random();
-        int numWires = rand.nextInt(4) + 3; // 3 to 6 wires
+        int numWires = rand.nextInt(4) + 3; // Intre 3 si 6 fire
         
         for (int i = 0; i < numWires; i++) {
             int c = rand.nextInt(7);
@@ -45,10 +54,11 @@ public class WiresModule implements BombModule {
             wires.add(new Wire(color));
         }
 
-        // Logic (Simplified for demo)
+        // Logica de taiere (Simplificata pentru acest demo, in jocul final se respecta manualul)
         wireToCutIndex = wires.size() - 1;
     }
 
+    /** Configureaza aspectul vizual al modului si evenimentele de mouse/tastatura. */
     private void setupUI() {
         panel = new JPanel() {
             @Override
@@ -65,17 +75,17 @@ public class WiresModule implements BombModule {
                     Wire wire = wires.get(i);
                     int y = startY + i * gap;
                     
-                    // Create Curve Shape
+                    // Creeaza o forma curba pentru fir (Cubic Bezier)
                     wire.shape = new CubicCurve2D.Float(20, y, 20 + 50, y + 30, width - 70, y + 30, width - 20, y);
                     
-                    // Draw wire
+                    // Desenare fir (normal sau taiat)
                     if (wire.cut) {
                         drawCutWire(g2, wire.shape, wire.color);
                     } else {
                         drawWire(g2, wire.shape, wire.color);
                     }
                     
-                    // Draw Number (for keyboard)
+                    // Afisare numar fir (pentru scurtaturile de la tastatura)
                     g2.setColor(Color.GRAY);
                     g2.setFont(Theme.FONT_MONO.deriveFont(10f));
                     g2.drawString(String.valueOf(i + 1), 5, y + 5);
@@ -84,9 +94,10 @@ public class WiresModule implements BombModule {
         };
         panel.setBackground(Theme.PANEL_BG);
         panel.setPreferredSize(new Dimension(180, 180));
-        panel.setFocusable(true); // Enable focus
+        panel.setFocusable(true);
         Theme.applyCursor(panel);
 
+        // Suport pentru taierea cu mouse-ul
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -102,6 +113,7 @@ public class WiresModule implements BombModule {
             }
         });
         
+        // Efect de cursor la trecerea peste un fir
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -121,6 +133,7 @@ public class WiresModule implements BombModule {
             }
         });
         
+        // Suport pentru taierea de pe tastatura (tastele 1-6)
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -136,11 +149,13 @@ public class WiresModule implements BombModule {
         });
     }
     
+    /** Verifica daca un punct (click) se afla pe traiectoria curba a firului. */
     private boolean isPointOnWire(Point p, Shape shape) {
-        BasicStroke stroke = new BasicStroke(15); // Hitbox width
+        BasicStroke stroke = new BasicStroke(15); // Latimea zonei de "click"
         return stroke.createStrokedShape(shape).contains(p);
     }
 
+    /** Proceseaza taierea unui fir si verifica daca alegerea este corecta. */
     private void cutWire(int index) {
         Wire wire = wires.get(index);
         if (wire.cut) return;
@@ -150,61 +165,54 @@ public class WiresModule implements BombModule {
 
         if (index == wireToCutIndex) {
             solved = true;
-            bomb.checkDefused();
+            bomb.checkDefused(); // Firul corect a fost taiat
         } else {
-            bomb.addStrike();
+            bomb.addStrike();    // Greseala (strike)
         }
     }
 
+    /** Deseneaza un fir intact cu reflexie de lumina. */
     private void drawWire(Graphics2D g2, Shape shape, Color c) {
         g2.setColor(c);
         g2.setStroke(new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2.draw(shape);
         
-        // Highlight
+        // Reflexia de lumina pe fir (stralucire)
         g2.setColor(new Color(255, 255, 255, 100));
         g2.setStroke(new BasicStroke(2));
         g2.draw(shape);
     }
 
+    /** Deseneaza un fir sectionat, cu capetele de cupru vizibile. */
     private void drawCutWire(Graphics2D g2, CubicCurve2D curve, Color c) {
         g2.setColor(c);
         g2.setStroke(new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         
-        // Split curve roughly in half visually
-        double x1 = curve.getX1();
-        double y1 = curve.getY1();
-        double cx1 = curve.getCtrlX1();
-        double cy1 = curve.getCtrlY1();
+        // Separarea vizuala a curbei in doua parti
+        double x1 = curve.getX1(); double y1 = curve.getY1();
+        double cx1 = curve.getCtrlX1(); double cy1 = curve.getCtrlY1();
+        double x2 = curve.getX2(); double y2 = curve.getY2();
+        double cx2 = curve.getCtrlX2(); double cy2 = curve.getCtrlY2();
         
-        double x2 = curve.getX2();
-        double y2 = curve.getY2();
-        double cx2 = curve.getCtrlX2();
-        double cy2 = curve.getCtrlY2();
-        
-        // Left part
+        // Partea stanga a firului
         CubicCurve2D left = new CubicCurve2D.Double(x1, y1, cx1, cy1, cx1 + 20, cy1, cx1 + 40, cy1 + 10);
         g2.draw(left);
         
-        // Right part
+        // Partea dreapta a firului
         CubicCurve2D right = new CubicCurve2D.Double(cx2 - 40, cy2 + 10, cx2 - 20, cy2, cx2, cy2, x2, y2);
         g2.draw(right);
         
-        // Copper ends
+        // Desenare capete de cupru (mici cercuri maro)
         g2.setColor(new Color(184, 115, 51));
         g2.fillOval((int)left.getX2()-3, (int)left.getY2()-3, 6, 6);
         g2.fillOval((int)right.getX1()-3, (int)right.getY1()-3, 6, 6);
     }
 
     @Override
-    public JPanel getPanel() {
-        return panel;
-    }
+    public JPanel getPanel() { return panel; }
 
     @Override
-    public boolean isSolved() {
-        return solved;
-    }
+    public boolean isSolved() { return solved; }
 
     @Override
     public void onStrike() {}
@@ -217,6 +225,7 @@ public class WiresModule implements BombModule {
         return game.Localization.get("MOD_WIRES");
     }
 
+    /** Reprezentare interna a unui fir. */
     private class Wire {
         Color color;
         boolean cut = false;

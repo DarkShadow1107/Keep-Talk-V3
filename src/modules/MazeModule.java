@@ -10,6 +10,12 @@ import java.awt.event.MouseEvent;
 import java.util.Random;
 import javax.swing.*;
 
+/**
+ * Modulul "Labirint" (Maze).
+ * Jucătorul trebuie să navigheze un punct alb printr-un labirint invizibil către un pătrat roșu.
+ * Labirintul este identificat prin poziția a două puncte verzi (markere).
+ * Logica pereților este stocată în MazeData.
+ */
 public class MazeModule implements BombModule {
     private JPanel panel;
     private boolean solved = false;
@@ -27,6 +33,9 @@ public class MazeModule implements BombModule {
         setupUI();
     }
 
+    /**
+     * Selectează un labirint aleatoriu și setează pozițiile de start și țintă.
+     */
     private void generatePuzzle() {
         Random rand = new Random();
         layout = MazeData.ALL_MAZES.get(rand.nextInt(MazeData.ALL_MAZES.size()));
@@ -37,6 +46,9 @@ public class MazeModule implements BombModule {
         targetY = layout.markers[1].y;
     }
 
+    /**
+     * Configurează interfața grafică cu un aspect de radar militar.
+     */
     private void setupUI() {
         panel = new JPanel() {
             @Override
@@ -45,10 +57,10 @@ public class MazeModule implements BombModule {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Draw Radar Screen Background
-                int size = 100; // Fixed size to avoid overlap
+                // Desenare fundal ecran radar
+                int size = 100; 
                 int startX = (getWidth() - size) / 2;
-                int startY = 5; // Move to top
+                int startY = 5;
 
                 g2.setColor(new Color(0, 20, 0));
                 g2.fillRect(startX, startY, size, size);
@@ -56,7 +68,7 @@ public class MazeModule implements BombModule {
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRect(startX, startY, size, size);
 
-                // Draw Grid
+                // Desenare grilă
                 int cellSize = size / SIZE;
                 g2.setColor(new Color(0, 50, 0));
                 g2.setStroke(new BasicStroke(1));
@@ -65,7 +77,7 @@ public class MazeModule implements BombModule {
                     g2.drawLine(startX, startY + i * cellSize, startX + size, startY + i * cellSize);
                 }
 
-                // Draw Fixed Maze Markers (from MazeData) as faint green dots
+                // Desenare markere fixe verzi (identifică labirintul conform manualului)
                 g2.setColor(new Color(0, 150, 0, 150));
                 for (java.awt.Point p : layout.markers) {
                     int mx = startX + p.x * cellSize + cellSize / 2;
@@ -73,24 +85,24 @@ public class MazeModule implements BombModule {
                     g2.fillOval(mx - 4, my - 4, 8, 8);
                 }
 
-                // Draw Target (Red Square as per manual icon)
+                // Desenare țintă (Pătrat roșu)
                 int tx = startX + targetX * cellSize + cellSize / 4;
                 int ty = startY + targetY * cellSize + cellSize / 4;
                 g2.setColor(Color.RED);
                 g2.fillRect(tx, ty, cellSize / 2, cellSize / 2);
 
-                // Draw Player (White Circle/Light)
+                // Desenare jucător (Punct alb luminos)
                 int px = startX + playerX * cellSize + cellSize / 2;
                 int py = startY + playerY * cellSize + cellSize / 2;
                 g2.setColor(Color.WHITE);
                 g2.fillOval(px - 5, py - 5, 10, 10);
 
-                // Draw Scanline
+                // Desenare linie de scanare radar (efect vizual)
                 int scanX = startX + (int)(scanLinePos * size);
                 g2.setColor(new Color(0, 255, 0, 100));
                 g2.drawLine(scanX, startY, scanX, startY + size);
                 
-                // Scanline trail
+                // Efect de urmă (glow) pentru linia de scanare
                 GradientPaint gp = new GradientPaint(scanX - 30, startY, new Color(0, 255, 0, 0), scanX, startY, new Color(0, 255, 0, 50));
                 g2.setPaint(gp);
                 g2.fillRect(scanX - 30, startY, 30, size);
@@ -101,7 +113,7 @@ public class MazeModule implements BombModule {
         panel.setFocusable(true);
         Theme.applyCursor(panel);
 
-        // Scanline animation
+        // Timer pentru animația liniei de scanare
         scanTimer = new Timer(20, e -> {
             scanLinePos += 0.01f;
             if (scanLinePos > 1.0f) scanLinePos = 0;
@@ -109,7 +121,7 @@ public class MazeModule implements BombModule {
         });
         scanTimer.start();
 
-        // Interaction
+        // Permite focusarea panelului pentru control de la tastatură
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -117,6 +129,7 @@ public class MazeModule implements BombModule {
             }
         });
 
+        // Control prin taste (Săgeți sau WASD)
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -130,7 +143,7 @@ public class MazeModule implements BombModule {
             }
         });
         
-        // Add visual controls for mouse users
+        // Adăugare butoane vizuale pentru utilizatorii de mouse
         JPanel controls = new JPanel(new GridLayout(2, 3, 2, 2));
         controls.setOpaque(false);
         controls.setBorder(BorderFactory.createEmptyBorder(0, 45, 5, 45));
@@ -146,6 +159,9 @@ public class MazeModule implements BombModule {
         panel.add(controls, BorderLayout.SOUTH);
     }
 
+    /**
+     * Creează un buton stilizat pentru controlul direcției.
+     */
     private JButton createBtn(String text, int dx, int dy) {
         JButton btn = new JButton(text);
         btn.setBackground(new Color(45, 45, 50));
@@ -161,26 +177,30 @@ public class MazeModule implements BombModule {
         return btn;
     }
 
+    /**
+     * Mută jucătorul în direcția specificată dacă nu există perete.
+     */
     private void move(int dx, int dy) {
         if (solved) return;
 
         int newX = playerX + dx;
         int newY = playerY + dy;
 
-        // Check bounds
+        // Verifică limitele labirintului
         if (newX < 0 || newX >= SIZE || newY < 0 || newY >= SIZE) {
-            bomb.addStrike();
+            bomb.addStrike(); // Greșeală dacă se încearcă ieșirea din labirint
             return;
         }
 
-        // Check walls (logic from MazeData)
+        // Verifică prezența pereților (logica definită în MazeData)
         if (layout.hasWall(playerX, playerY, dx, dy)) {
-            bomb.addStrike();
+            bomb.addStrike(); // Greșeală dacă se lovește un perete
         } else {
             playerX = newX;
             playerY = newY;
             panel.repaint();
             
+            // Verifică dacă s-a ajuns la țintă
             if (playerX == targetX && playerY == targetY) {
                 solved = true;
                 scanTimer.stop();

@@ -8,6 +8,12 @@ import java.util.Map;
 import java.util.Random;
 import javax.swing.*;
 
+/**
+ * Modulul "Cod Morse" (Morse Code).
+ * O lumină portocalie clipește o secvență de puncte și linii reprezentând un cuvânt.
+ * Jucătorul trebuie să identifice cuvântul și să regleze frecvența corespunzătoare
+ * conform tabelului, apoi să apese butonul "TX" (Transmisie).
+ */
 public class MorseCodeModule implements BombModule {
     private JPanel panel;
     private boolean solved = false;
@@ -17,8 +23,13 @@ public class MorseCodeModule implements BombModule {
     private JLabel freqLabel;
     private JPanel lightPanel;
     
+    /** Lista de cuvinte posibile pentru secvența Morse. */
     private static final String[] WORDS = {"SHELL", "HALLS", "SLICK", "TRICK", "BOXES", "LEAKS", "STROBE", "BISTRO", "FLICK", "BOMBS", "BREAK", "BRICK", "STEAK", "STING", "VECTOR", "BEATS"};
+    
+    /** Mapare pentru alfabetul Morse. */
     private static final Map<String, String> MORSE_CODE = new HashMap<>();
+    
+    /** Mapare între cuvânt și frecvența radio corespunzătoare. */
     private static final Map<String, Double> FREQUENCIES = new HashMap<>();
 
     static {
@@ -49,15 +60,22 @@ public class MorseCodeModule implements BombModule {
         startFlashing();
     }
 
+    /**
+     * Alege un cuvânt aleatoriu din listă pentru a fi transmis prin Morse.
+     */
     private void generatePuzzle() {
         Random rand = new Random();
         targetWord = WORDS[rand.nextInt(WORDS.length)];
     }
 
+    /**
+     * Configurează interfața pentru afișarea luminii și controlul frecvenței.
+     */
     private void setupUI() {
         panel = new JPanel(new BorderLayout());
         panel.setBackground(Theme.PANEL_BG);
 
+        // Panoul de sus conține lumina Morse
         lightPanel = new JPanel();
         lightPanel.setPreferredSize(new Dimension(50, 50));
         lightPanel.setBackground(Color.BLACK);
@@ -69,6 +87,7 @@ public class MorseCodeModule implements BombModule {
         
         panel.add(centerPanel, BorderLayout.NORTH);
 
+        // Panoul de jos conține selectorul de frecvență și butonul TX
         JPanel controlPanel = new JPanel(new BorderLayout());
         controlPanel.setBackground(Theme.PANEL_BG);
 
@@ -95,26 +114,20 @@ public class MorseCodeModule implements BombModule {
         panel.setPreferredSize(new Dimension(180, 180));
     }
 
+    /**
+     * Schimbă frecvența curentă prin navigarea în lista de cuvinte/frecvențe.
+     */
     private void changeFreq(int dir) {
-        // Simplified frequency list for UI
-        // In real game, it cycles through valid frequencies.
-        // Here we just cycle through the WORDS array indices to show frequencies.
         currentFreqIndex = (currentFreqIndex + dir + WORDS.length) % WORDS.length;
         String word = WORDS[currentFreqIndex];
         freqLabel.setText(String.format("%.3f MHz", FREQUENCIES.get(word)));
     }
 
+    /**
+     * Pornește un fir de execuție separat pentru a face lumina să clipească continuu în cod Morse.
+     */
     private void startFlashing() {
-        StringBuilder sequence = new StringBuilder();
-        for (char c : targetWord.toCharArray()) {
-            sequence.append(MORSE_CODE.get(String.valueOf(c))).append(" ");
-        }
-        
-        // Convert to timing sequence: . = 1 unit on, 1 unit off. - = 3 units on, 1 unit off. Space = 3 units off.
-        // Simplified: We will use a tick based system.
-        // Let's just flash the light.
-        
-        final int DOT = 200;
+        final int DOT = 200; // Durata unei unități de timp (.)
         
         new Thread(() -> {
             while (!solved && !bomb.isExploded()) {
@@ -123,18 +136,26 @@ public class MorseCodeModule implements BombModule {
                     if (code == null) continue;
                     for (char s : code.toCharArray()) {
                         if (solved || bomb.isExploded()) return;
+                        
+                        // Aprindem lumina
                         lightPanel.setBackground(Theme.ACCENT_ORANGE);
+                        // Durata depinde dacă e punct (.) sau linie (-)
                         try { Thread.sleep(s == '.' ? DOT : DOT * 3); } catch (InterruptedException e) {}
+                        
+                        // Stingem lumina
                         lightPanel.setBackground(Color.BLACK);
                         try { Thread.sleep(DOT); } catch (InterruptedException e) {}
                     }
-                    try { Thread.sleep(DOT * 3); } catch (InterruptedException e) {} // Letter gap
+                    try { Thread.sleep(DOT * 3); } catch (InterruptedException e) {} // Pauză între litere
                 }
-                try { Thread.sleep(DOT * 7); } catch (InterruptedException e) {} // Word gap
+                try { Thread.sleep(DOT * 7); } catch (InterruptedException e) {} // Pauză între reluarea cuvântului
             }
         }).start();
     }
 
+    /**
+     * Verifică dacă frecvența selectată corespunde cuvântului transmis.
+     */
     private void checkSolution() {
         if (solved) return;
         
@@ -144,7 +165,7 @@ public class MorseCodeModule implements BombModule {
             panel.setBackground(Theme.ACCENT_GREEN);
             bomb.checkDefused();
         } else {
-            bomb.addStrike();
+            bomb.addStrike(); // Greșeală dacă frecvența e incorectă sau nu corespunde
         }
     }
 

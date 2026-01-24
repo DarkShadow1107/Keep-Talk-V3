@@ -1,6 +1,5 @@
 package game;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
@@ -9,26 +8,32 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import javax.swing.*;
 
+/**
+ * Gestioneaza efectele vizuale complexe de explozie, inclusiv particule, spray-uri,
+ * flash-uri pe ecran, tremuratul camerei si efectul de ecran spart.
+ */
 public class ExplosionOverlay extends JComponent {
-    private List<Particle> particles = new ArrayList<>();
-    private List<Shockwave> shockwaves = new ArrayList<>();
-    private List<Debris> debrisList = new ArrayList<>();
-    private List<Path2D> cracks = new ArrayList<>(); // Cracked screen effect
-    private Timer animationTimer;
+    private List<Particle> particles = new ArrayList<>(); // Lista de particule de foc/fum
+    private List<Shockwave> shockwaves = new ArrayList<>(); // Undele de soc circulare
+    private List<Debris> debrisList = new ArrayList<>(); // Resturi/bucati care zboara
+    private List<Path2D> cracks = new ArrayList<>(); // Efectul de ecran crapat
+    private Timer animationTimer; // Timerul pentru animatie (aprox. 60 FPS)
     private Random random = new Random();
-    private float flashIntensity = 0f;
-    private float shakeIntensity = 0f;
-    private float glitchIntensity = 0f;
-    private float crackOpacity = 1.0f; // Opacity for fading cracks
-    private BufferedImage scanlineImage;
-    private long startTime;
+    private float flashIntensity = 0f; // Luminozitatea flash-ului alb
+    private float shakeIntensity = 0f; // Cat de tare tremura ecranul
+    private float glitchIntensity = 0f; // Intensitatea efectelor de glitch video
+    private float crackOpacity = 1.0f; // Transparenta crapaturilor pe ecran
+    private BufferedImage scanlineImage; // Imagine statica pentru efect CRT (linii de scanare)
+    private long startTime; // Momentul la care a inceput explozia
 
     public ExplosionOverlay() {
         setOpaque(false);
         setFocusable(false);
     }
 
+    /** Declanșează secvența completă de explozie. */
     public void explode(int centerX, int centerY) {
         particles.clear();
         shockwaves.clear();
@@ -40,22 +45,22 @@ public class ExplosionOverlay extends JComponent {
         crackOpacity = 1.0f;
         startTime = System.currentTimeMillis();
 
-        // Create explosion particles
+        // Generam particulele exploziei
         for (int i = 0; i < 400; i++) {
             particles.add(new Particle(centerX, centerY));
         }
         
-        // Create debris
+        // Generam resturile mecanice
         for (int i = 0; i < 50; i++) {
             debrisList.add(new Debris(centerX, centerY));
         }
         
-        // Create shockwaves
+        // Adaugam cateva unde de soc succesive
         shockwaves.add(new Shockwave(centerX, centerY, 5));
         shockwaves.add(new Shockwave(centerX, centerY, 15));
         shockwaves.add(new Shockwave(centerX, centerY, 30));
         
-        // Generate Cracks
+        // Generam crapaturile pe ecran
         generateCracks(centerX, centerY);
 
         if (animationTimer != null && animationTimer.isRunning()) {
@@ -65,7 +70,7 @@ public class ExplosionOverlay extends JComponent {
         animationTimer = new Timer(16, e -> {
             updateEffects();
             repaint();
-            // Stop only when everything is gone
+            // Oprim timerul cand toate efectele au disparut
             if (particles.isEmpty() && shockwaves.isEmpty() && debrisList.isEmpty() && flashIntensity <= 0.01f && crackOpacity <= 0.01f) {
                 ((Timer)e.getSource()).stop();
             }
@@ -73,6 +78,7 @@ public class ExplosionOverlay extends JComponent {
         animationTimer.start();
     }
     
+    /** Genereaza cai geometrice neregulate pentru a simula ecranul spart. */
     private void generateCracks(int cx, int cy) {
         int numCracks = 5 + random.nextInt(5);
         for (int i = 0; i < numCracks; i++) {
@@ -85,7 +91,7 @@ public class ExplosionOverlay extends JComponent {
             
             while (dist < maxDist) {
                 dist += random.nextInt(50) + 20;
-                angle += (random.nextDouble() - 0.5) * 0.5; // Jitter angle
+                angle += (random.nextDouble() - 0.5) * 0.5; // Unghi variabil pentru naturalete
                 double x = cx + Math.cos(angle) * dist;
                 double y = cy + Math.sin(angle) * dist;
                 crack.lineTo(x, y);
@@ -94,19 +100,20 @@ public class ExplosionOverlay extends JComponent {
         }
     }
 
+    /** Actualizeaza pozitia si intensitatea fiecarui element in fiecare cadru. */
     private void updateEffects() {
-        // Update intensities
+        // Reducem treptat intensitatile pentru efect de fade-out
         flashIntensity *= 0.90f;
         shakeIntensity *= 0.90f;
         glitchIntensity *= 0.92f;
         
-        // Fade out cracks after 10 seconds (10000 ms)
+        // Incepem sa facem crapaturile transparente dupa 10 secunde
         long elapsed = System.currentTimeMillis() - startTime;
         if (elapsed > 10000) {
             crackOpacity *= 0.95f;
         }
 
-        // Update particles
+        // Actualizam si eliminam particulele "moarte"
         Iterator<Particle> it = particles.iterator();
         while (it.hasNext()) {
             Particle p = it.next();
@@ -116,7 +123,7 @@ public class ExplosionOverlay extends JComponent {
             }
         }
         
-        // Update debris
+        // Actualizam resturile
         Iterator<Debris> dit = debrisList.iterator();
         while (dit.hasNext()) {
             Debris d = dit.next();
@@ -126,7 +133,7 @@ public class ExplosionOverlay extends JComponent {
             }
         }
 
-        // Update shockwaves
+        // Actualizam undele de soc
         Iterator<Shockwave> swIt = shockwaves.iterator();
         while (swIt.hasNext()) {
             Shockwave sw = swIt.next();
@@ -137,19 +144,20 @@ public class ExplosionOverlay extends JComponent {
         }
     }
 
+    /** Creeaza imaginea de overlay pentru liniile de scanare (aspect retro/TV). */
     private void createScanlineImage(int w, int h) {
         if (scanlineImage != null && scanlineImage.getWidth() == w && scanlineImage.getHeight() == h) return;
         
         scanlineImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = scanlineImage.createGraphics();
         
-        // Scanlines
+        // Desenam liniile orizontale fine
         g2.setColor(new Color(0, 0, 0, 40));
         for (int y = 0; y < h; y += 3) {
             g2.drawLine(0, y, w, y);
         }
         
-        // Vignette
+        // Adaugam un efect de vignetta (intunecare pe margini)
         RadialGradientPaint rgp = new RadialGradientPaint(
             w / 2, h / 2, (float)Math.hypot(w/2, h/2),
             new float[]{0.6f, 1.0f},
@@ -167,34 +175,33 @@ public class ExplosionOverlay extends JComponent {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Apply Screen Shake
+        // Aplicam tremuratul ecranului (Screen Shake)
         if (shakeIntensity > 0.5f) {
             int dx = (int)((random.nextFloat() - 0.5f) * shakeIntensity * 2);
             int dy = (int)((random.nextFloat() - 0.5f) * shakeIntensity * 2);
             g2.translate(dx, dy);
         }
 
-        // Draw CRT Overlay
+        // Desenam overlay-ul CRT
         createScanlineImage(getWidth(), getHeight());
         g2.drawImage(scanlineImage, 0, 0, null);
 
-        // Draw Glitch Artifacts
+        // Desenam artefactele de glitch computerizat
         if (glitchIntensity > 0.1f) {
             drawGlitches(g2);
         }
 
-        // Draw Flash
+        // Desenam flash-ul alb de inceput
         if (flashIntensity > 0.01f) {
             g2.setColor(new Color(1f, 1f, 1f, flashIntensity * 0.9f));
-            g2.fillRect(-50, -50, getWidth()+100, getHeight()+100); // Oversize for shake
+            g2.fillRect(-50, -50, getWidth()+100, getHeight()+100);
         }
 
-        // Draw Shockwaves
+        // Desenam restul elementelor vizuale
         for (Shockwave sw : shockwaves) {
             sw.draw(g2);
         }
         
-        // Draw Debris
         for (Debris d : debrisList) {
             d.draw(g2);
         }

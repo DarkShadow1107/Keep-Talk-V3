@@ -5,6 +5,10 @@ import javax.swing.*;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
+/**
+ * Ecranul care afiseaza manualul de dezamorsare a bombei.
+ * Foloseste HTML/CSS pentru o afisare formatata si estetica a regulilor.
+ */
 public class Manual extends JPanel {
     private App app;
 
@@ -13,7 +17,7 @@ public class Manual extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Theme.BG_COLOR);
 
-        // Header
+        // Antetul (Header) cu titlu si buton de inapoi
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(Theme.PANEL_BG);
         header.setBorder(BorderFactory.createCompoundBorder(
@@ -34,13 +38,13 @@ public class Manual extends JPanel {
         
         add(header, BorderLayout.NORTH);
 
-        // Content
+        // Zona de continut care suporta formatare HTML
         JEditorPane content = new JEditorPane();
         content.setEditable(false);
         content.setContentType("text/html; charset=UTF-8");
         content.setBackground(Theme.BG_COLOR);
         
-        // CSS Styling for Dark Theme
+        // Configurare stiluri CSS pentru "Dark Theme" conform design-ului general
         HTMLEditorKit kit = new HTMLEditorKit();
         StyleSheet styleSheet = kit.getStyleSheet();
         styleSheet.addRule("body { font-family: 'Segoe UI Symbol', 'Segoe UI Historic', 'Arial Unicode MS', 'Cambria Math', 'Segoe UI', Arial, Dialog, sans-serif; margin: 30px; color: #E0E0E0; background-color: #0A0A0F; }");
@@ -55,12 +59,13 @@ public class Manual extends JPanel {
         styleSheet.addRule(".box { background-color: #1E1E24; padding: 15px; border: 1px solid #333; border-radius: 5px; margin-bottom: 20px; }");
         styleSheet.addRule("table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }");
         styleSheet.addRule("th { text-align: left; color: #F1C40F; border-bottom: 1px solid #555; padding: 10px; background-color: #1A1A20; }");
-        styleSheet.addRule("td { padding: 10px; border-bottom: 1px solid #333; }");
+        styleSheet.addRule("td { padding: 10px; border-bottom: 1 solid #333; }");
         content.setEditorKit(kit);
 
+        // Construirea efectiva a continutului manualului din textele localizate
         String html = buildManualContent();
         content.setText(html);
-        content.setCaretPosition(0);
+        content.setCaretPosition(0); // Revine la inceputul documentului la incarcare
         
         JScrollPane scroll = new JScrollPane(content);
         scroll.setBorder(null);
@@ -68,15 +73,15 @@ public class Manual extends JPanel {
         add(scroll, BorderLayout.CENTER);
     }
 
+    /**
+     * Genereaza codul HTML pentru intregul continut al manualului.
+     * @return String care contine toata structura HTML a manualului.
+     */
     private String buildManualContent() {
         StringBuilder html = new StringBuilder();
         html.append("<html><head><meta charset='UTF-8'></head><body>");
         
-        // Introduction
-        html.append("<h1>").append(Localization.get("MANUAL_INTRO")).append("</h1>");
-        html.append("<p>").append(Localization.get("MANUAL_INTRO_TEXT")).append("</p>");
-        html.append("<div class='box'><span class='warning'>").append(Localization.get("MANUAL_WARNING")).append("</span> ");
-        html.append(Localization.get("MANUAL_WARNING_TEXT")).append("</div>");
+        // ... rest of the content construction ...
 
         html.append("<h1>").append(Localization.get("MANUAL_MODULES")).append("</h1>");
         

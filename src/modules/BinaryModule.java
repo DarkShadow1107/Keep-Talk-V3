@@ -8,12 +8,18 @@ import java.awt.event.MouseEvent;
 import java.util.Random;
 import javax.swing.*;
 
+/**
+ * Modulul "Binar" (Binary).
+ * Jucătorul vede un număr zecimal pe un afișaj digital și trebuie să îl 
+ * convertească în binar folosind 5 switch-uri (biți).
+ * Fiecare bit reprezintă o putere a lui 2 (16, 8, 4, 2, 1).
+ */
 public class BinaryModule implements BombModule {
     private JPanel panel;
     private boolean solved = false;
     private Bomb bomb;
     private int targetValue;
-    private boolean[] bits = new boolean[5]; // 5 bits = 0-31
+    private boolean[] bits = new boolean[5]; // 5 biți = valori între 0 și 31
     private Rectangle[] bitRects = new Rectangle[5];
     private Rectangle submitBtnRect;
     private boolean submitPressed = false;
@@ -24,11 +30,17 @@ public class BinaryModule implements BombModule {
         setupUI();
     }
 
+    /**
+     * Generează o valoare țintă aleatorie între 0 și 31.
+     */
     private void generatePuzzle() {
         Random rand = new Random();
-        targetValue = rand.nextInt(32); // 0 to 31
+        targetValue = rand.nextInt(32); // 0 la 31
     }
 
+    /**
+     * Configurează interfața grafică a modulului.
+     */
     private void setupUI() {
         panel = new JPanel() {
             @Override
@@ -37,7 +49,7 @@ public class BinaryModule implements BombModule {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Draw Target Number Display
+                // Desenare afișaj număr țintă (Target Number)
                 g2.setColor(new Color(20, 20, 20));
                 g2.fillRoundRect(20, 30, getWidth() - 40, 50, 10, 10);
                 g2.setColor(new Color(50, 50, 50));
@@ -51,7 +63,7 @@ public class BinaryModule implements BombModule {
                 int ty = 30 + (50 + fm.getAscent()) / 2 - 7;
                 g2.drawString(text, tx, ty);
 
-                // Draw Bits (LEDs/Switches)
+                // Desenare biți (LED-uri/Switch-uri)
                 int startX = (getWidth() - (5 * 35)) / 2;
                 int bitY = 90;
                 
@@ -59,33 +71,33 @@ public class BinaryModule implements BombModule {
                     int x = startX + i * 35;
                     bitRects[i] = new Rectangle(x, bitY, 25, 40);
                     
-                    // Switch body
+                    // Corpul comutatorului
                     g2.setColor(new Color(40, 40, 40));
                     g2.fillRoundRect(x, bitY, 25, 40, 5, 5);
                     
-                    // LED/Light
-                    if (bits[4 - i]) { // MSB is left (index 0 visually, but bit 4 logic?) 
-                        // Actually let's make index 0 be 16 (2^4), index 4 be 1 (2^0)
-                        // So bits array: [16, 8, 4, 2, 1]
+                    // LED aprins dacă bitul este activ
+                    if (bits[4 - i]) { 
+                        // Bitul cel mai semnificativ (MSB) este în stânga
                         g2.setColor(Theme.ACCENT_GREEN);
                         g2.fillRoundRect(x + 2, bitY + 2, 21, 18, 3, 3);
                         
-                        // Glow
+                        // Efect de strălucire (glow)
                         g2.setColor(new Color(46, 204, 113, 100));
                         g2.fillRoundRect(x - 2, bitY - 2, 29, 24, 8, 8);
                     } else {
+                        // LED stins
                         g2.setColor(new Color(20, 20, 20));
                         g2.fillRoundRect(x + 2, bitY + 20, 21, 18, 3, 3);
                     }
                     
-                    // Label (power of 2)
+                    // Etichetă (puterea lui 2 corespunzătoare)
                     g2.setColor(Color.GRAY);
                     g2.setFont(Theme.FONT_MONO.deriveFont(10f));
                     String label = String.valueOf((int)Math.pow(2, 4-i));
                     g2.drawString(label, x + 8, bitY + 52);
                 }
 
-                // Submit Button
+                // Butonul Submit
                 submitBtnRect = new Rectangle((getWidth() - 100) / 2, 145, 100, 30);
                 g2.setColor(submitPressed ? Theme.ACCENT_BLUE.darker() : Theme.ACCENT_BLUE);
                 g2.fillRoundRect(submitBtnRect.x, submitBtnRect.y, submitBtnRect.width, submitBtnRect.height, 10, 10);
@@ -106,16 +118,16 @@ public class BinaryModule implements BombModule {
             public void mousePressed(MouseEvent e) {
                 if (solved) return;
                 
-                // Check bits
+                // Verificare click pe biți
                 for (int i = 0; i < 5; i++) {
                     if (bitRects[i].contains(e.getPoint())) {
-                        bits[4-i] = !bits[4-i]; // Toggle bit
+                        bits[4-i] = !bits[4-i]; // Schimbă starea bitului
                         panel.repaint();
                         return;
                     }
                 }
                 
-                // Check submit
+                // Verificare click pe butonul de trimis
                 if (submitBtnRect.contains(e.getPoint())) {
                     submitPressed = true;
                     panel.repaint();
@@ -137,6 +149,9 @@ public class BinaryModule implements BombModule {
         });
     }
 
+    /**
+     * Calculează valoarea curentă a biților și o compară cu ținta.
+     */
     private void checkSolution() {
         int currentValue = 0;
         for (int i = 0; i < 5; i++) {
@@ -149,7 +164,7 @@ public class BinaryModule implements BombModule {
             solved = true;
             bomb.checkDefused();
         } else {
-            bomb.addStrike();
+            bomb.addStrike(); // Greșeală dacă valoarea binară e incorectă
         }
     }
 

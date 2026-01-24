@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.*;
 
+/**
+ * Modulul "Memorie" (Memory).
+ * Jucătorul trebuie să treacă prin 5 stagii de memorare a pozițiilor și etichetelor butoanelor.
+ * Regulile se schimbă la fiecare stagiu și depind de istoricul apăsărilor anterioare.
+ */
 public class MemoryModule implements BombModule {
     private JPanel panel;
     private boolean solved = false;
@@ -32,6 +37,9 @@ public class MemoryModule implements BombModule {
         startStage();
     }
 
+    /**
+     * Configurează interfața grafică a modulului de memorie.
+     */
     private void setupUI() {
         panel = new JPanel() {
             @Override
@@ -40,11 +48,11 @@ public class MemoryModule implements BombModule {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Draw Main Display
+                // Desenare Afișaj Principal (Numărul mare de sus)
                 int dispW = 80;
                 int dispH = 60;
                 int dispX = (getWidth() - dispW) / 2;
-                int dispY = 30; // Moved up slightly
+                int dispY = 30;
 
                 g2.setColor(Color.BLACK);
                 g2.fillRoundRect(dispX, dispY, dispW, dispH, 10, 10);
@@ -60,7 +68,7 @@ public class MemoryModule implements BombModule {
                 g2.setColor(Theme.TEXT_DIGITAL);
                 g2.drawString(text, textX, textY);
 
-                // Draw Stage Indicators
+                // Desenare Indicatori de Stagiu (cele 5 puncte verzi)
                 int stageY = dispY + dispH + 15;
                 int dotSize = 10;
                 int dotGap = 10;
@@ -73,7 +81,7 @@ public class MemoryModule implements BombModule {
                     g2.fillOval(startDotX + i * (dotSize + dotGap), stageY, dotSize, dotSize);
                 }
 
-                // Draw Buttons
+                // Desenare cele 4 Butoane cu cifre
                 int btnW = 40;
                 int btnH = 50;
                 int btnGap = 10;
@@ -84,19 +92,19 @@ public class MemoryModule implements BombModule {
                     int x = startBtnX + i * (btnW + btnGap);
                     buttonRects[i] = new Rectangle(x, btnY, btnW, btnH);
                     
-                    // Button Body
+                    // Corpul butonului cu efect 3D simplu
                     if (buttonPressed[i]) {
                         g2.setColor(new Color(180, 180, 180));
                         g2.fillRoundRect(x, btnY + 5, btnW, btnH - 5, 5, 5);
                     } else {
                         g2.setColor(new Color(200, 200, 200));
                         g2.fillRoundRect(x, btnY, btnW, btnH, 5, 5);
-                        // Shadow
+                        // Umbra butonului
                         g2.setColor(new Color(150, 150, 150));
                         g2.fillRoundRect(x, btnY + btnH - 5, btnW, 5, 5, 5);
                     }
                     
-                    // Label
+                    // Eticheta butonului (cifra)
                     g2.setColor(Color.BLACK);
                     g2.setFont(Theme.FONT_BOLD.deriveFont(24f));
                     String lbl = String.valueOf(buttonLabels.get(i));
@@ -134,6 +142,10 @@ public class MemoryModule implements BombModule {
         });
     }
 
+    /**
+     * Inițializează un nou stagiu cu cifre aleatorii și determină răspunsul corect
+     * bazat pe regulile complexe din manual.
+     */
     private void startStage() {
         Random rand = new Random();
         displayVal = rand.nextInt(4) + 1;
@@ -142,19 +154,21 @@ public class MemoryModule implements BombModule {
         for (int i = 1; i <= 4; i++) buttonLabels.add(i);
         Collections.shuffle(buttonLabels);
         
-        // Determine correct answer logic
+        // Logica de determinare a răspunsului corect (Poziție sau Etichetă)
         int correctPos = -1;
         int correctLbl = -1;
         
         switch (stage) {
             case 1 -> {
+                // Stagiu 1: bazat doar pe afișaj
                 switch (displayVal) {
-                    case 1, 2 -> correctPos = 1;
-                    case 3 -> correctPos = 2;
-                    default -> correctPos = 3;
+                    case 1, 2 -> correctPos = 1; // Poziția 2
+                    case 3 -> correctPos = 2;    // Poziția 3
+                    default -> correctPos = 3;   // Poziția 4
                 }
             }
             case 2 -> {
+                // Stagiu 2: memorează eticheta de la stagiul 1
                 switch (displayVal) {
                     case 1 -> correctLbl = 4;
                     case 3 -> correctPos = 0;
@@ -162,6 +176,7 @@ public class MemoryModule implements BombModule {
                 }
             }
             case 3 -> {
+                // Stagiu 3: memorează etichetele de la stagiile anterioare
                 switch (displayVal) {
                     case 1 -> correctLbl = correctLabels[1];
                     case 2 -> correctLbl = correctLabels[0];
@@ -170,6 +185,7 @@ public class MemoryModule implements BombModule {
                 }
             }
             case 4 -> {
+                // Stagiu 4: bazat pe poziții anterioare
                 switch (displayVal) {
                     case 1 -> correctPos = correctPositions[0];
                     case 2 -> correctPos = 0;
@@ -177,6 +193,7 @@ public class MemoryModule implements BombModule {
                 }
             }
             case 5 -> {
+                // Stagiu 5: verificare finală bazată pe etichete
                 switch (displayVal) {
                     case 1 -> correctLbl = correctLabels[0];
                     case 2 -> correctLbl = correctLabels[1];
@@ -186,11 +203,11 @@ public class MemoryModule implements BombModule {
             }
         }
         
-        // Resolve Pos vs Label
+        // Rezolvăm legătura dintre poziție și etichetă (identificăm butonul fizic)
         if (correctPos != -1) {
             correctLbl = buttonLabels.get(correctPos);
         } else {
-            // Find pos for label
+            // Căutăm poziția la care se află eticheta cerută
             for(int i=0; i<4; i++) {
                 if (buttonLabels.get(i) == correctLbl) {
                     correctPos = i;
@@ -204,28 +221,33 @@ public class MemoryModule implements BombModule {
         if (panel != null) panel.repaint();
     }
 
+    /**
+     * Procesează apăsarea unui buton și verifică dacă este răspunsul corect.
+     * Dacă e corect, trece la stagiul următor. Dacă greșește, resetează modulul la stagiul 1.
+     */
     private void handlePress(int pos) {
         if (solved) return;
         
         int pressedLbl = buttonLabels.get(pos);
         
         if (pos == expectedPos && pressedLbl == expectedLbl) {
-            // Correct
+            // Răspuns corect: memorăm poziția și eticheta
             correctPositions[stage-1] = pos;
             correctLabels[stage-1] = pressedLbl;
             
             stage++;
             if (stage > 5) {
+                // Modul rezolvat după cele 5 stagii
                 solved = true;
                 bomb.checkDefused();
             } else {
-                // Delay slightly to show press
+                // Trecere la stagiul următor după o scurtă întârziere (vizibilitate click)
                 Timer t = new Timer(200, e -> startStage());
                 t.setRepeats(false);
                 t.start();
             }
         } else {
-            // Wrong
+            // Greșeală: se adaugă strike și se resetează tot progresul modului
             bomb.addStrike();
             stage = 1;
             correctPositions = new int[5];

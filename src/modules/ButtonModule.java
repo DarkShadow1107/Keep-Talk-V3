@@ -15,7 +15,7 @@ public class ButtonModule implements BombModule {
     private Bomb bomb;
     private String color;
     private String text;
-    private String stripColor;
+    private String stripColor; // Culoarea benzii care apare la apăsare prelungită
     private boolean isPressed = false;
     private long pressTime;
 
@@ -25,6 +25,9 @@ public class ButtonModule implements BombModule {
         setupUI();
     }
 
+    /**
+     * Generează aleatoriu proprietățile butonului (culoare, text, culoarea benzii).
+     */
     private void generateButton() {
         String[] colors = {"Blue", "White", "Yellow", "Red"};
         String[] texts = {"Abort", "Detonate", "Hold", "Press"};
@@ -34,6 +37,9 @@ public class ButtonModule implements BombModule {
         stripColor = colors[rand.nextInt(colors.length)];
     }
 
+    /**
+     * Configurează interfața grafică a butonului și a benzii indicatoare.
+     */
     private void setupUI() {
         panel = new JPanel() {
             @Override
@@ -42,27 +48,29 @@ public class ButtonModule implements BombModule {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Draw Strip
+                // Randare Bandă (Strip) - apare în dreapta când butonul este ținut apăsat
                 int stripX = getWidth() - 35;
                 int stripY = 50;
                 int stripW = 18;
                 int stripH = 100;
                 
+                // Fundalul benzii (oprită)
                 g2.setColor(new Color(20, 20, 20));
                 g2.fillRoundRect(stripX, stripY, stripW, stripH, 5, 5);
                 
+                // Dacă butonul este apăsat și regula cere "Hold", aprindem banda
                 if (isPressed && shouldHold()) {
                     g2.setColor(getColor(stripColor));
                     g2.fillRoundRect(stripX + 2, stripY + 2, stripW - 4, stripH - 4, 3, 3);
                     
-                    // Glow
+                    // Efect de strălucire (Glow) pentru bandă
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
                     g2.setColor(getColor(stripColor));
                     g2.fillRoundRect(stripX - 2, stripY - 2, stripW + 4, stripH + 4, 8, 8);
                     g2.setComposite(AlphaComposite.SrcOver);
                 }
 
-                // Draw Button Base
+                // Randare umbră buton
                 int btnSize = 140;
                 int btnX = (getWidth() - stripW - 20 - btnSize) / 2;
                 int btnY = (getHeight() - btnSize) / 2 + 10;
@@ -70,14 +78,14 @@ public class ButtonModule implements BombModule {
                 g2.setColor(new Color(0, 0, 0, 100));
                 g2.fillOval(btnX + 5, btnY + 5, btnSize, btnSize);
 
-                // Draw Button
+                // Randare corp buton
                 Color btnColor = getColor(color);
                 if (isPressed) btnColor = btnColor.darker();
                 
                 g2.setColor(btnColor);
                 g2.fillOval(btnX, btnY, btnSize, btnSize);
                 
-                // Button Highlight/Shadow
+                // Efect 3D (Gradient pentru reflexie)
                 GradientPaint gp = new GradientPaint(
                     btnX, btnY, new Color(255, 255, 255, 50),
                     btnX, btnY + btnSize, new Color(0, 0, 0, 50)
@@ -85,12 +93,12 @@ public class ButtonModule implements BombModule {
                 g2.setPaint(gp);
                 g2.fillOval(btnX, btnY, btnSize, btnSize);
 
-                // Button Border
+                // Contur buton
                 g2.setColor(new Color(0, 0, 0, 50));
                 g2.setStroke(new BasicStroke(2));
                 g2.drawOval(btnX, btnY, btnSize, btnSize);
 
-                // Text
+                // Randare text pe buton
                 g2.setColor(isDark(color) ? Color.WHITE : Color.BLACK);
                 g2.setFont(Theme.FONT_BOLD.deriveFont(24f));
                 FontMetrics fm = g2.getFontMetrics();
@@ -107,7 +115,7 @@ public class ButtonModule implements BombModule {
             public void mousePressed(MouseEvent e) {
                 if (solved) return;
                 
-                // Check if click is within button circle
+                // Verificăm dacă click-ul a fost în interiorul cercului butonului
                 int btnSize = 140;
                 int stripW = 20;
                 int btnX = (panel.getWidth() - stripW - 20 - btnSize) / 2;
@@ -133,52 +141,29 @@ public class ButtonModule implements BombModule {
         });
     }
 
+    /**
+     * Logică apelată la eliberarea butonului. Verifică dacă regulile au fost respectate.
+     */
     private void handleRelease() {
-        // Determine if it was a tap or a hold
-        // In the original game, holding for any amount of time shows the strip.
-        // If you release immediately (tap), you don't see the strip.
-        // But "immediately" is subjective.
-        // Logic:
-        // If we are supposed to hold, and we release, we check the timer.
-        // If we are supposed to press, and we release, it's solved.
-        
         boolean ruleSaysHold = shouldHold();
         
         if (ruleSaysHold) {
-            // We must release on a specific digit.
+            // Dacă regula a fost să ținem apăsat, verificăm timpul la care a fost eliberat.
             if (checkReleaseTime()) {
                 solve();
             } else {
                 bomb.addStrike();
             }
         } else {
-            // Rule says press and release.
-            // If we held it long enough to see the strip, is that a strike?
-            // In the original game, if you hold when you should press, you can still solve it by releasing on the strip rule?
-            // Actually, if the rule says "Press and release", you just do it.
-            // If you hold it, the strip appears, and then you are now in "Release a Held Button" territory.
-            // So if you hold it, you MUST follow the strip rule.
-            // If you tap it, you follow the "Press" rule.
-            
-            // Simplified logic:
-            // If the user held the button (saw the strip), they must follow the strip rule.
-            // If the user tapped the button (didn't see strip), they are following the initial rule.
-            
-            // Since we show the strip immediately on press in this implementation (for feedback),
-            // let's say:
-            // If the initial rule was "Press", and they release, it's correct.
-            // UNLESS they waited for a specific digit? No, that's too complex.
-            
-            // Let's stick to:
-            // If rule says Hold: You MUST release on digit.
-            // If rule says Press: You MUST release immediately (any digit).
-            // But if you release on a specific digit that matches the strip rule, maybe that's okay too?
-            // Let's just enforce the primary rule.
-            
+            // Dacă regula a fost un simplu "apasă și eliberează".
             solve();
         }
     }
 
+    /**
+     * Determină dacă butonul trebuie ținut apăsat (Hold) sau eliberat imediat (Press).
+     * @return true dacă trebuie ținut apăsat, false altfel.
+     */
     private boolean shouldHold() {
         if (color.equals("Blue") && text.equals("Abort")) return true;
         if (bomb.getBatteries() > 1 && text.equals("Detonate")) return false;
@@ -188,6 +173,9 @@ public class ButtonModule implements BombModule {
         return !(color.equals("Red") && text.equals("Hold"));
     }
 
+    /**
+     * Verifică dacă timpul de pe cronometru conține cifra cerută de culoarea benzii.
+     */
     private boolean checkReleaseTime() {
         int time = bomb.getTimeRemaining();
         int minutes = time / 60;
@@ -198,7 +186,7 @@ public class ButtonModule implements BombModule {
         if (stripColor.equals("Blue")) targetDigit = 4;
         else if (stripColor.equals("White")) targetDigit = 1;
         else if (stripColor.equals("Yellow")) targetDigit = 5;
-        else targetDigit = 1;
+        else targetDigit = 1; // Default pentru Red sau altele
 
         return formatted.contains(String.valueOf(targetDigit));
     }

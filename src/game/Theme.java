@@ -5,15 +5,20 @@ import java.awt.image.BufferedImage;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
+/**
+ * Clasa utilitara care defineste identitatea vizuala a jocului (Culori, Fonturi, Componente).
+ * Gestioneaza tema intunecata (Dark Theme) si stilul industrial al jocului.
+ */
 public class Theme {
-    // Colors
-    public static final Color BG_COLOR = new Color(10, 10, 15); // Darker Background
-    public static final Color PANEL_BG = new Color(35, 35, 40);
-    public static final Color PANEL_BORDER = new Color(60, 60, 65);
-    public static final Color TEXT_PRIMARY = new Color(240, 240, 240);
-    public static final Color TEXT_SECONDARY = new Color(180, 180, 180);
-    public static final Color TEXT_DIGITAL = new Color(255, 0, 0); // Red digital text
+    // Definirea paletei de culori principale
+    public static final Color BG_COLOR = new Color(10, 10, 15); // Fundal foarte inchis
+    public static final Color PANEL_BG = new Color(35, 35, 40); // Fundal pentru panouri/module
+    public static final Color PANEL_BORDER = new Color(60, 60, 65); // Bordura metalica
+    public static final Color TEXT_PRIMARY = new Color(240, 240, 240); // Text principal albicios
+    public static final Color TEXT_SECONDARY = new Color(180, 180, 180); // Text secundar gri
+    public static final Color TEXT_DIGITAL = new Color(255, 0, 0); // Rosul segmentat de timer
     
+    // Culori de accent pentru diverse elemente UI
     public static final Color ACCENT_RED = new Color(231, 76, 60);
     public static final Color ACCENT_GREEN = new Color(46, 204, 113);
     public static final Color ACCENT_BLUE = new Color(52, 152, 219);
@@ -21,13 +26,14 @@ public class Theme {
     public static final Color ACCENT_ORANGE = new Color(230, 126, 34);
     public static final Color ACCENT_PURPLE = new Color(155, 89, 182);
     
+    // Culori specifice pentru LED-uri si stari de pericol
     public static final Color DANGER_RED = new Color(192, 57, 43);
     public static final Color LED_RED_ON = new Color(255, 50, 50);
     public static final Color LED_RED_OFF = new Color(80, 0, 0);
     public static final Color LED_GREEN_ON = new Color(50, 255, 50);
     public static final Color LED_GREEN_OFF = new Color(0, 80, 0);
     
-    public static final Color MANUAL_BG = new Color(250, 248, 239); // Paper color
+    public static final Color MANUAL_BG = new Color(250, 248, 239); // Culoare de hartie veche
 
     // Fonts - Using Unicode-compatible fonts for international character support
     public static final Font FONT_TITLE = createUnicodeFont(Font.BOLD, 48);

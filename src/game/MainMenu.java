@@ -1,11 +1,13 @@
 package game;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.*;
 
+/**
+ * Meniul principal al aplicatiei.
+ * Permite navigarea catre ecranele de joc, manual, credite si setarea limbii.
+ */
 public class MainMenu extends JPanel {
     private App app;
 
@@ -15,6 +17,7 @@ public class MainMenu extends JPanel {
         setupUI();
     }
 
+    /** Construieste si structureaza elementele vizuale ale meniului. */
     private void setupUI() {
         removeAll();
         setLayout(new GridBagLayout());
@@ -25,7 +28,7 @@ public class MainMenu extends JPanel {
         gbc.insets = new Insets(15, 0, 15, 0);
         gbc.anchor = GridBagConstraints.CENTER;
 
-        // Title Panel
+        // Sectiunea de Titlu si Subtitlu
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.setOpaque(false);
@@ -48,7 +51,7 @@ public class MainMenu extends JPanel {
 
         add(Box.createRigidArea(new Dimension(0, 30)), gbc);
 
-        // Button Panel
+        // Sectiunea cu butoanele principale de navigare
         JPanel buttonPanel = new JPanel(new GridLayout(0, 1, 0, 20));
         buttonPanel.setOpaque(false);
         
@@ -60,11 +63,12 @@ public class MainMenu extends JPanel {
 
         add(buttonPanel, gbc);
         
-        // Language Selector Panel (Redesigned)
+        // Sectiunea pentru selectia limbii
         JPanel langPanel = createLanguageSelector();
         add(langPanel, gbc);
     }
 
+    /** Creeaza si stilizeaza selectorul de limba de tip meniu dropdown. */
     private JPanel createLanguageSelector() {
         JPanel container = new JPanel();
         container.setOpaque(false);
@@ -74,13 +78,12 @@ public class MainMenu extends JPanel {
         langLabel.setFont(Theme.FONT_BOLD);
         langLabel.setForeground(Theme.TEXT_SECONDARY);
         
-        // Create a styled dropdown panel
         JPanel selectorPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         selectorPanel.setOpaque(false);
         
         Localization.Language currentLang = Localization.getLanguage();
         
-        // Create a custom styled button that shows current language
+        // Buton custom pentru afisarea limbii curente
         JButton langButton = new JButton(currentLang.getDisplayName()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -89,7 +92,7 @@ public class MainMenu extends JPanel {
                 
                 boolean rollover = getModel().isRollover();
                 
-                // Background gradient
+                // Fundal cu gradient
                 GradientPaint gp = new GradientPaint(0, 0, 
                     rollover ? new Color(70, 70, 80) : new Color(50, 50, 60), 
                     0, getHeight(), 
@@ -97,12 +100,12 @@ public class MainMenu extends JPanel {
                 g2.setPaint(gp);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
                 
-                // Border
+                // Bordura colorata
                 g2.setColor(Theme.ACCENT_ORANGE);
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRoundRect(1, 1, getWidth()-3, getHeight()-3, 15, 15);
                 
-                // Text
+                // Afisare text centrat
                 g2.setColor(Theme.TEXT_PRIMARY);
                 g2.setFont(Theme.FONT_BOLD.deriveFont(16f));
                 FontMetrics fm = g2.getFontMetrics();
@@ -110,7 +113,7 @@ public class MainMenu extends JPanel {
                 int y = (getHeight() + fm.getAscent()) / 2 - 3;
                 g2.drawString(getText(), x, y);
                 
-                // Arrow indicator
+                // Simbol sageata pentru meniu
                 g2.setColor(Theme.ACCENT_ORANGE);
                 int arrowX = getWidth() - 25;
                 int arrowY = getHeight() / 2 - 3;
@@ -128,7 +131,7 @@ public class MainMenu extends JPanel {
         langButton.setContentAreaFilled(false);
         langButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Create popup menu for languages
+        // Meniul plutitor care se deschide la click
         JPopupMenu langMenu = new JPopupMenu();
         langMenu.setBackground(new Color(40, 40, 50));
         langMenu.setBorder(BorderFactory.createLineBorder(Theme.ACCENT_ORANGE, 2));
@@ -147,7 +150,7 @@ public class MainMenu extends JPanel {
                     }
                     g2.fillRect(0, 0, getWidth(), getHeight());
                     
-                    // Highlight current language
+                    // Marcam limba curent activata
                     if (lang == Localization.getLanguage()) {
                         g2.setColor(Theme.ACCENT_GREEN);
                         g2.fillRect(0, 0, 4, getHeight());
@@ -169,7 +172,7 @@ public class MainMenu extends JPanel {
             item.addActionListener(e -> {
                 Localization.setLanguage(lang);
                 langButton.setText(lang.getDisplayName());
-                setupUI();
+                setupUI(); // Reconstruim interfata pentru a vedea schimbarile
                 revalidate();
                 repaint();
             });
@@ -193,7 +196,7 @@ public class MainMenu extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Draw dark background
+        // Fundalul negru al meniului
         g2.setColor(Theme.BG_COLOR);
         g2.fillRect(0, 0, getWidth(), getHeight());
 

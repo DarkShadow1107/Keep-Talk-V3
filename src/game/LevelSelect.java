@@ -1,9 +1,13 @@
 package game;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import javax.swing.*;
 
+/**
+ * Ecranul de selectie a nivelului.
+ * Afiseaza diverse niveluri organizate pe tab-uri in functie de dificultate.
+ */
 public class LevelSelect extends JPanel {
     private App app;
 
@@ -12,17 +16,20 @@ public class LevelSelect extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Theme.BG_COLOR);
 
+        // Titlul ecranului
         JLabel title = new JLabel(Localization.get("LEVEL_SELECT"), SwingConstants.CENTER);
         title.setFont(Theme.FONT_TITLE);
         title.setForeground(Theme.ACCENT_ORANGE);
         title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         add(title, BorderLayout.NORTH);
 
+        // Componenta cu tab-uri pentru categorii de dificultate
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setFont(Theme.FONT_BOLD);
         tabbedPane.setBackground(Theme.PANEL_BG);
         tabbedPane.setForeground(Theme.TEXT_PRIMARY);
         
+        // Adaugarea tab-urilor
         tabbedPane.addTab(Localization.get("GAME_NONE").equals("NONE") ? "ALL" : "ALL", createLevelList(null));
         tabbedPane.addTab(Localization.get("DIFF_EASY"), createLevelList("EASY"));
         tabbedPane.addTab(Localization.get("DIFF_MEDIUM"), createLevelList("MEDIUM"));
@@ -32,6 +39,7 @@ public class LevelSelect extends JPanel {
 
         add(tabbedPane, BorderLayout.CENTER);
 
+        // Butonul de inapoi
         JButton backButton = Theme.createButton(Localization.get("GAME_ABORT"));
         backButton.setBackground(Theme.BG_COLOR);
         backButton.setForeground(Theme.ACCENT_RED);
@@ -43,6 +51,11 @@ public class LevelSelect extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
+    /**
+     * Creeaza o lista scrollabila de niveluri filtrate dupa dificultate.
+     * @param difficultyFilter Dificultatea dorita (sau null pentru toate).
+     * @return Un JScrollPane care contine lista de niveluri.
+     */
     private JScrollPane createLevelList(String difficultyFilter) {
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
@@ -51,10 +64,12 @@ public class LevelSelect extends JPanel {
 
         List<Level> levels = Level.getLevels();
         for (Level level : levels) {
+            // Filtram nivelurile care nu corespund dificultatii selectate
             if (difficultyFilter != null && !level.getDifficulty().equalsIgnoreCase(difficultyFilter)) {
                 continue;
             }
 
+            // Panel pentru reprezentarea unui singur nivel
             JPanel levelPanel = new JPanel(new BorderLayout());
             levelPanel.setBackground(Theme.PANEL_BG);
             levelPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -73,6 +88,7 @@ public class LevelSelect extends JPanel {
             descLabel.setForeground(Theme.TEXT_SECONDARY);
             descLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 0));
 
+            // Butonul de pornire pentru acest nivel
             JButton playButton = Theme.createButton(Localization.get("BTN_START"));
             playButton.setBackground(Theme.ACCENT_RED);
             playButton.setPreferredSize(new Dimension(150, 40));

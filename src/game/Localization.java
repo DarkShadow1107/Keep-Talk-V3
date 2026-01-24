@@ -2,11 +2,17 @@ package game;
 
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+/**
+ * Gestioneaza suportul pentru mai multe limbi (Internationalizare).
+ * Incarca textele dintr-un fisier de proprietati bazat pe limba selectata.
+ */
 public class Localization {
+    /**
+     * Enumeratie pentru limbile suportate de joc.
+     */
     public enum Language {
         ENGLISH("English", "🇬🇧", "en"),
         FRENCH("Français", "🇫🇷", "fr"),
@@ -39,21 +45,23 @@ public class Localization {
         public String toString() { return displayName; }
     }
 
-    private static Language currentLanguage = Language.ENGLISH;
-    private static ResourceBundle currentBundle;
-    private static ResourceBundle englishBundle; // Fallback
+    private static Language currentLanguage = Language.ENGLISH; // Limba curent selectata
+    private static ResourceBundle currentBundle; // Pachetul de resurse pentru limba curenta
+    private static ResourceBundle englishBundle; // Pachetul de rezerva (fallback)
 
     static {
-        // Load English as fallback
+        // La incarcarea clasei, setam Engleza ca fiind limba implicita si de rezerva
         englishBundle = loadBundle(Language.ENGLISH);
         currentBundle = englishBundle;
     }
 
+    /** Incarca fisierul .properties corespunzator limbii specificate. */
     private static ResourceBundle loadBundle(Language lang) {
         try {
             String resourcePath = "/resources/messages_" + lang.getCode() + ".properties";
             var stream = Localization.class.getResourceAsStream(resourcePath);
             if (stream != null) {
+                // Incarcare in format UTF-8 pentru suportul caracterelor speciale (ex: diacritice)
                 InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
                 return new PropertyResourceBundle(reader);
             }
@@ -63,13 +71,14 @@ public class Localization {
         return null;
     }
 
+    /** Schimba limba interfetei jocului. */
     public static void setLanguage(Language lang) {
         currentLanguage = lang;
         ResourceBundle bundle = loadBundle(lang);
         if (bundle != null) {
             currentBundle = bundle;
         } else {
-            // Fall back to English if language file not found
+            // Daca nu gasim fisierul, ramanem pe Engleza
             currentBundle = englishBundle;
             System.out.println("Language file not found for " + lang.getDisplayName() + ", using English.");
         }
@@ -79,8 +88,13 @@ public class Localization {
         return currentLanguage;
     }
 
+    /**
+     * Returneaza textul tradus pentru o anumita cheie.
+     * @param key Cheia textului din fisierul .properties.
+     * @return Textul tradus sau cheia insasi daca nu este gasita traducerarea.
+     */
     public static String get(String key) {
-        // Try current language bundle first
+        // Incercam in limba curenta
         if (currentBundle != null) {
             try {
                 String value = currentBundle.getString(key);
@@ -90,7 +104,7 @@ public class Localization {
             } catch (Exception ignored) {}
         }
         
-        // Fall back to English bundle
+        // Incercam in Engleza (fallback)
         if (englishBundle != null && currentBundle != englishBundle) {
             try {
                 String value = englishBundle.getString(key);
@@ -100,7 +114,6 @@ public class Localization {
             } catch (Exception ignored) {}
         }
         
-        // If key not found anywhere, return the key itself
         return key;
     }
 }

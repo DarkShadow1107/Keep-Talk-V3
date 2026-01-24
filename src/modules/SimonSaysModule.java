@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.*;
 
+/**
+ * Modulul "Simon Spune" (Simon Says).
+ * Jucătorul trebuie să apese o secvență de butoane colorate care luminează.
+ * Regulile de răspuns se schimbă în funcție de numărul de greșeli (strikes) 
+ * și de prezența unei vocale în numărul de serie.
+ */
 public class SimonSaysModule implements BombModule {
     private JPanel panel;
     private boolean solved = false;
@@ -20,10 +26,10 @@ public class SimonSaysModule implements BombModule {
     private List<Integer> inputSequence;
     private int stage = 0;
     private Color[] baseColors = {
-        new Color(100, 0, 0),   // Red
-        new Color(0, 0, 100),   // Blue
-        new Color(0, 100, 0),   // Green
-        new Color(100, 100, 0)  // Yellow
+        new Color(100, 0, 0),   // Roșu
+        new Color(0, 0, 100),   // Albastru
+        new Color(0, 100, 0),   // Verde
+        new Color(100, 100, 0)  // Galben
     };
     private Color[] litColors = {
         new Color(255, 50, 50),
@@ -45,6 +51,9 @@ public class SimonSaysModule implements BombModule {
         startFlashing();
     }
 
+    /**
+     * Configurează interfața grafică cu cele 4 butoane colorate sub formă de cadrane.
+     */
     private void setupUI() {
         panel = new JPanel() {
             @Override
@@ -58,19 +67,19 @@ public class SimonSaysModule implements BombModule {
                 int size = 140;
                 int gap = 10;
 
-                // Draw 4 quadrants
+                // Desenare cele 4 butoane
                 drawButton(g2, 0, cx - size/2 - gap/2, cy - size/2 - gap/2, size/2, size/2, 90);
                 drawButton(g2, 1, cx + gap/2, cy - size/2 - gap/2, size/2, size/2, 0);
                 drawButton(g2, 3, cx - size/2 - gap/2, cy + gap/2, size/2, size/2, 180);
                 drawButton(g2, 2, cx + gap/2, cy + gap/2, size/2, size/2, 270);
                 
-                // Center cap
+                // Capacul central (decorativ)
                 g2.setColor(new Color(20, 20, 20));
                 g2.fillOval(cx - 25, cy - 25, 50, 50);
                 g2.setColor(new Color(50, 50, 50));
                 g2.drawOval(cx - 25, cy - 25, 50, 50);
                 
-                // Logo
+                // Sigla centrală
                 g2.setColor(Color.WHITE);
                 g2.setFont(Theme.FONT_BOLD.deriveFont(10f));
                 int w = g2.getFontMetrics().stringWidth("SIMON");
@@ -105,30 +114,29 @@ public class SimonSaysModule implements BombModule {
         });
     }
 
+    /**
+     * Randează un buton individual cu efect de plastic și luciu.
+     */
     private void drawButton(Graphics2D g2, int index, int x, int y, int w, int h, int startAngle) {
         Color c = litState[index] ? litColors[index] : baseColors[index];
         
-        // We draw a rectangle but clip it or just draw a filled arc/rect?
-        // Actually, Simon buttons are usually sectors of a circle.
-        // Let's draw rounded rectangles for a modern look or arcs for classic.
-        // Let's do rounded rects arranged in a grid for simplicity and robustness, 
-        // or rotated arcs.
-        
-        // Let's stick to the grid layout but make them look like plastic pads.
         g2.setColor(c);
         g2.fillRoundRect(x, y, w, h, 20, 20);
         
-        // Shine/Gloss
+        // Efect de strălucire/reflexie
         GradientPaint gp = new GradientPaint(x, y, new Color(255, 255, 255, 100), x, y + h/2, new Color(255, 255, 255, 0));
         g2.setPaint(gp);
         g2.fillRoundRect(x, y, w, h/2, 20, 20);
         
-        // Border
+        // Contur buton
         g2.setColor(c.darker());
         g2.setStroke(new BasicStroke(2));
         g2.drawRoundRect(x, y, w, h, 20, 20);
     }
 
+    /**
+     * Identifică indexul butonului dintr-o anumită poziție (x, y).
+     */
     private int getButtonAt(int x, int y) {
         int cx = panel.getWidth() / 2;
         int cy = panel.getHeight() / 2 + 10;
@@ -136,23 +144,29 @@ public class SimonSaysModule implements BombModule {
         int gap = 10;
         int half = size/2;
         
-        // Top Left (Red - 0)
+        // Sus-Stânga (Roșu - 0)
         if (x >= cx - half - gap/2 && x <= cx - gap/2 && y >= cy - half - gap/2 && y <= cy - gap/2) return 0;
-        // Top Right (Blue - 1)
+        // Sus-Dreapta (Albastru - 1)
         if (x >= cx + gap/2 && x <= cx + half + gap/2 && y >= cy - half - gap/2 && y <= cy - gap/2) return 1;
-        // Bottom Left (Yellow - 3)
+        // Jos-Stânga (Galben - 3)
         if (x >= cx - half - gap/2 && x <= cx - gap/2 && y >= cy + gap/2 && y <= cy + half + gap/2) return 3;
-        // Bottom Right (Green - 2)
+        // Jos-Dreapta (Verde - 2)
         if (x >= cx + gap/2 && x <= cx + half + gap/2 && y >= cy + gap/2 && y <= cy + half + gap/2) return 2;
         
         return -1;
     }
 
+    /**
+     * Adaugă o culoare aleatorie la secvența curentă.
+     */
     private void addToSequence() {
         Random rand = new Random();
         sequence.add(rand.nextInt(4));
     }
 
+    /**
+     * Pornește animația de iluminare a secvenței ce trebuie reținută.
+     */
     private void startFlashing() {
         final int[] flashIndex = {0};
         
@@ -167,7 +181,7 @@ public class SimonSaysModule implements BombModule {
                     return;
                 }
 
-                // Reset all
+                // Stingem toate butoanele
                 for (int i = 0; i < 4; i++) litState[i] = false;
 
                 if (flashIndex[0] >= sequence.size()) {
@@ -177,6 +191,7 @@ public class SimonSaysModule implements BombModule {
                 }
 
                 if (on) {
+                    // Aprindem butonul corespunzător din secvență
                     int btnIndex = sequence.get(flashIndex[0]);
                     litState[btnIndex] = true;
                     on = false;
@@ -190,10 +205,11 @@ public class SimonSaysModule implements BombModule {
         flashTimer.start();
     }
 
+    /**
+     * Procesează apăsarea unui buton de către jucător și verifică corectitudinea.
+     */
     private void handleInput(int index) {
         if (solved) return;
-        
-        // Visual feedback is handled by mouse press/release
         
         int expectedFlash = sequence.get(inputSequence.size());
         int strikes = bomb.getStrikes();
@@ -202,91 +218,101 @@ public class SimonSaysModule implements BombModule {
         if (index == requiredInput) {
             inputSequence.add(index);
             if (inputSequence.size() == sequence.size()) {
+                // Secvență completată corect pentru acest stagiu
                 stage++;
                 inputSequence.clear();
                 if (stage >= 3) {
+                    // Modul rezolvat după 3 stagii
                     solved = true;
                     flashTimer.stop();
-                    for(int i=0; i<4; i++) litState[i] = true; // All lit on win
+                    for(int i=0; i<4; i++) litState[i] = true; // Toate aprinse la victorie
                     panel.repaint();
                     bomb.checkDefused();
                 } else {
                     addToSequence();
-                    // Restart flashing after a short delay
+                    // Pornește din nou iluminarea după o scurtă pauză
                     Timer t = new Timer(1000, e -> startFlashing());
                     t.setRepeats(false);
                     t.start();
                 }
             }
         } else {
+            // Greșeală (Strike) și resetarea progresului curent
             bomb.addStrike();
             inputSequence.clear();
             startFlashing();
         }
     }
 
+    /**
+     * Determină butonul corect ce trebuie apăsat conform tabelului din manual.
+     * Regulile diferă dacă seria conține o vocală și în funcție de numărul de greșeli.
+     */
     private int getCorrectButton(int flashIndex, int strikes) {
         boolean hasVowel = hasVowel(bomb.getSerialNumber());
-        // 0:Red, 1:Blue, 2:Green, 3:Yellow
+        // 0:Roșu, 1:Albastru, 2:Verde, 3:Galben
         
         if (hasVowel) {
             switch (strikes) {
                 case 0 -> {
                     switch (flashIndex) {
-                        case 0 -> { return 1; }
-                        case 1 -> { return 0; }
-                        case 2 -> { return 3; }
-                        case 3 -> { return 2; }
+                        case 0 -> { return 1; } // Roșu -> Albastru
+                        case 1 -> { return 0; } // Albastru -> Roșu
+                        case 2 -> { return 3; } // Verde -> Galben
+                        case 3 -> { return 2; } // Galben -> Verde
                     }
                 }
                 case 1 -> {
                     switch (flashIndex) {
-                        case 0 -> { return 3; }
-                        case 1 -> { return 2; }
-                        case 2 -> { return 1; }
-                        case 3 -> { return 0; }
+                        case 0 -> { return 3; } // Roșu -> Galben
+                        case 1 -> { return 2; } // Albastru -> Verde
+                        case 2 -> { return 1; } // Verde -> Albastru
+                        case 3 -> { return 0; } // Galben -> Roșu
                     }
                 }
-                default -> {
+                default -> { // 2+ strikes
                     switch (flashIndex) {
-                        case 0 -> { return 2; }
-                        case 1 -> { return 0; }
-                        case 2 -> { return 3; }
-                        case 3 -> { return 1; }
+                        case 0 -> { return 2; } // Roșu -> Verde
+                        case 1 -> { return 0; } // Albastru -> Roșu
+                        case 2 -> { return 3; } // Verde -> Galben
+                        case 3 -> { return 1; } // Galben -> Albastru
                     }
                 }
             }
-        } else { // No Vowel
+        } else { // Nu are vocală în serie
             switch (strikes) {
                 case 0 -> {
                     switch (flashIndex) {
-                        case 0 -> { return 1; }
-                        case 1 -> { return 3; }
-                        case 2 -> { return 2; }
-                        case 3 -> { return 0; }
+                        case 0 -> { return 1; } // Roșu -> Albastru
+                        case 1 -> { return 3; } // Albastru -> Galben
+                        case 2 -> { return 2; } // Verde -> Verde
+                        case 3 -> { return 0; } // Galben -> Roșu
                     }
                 }
                 case 1 -> {
                     switch (flashIndex) {
-                        case 0 -> { return 0; }
-                        case 1 -> { return 1; }
-                        case 2 -> { return 3; }
-                        case 3 -> { return 2; }
+                        case 0 -> { return 0; } // Roșu -> Roșu
+                        case 1 -> { return 1; } // Albastru -> Albastru
+                        case 2 -> { return 3; } // Verde -> Galben
+                        case 3 -> { return 2; } // Galben -> Verde
                     }
                 }
-                default -> {
+                default -> { // 2+ strikes
                     switch (flashIndex) {
-                        case 0 -> { return 3; }
-                        case 1 -> { return 2; }
-                        case 2 -> { return 1; }
-                        case 3 -> { return 0; }
+                        case 0 -> { return 3; } // Roșu -> Galben
+                        case 1 -> { return 2; } // Albastru -> Verde
+                        case 2 -> { return 1; } // Verde -> Albastru
+                        case 3 -> { return 0; } // Galben -> Roșu
                     }
                 }
             }
         }
-        return flashIndex;
+        return -1;
     }
 
+    /**
+     * Verifică dacă un șir de caractere conține vocale (A, E, I, O, U).
+     */
     private boolean hasVowel(String serial) {
         String vowels = "AEIOU";
         for (char c : serial.toUpperCase().toCharArray()) {
